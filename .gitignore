@@ -1,0 +1,9 @@
+.idea
+*.iml
+out
+gen
+
+debug/
+target/
+
+**/*.rs.bk

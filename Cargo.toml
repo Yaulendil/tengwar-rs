@@ -1,0 +1,8 @@
+[package]
+name = "tengwar"
+version = "0.1.0"
+authors = ["Yaulendil <davarice@protonmail.com>"]
+edition = "2018"
+
+[dependencies]
+itertools = "0.10.0"
