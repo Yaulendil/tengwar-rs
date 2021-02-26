@@ -24,13 +24,15 @@ pub const NUMERAL: [char; 12] = [
 
 
 pub const TEHTA_A: Tehta = Tehta::basic('');
+// pub const TEHTA_A: Tehta = Tehta::basic('');
 /// Tecco
 pub const TEHTA_E: Tehta = Tehta::basic('');
+// pub const TEHTA_E: Tehta = Tehta::with_variant('', '');
 /// Tixë
-pub const TEHTA_I: Tehta = Tehta::basic('');
-// pub const TEHTA_I: Tehta = Tehta::with_variant('', ''); // Tixë
-pub const TEHTA_O: Tehta = Tehta::basic('');
-pub const TEHTA_U: Tehta = Tehta::basic('');
+// pub const TEHTA_I: Tehta = Tehta::basic('');
+pub const TEHTA_I: Tehta = Tehta::with_variant('', '');
+pub const TEHTA_O: Tehta = Tehta::with_variant('', '');
+pub const TEHTA_U: Tehta = Tehta::with_variant('', '');
 
 
 pub const TEMA_TINCO: Tema = Tema {
@@ -115,21 +117,16 @@ impl Tehta {
         Self { base, long: Some(long) }
     }
 
-    pub fn write(
-        &self, f: &mut Formatter<'_>, long: bool, palatal: bool,
-    ) -> fmt::Result {
-        if palatal {
-            f.write_char(MOD_PALATAL)?;
-        }
-
+    pub fn write(&self, f: &mut Formatter<'_>, long: bool) -> fmt::Result {
         if long {
-            // match self.long {
-            //     Some(variant) => f.write_char(variant),
-            //     None => {
-            f.write_char(MOD_LONG_VOWEL)?;
-            f.write_char(self.base)
-            //     }
-            // }
+            match self.long {
+                Some(variant) => f.write_char(variant),
+                None => {
+                    // f.write_char(MOD_LONG_VOWEL)?;
+                    f.write_char(carrier(true))?;
+                    f.write_char(self.base)
+                }
+            }
         } else {
             f.write_char(self.base)
         }
@@ -183,6 +180,39 @@ pub struct Glyph {
 
 
 impl Glyph {
+    pub const fn with_both(cons: char, vowel: Tehta) -> Self {
+        Self {
+            cons: Some(cons),
+            vowel: Some(vowel),
+            silme: false,
+            palatal: false,
+            long_cons: false,
+            long_vowel: false,
+        }
+    }
+
+    pub const fn with_cons(cons: char) -> Self {
+        Self {
+            cons: Some(cons),
+            vowel: None,
+            silme: false,
+            palatal: false,
+            long_cons: false,
+            long_vowel: false,
+        }
+    }
+
+    pub const fn with_vowel(vowel: Tehta) -> Self {
+        Self {
+            cons: None,
+            vowel: Some(vowel),
+            silme: false,
+            palatal: false,
+            long_cons: false,
+            long_vowel: false,
+        }
+    }
+
     const fn get_base(&self, base: char) -> (char, bool) {
         if self.silme {
             if base == TEMA_PARMA.nasal {
@@ -232,8 +262,12 @@ impl fmt::Display for Glyph {
             f.write_char(MOD_LONG_CONS)?;
         }
 
+        if *palatal {
+            f.write_char(MOD_PALATAL)?;
+        }
+
         if let Some(vowel) = vowel {
-            vowel.write(f, *long_vowel, *palatal)?;
+            vowel.write(f, *long_vowel && cons.is_some())?;
         }
 
         if rince {
