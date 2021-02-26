@@ -1,10 +1,10 @@
 use itertools::Itertools;
-use std::env::args;
-use tengwar::{Quenya, Rules};
+use tengwar::{Quenya, ToTengwar};
 
 
 fn main() {
-    println!("{}", Quenya::transcribe(
-        args().skip(1).intersperse(String::from(" ")).collect()
-    ));
+    let string_in: String = std::env::args().skip(1)
+        .intersperse(String::from(" "))
+        .collect();
+    println!("{}", string_in.to_tengwar::<Quenya>());
 }

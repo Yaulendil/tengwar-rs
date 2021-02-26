@@ -122,10 +122,8 @@ pub struct Quenya;
 
 
 impl Rules for Quenya {
-    fn transcribe(input: String) -> String {
-        let cvec: Vec<char> = input.chars()
-            .map(|c| c.to_ascii_lowercase())
-            .collect();
+    fn transcribe(input: impl AsRef<str>) -> String {
+        let cvec: Vec<char> = input.as_ref().to_lowercase().chars().collect();
         let mut line: &[char] = cvec.as_slice();
         let mut out: Vec<Token> = Vec::new();
         let mut tengwa: Option<Glyph> = None;
