@@ -258,6 +258,8 @@ impl Rules for Quenya {
                         }
                     }
 
+                    /*------------------*/
+
                     //  If nothing has been found, allow `_len` to decrement.
                     _len -= 1;
 
@@ -272,8 +274,6 @@ impl Rules for Quenya {
                         commit!();
                         continue 'next_slice;
                     }
-
-                    /*------------------*/
                 }
 
                 //  No currently active tengwa. Find a new one.
@@ -345,6 +345,8 @@ impl Rules for Quenya {
                         continue 'next_slice;
                     }
 
+                    /*------------------*/
+
                     //  If nothing has been found, allow `_len` to decrement.
                     _len -= 1;
 
@@ -360,8 +362,6 @@ impl Rules for Quenya {
                         advance!();
                         continue 'next_slice;
                     }
-
-                    /*------------------*/
                 }
 
                 // unreachable!();
