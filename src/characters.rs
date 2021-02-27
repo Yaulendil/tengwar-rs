@@ -126,6 +126,61 @@ pub const fn carrier(long: bool) -> char {
 }
 
 
+fn int(mut n: isize, base: isize) -> (bool, Vec<usize>) {
+    if n == 0 {
+        return (false, vec![0]);
+    }
+
+    let mut digits = Vec::new();
+    let neg = n.is_negative();
+
+    while n != 0 {
+        digits.push((n % base).abs() as usize);
+        n /= base;
+    }
+
+    (neg, digits)
+}
+
+
+pub fn int_10(n: isize) -> String {
+    let (neg, digits): (bool, Vec<usize>) = int(n, 10);
+    let mut out = String::with_capacity(neg as usize + digits.len() * 6);
+    let iter = digits.iter();
+
+    if neg { out.push('-'); }
+
+    for &digit in iter {
+        out.push(NUMERAL[digit]);
+        out.push('');
+    }
+
+    out
+}
+
+
+pub fn int_12(n: isize) -> String {
+    let (neg, digits): (bool, Vec<usize>) = int(n, 12);
+    let mut out = String::with_capacity(neg as usize + digits.len() * 6);
+    let mut iter = digits.iter();
+
+    if neg { out.push('-'); }
+
+    //  Mark the least significant digit uniquely.
+    if let Some(&first) = iter.next() {
+        out.push(NUMERAL[first]);
+        out.push('');
+    }
+
+    for &digit in iter {
+        out.push(NUMERAL[digit]);
+        out.push('');
+    }
+
+    out
+}
+
+
 #[derive(Clone)]
 pub struct Tehta {
     pub base: char,

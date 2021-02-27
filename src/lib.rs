@@ -1,6 +1,7 @@
 pub mod characters;
 mod quenya;
 
+pub use characters::{int_10, int_12};
 pub use quenya::Quenya;
 use std::fmt::{self, Write};
 
