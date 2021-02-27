@@ -118,6 +118,34 @@ const fn get_vowel(slice: &[char]) -> Option<(Tehta, bool, bool)> {
 }
 
 
+//  Source: https://www.at.mansbjorkman.net/teng_punctuation.htm
+const fn punctuation(slice: &[char]) -> Option<&'static str> {
+    match slice {
+        ['\''] => Some(PUNCT_DOT_1),
+        ['.'] => Some(PUNCT_DOT_2),
+        [':'] => Some(PUNCT_DOT_3),
+        [' ', ',']
+        | [','] => Some(PUNCT_DOT_S1),
+        ['.', '.', '.'] => Some(PUNCT_DOT_DIAM),
+
+        [' ', ';']
+        | [';'] => Some(PUNCT_LINE_S1),
+        ['-'] => Some(PUNCT_LINE_2),
+        ['?'] => Some(PUNCT_INTERR),
+        ['!'] => Some(PUNCT_EXCLAM),
+
+        ['(']
+        | [')'] => Some(PUNCT_PAREN),
+        ['['] => Some(PUNCT_PAREN_L),
+        [']'] => Some(PUNCT_PAREN_R),
+
+        // [';'] => Some(PUNCT_),
+
+        _ => None,
+    }
+}
+
+
 pub struct Quenya;
 
 
@@ -144,7 +172,7 @@ impl Rules for Quenya {
 
         /// Pass the first `char` in the slice through to the output unchanged.
         macro_rules! pass {
-            () => { out.push(Token::Pass(line[0])); };
+            () => { out.push(Token::Char(line[0])); };
         }
 
         'next_slice:
@@ -259,8 +287,17 @@ impl Rules for Quenya {
                         continue 'same_slice;
                     }
 
+                    //  Look for punctuation marks.
+                    if let Some(punct) = punctuation(sub) {
+                        out.push(Token::String(punct));
+
+                        _vowel_last = false;
+                        advance!(sub.len());
+                        continue 'next_slice;
+                    }
+
                     //  Look for a consonant.
-                    if let Some(mut new) = get_consonant(sub) {
+                    else if let Some(mut new) = get_consonant(sub) {
                         if sub == ['y'] {
                             new.palatal = true;
                         }
