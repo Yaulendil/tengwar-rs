@@ -1,9 +1,13 @@
 pub mod characters;
+pub mod etc;
 mod quenya;
 
 pub use characters::{int_10, int_12};
 pub use quenya::Quenya;
-use std::fmt::{self, Write};
+use std::{
+    borrow::Cow,
+    fmt::{self, Write},
+};
 
 
 pub trait Rules {
@@ -25,7 +29,7 @@ impl<T: AsRef<str>> ToTengwar for T {
 
 pub enum Token {
     Char(char),
-    String(&'static str),
+    String(Cow<'static, str>),
     Tengwa(characters::Glyph),
 }
 
@@ -34,7 +38,7 @@ impl fmt::Display for Token {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Char(chr) => f.write_char(*chr),
-            Self::String(s) => f.write_str(s),
+            Self::String(s) => f.write_str(&s),
             Self::Tengwa(t) => t.fmt(f),
         }
     }

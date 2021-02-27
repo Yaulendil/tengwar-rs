@@ -1,4 +1,5 @@
-use crate::{characters::*, Rules, Token};
+use crate::{characters::*, etc::find_integer, Rules, Token};
+use std::borrow::Cow;
 
 
 const MAX_CHUNK: usize = 3;
@@ -122,14 +123,16 @@ const fn get_vowel(slice: &[char]) -> Option<(Tehta, bool, bool)> {
 const fn punctuation(slice: &[char]) -> Option<&'static str> {
     match slice {
         ['\''] => Some(PUNCT_DOT_1),
+        [','] => Some(PUNCT_DOT_1),
         ['.'] => Some(PUNCT_DOT_2),
         [':'] => Some(PUNCT_DOT_3),
-        [' ', ',']
-        | [','] => Some(PUNCT_DOT_S1),
+        [' ', ',', ' ']
+        | [',', ' '] => Some(PUNCT_DOT_S1),
         ['.', '.', '.'] => Some(PUNCT_DOT_DIAM),
 
-        [' ', ';']
-        | [';'] => Some(PUNCT_LINE_S1),
+        [' ', ';', ' ']
+        | [';', ' '] => Some(PUNCT_LINE_S1),
+        [';'] => Some(PUNCT_LINE_1),
         ['-'] => Some(PUNCT_LINE_2),
         ['?'] => Some(PUNCT_INTERR),
         ['!'] => Some(PUNCT_EXCLAM),
@@ -156,6 +159,7 @@ impl Rules for Quenya {
         let mut out: Vec<Token> = Vec::new();
         let mut tengwa: Option<Glyph> = None;
         let mut _vowel_last: bool = false;
+        let mut _len: usize = MAX_CHUNK;
 
         /// Move the working slice forward.
         macro_rules! advance {
@@ -177,12 +181,20 @@ impl Rules for Quenya {
 
         'next_slice:
         while !line.is_empty() {
-            let mut len: usize = MAX_CHUNK;
+            if let Some((number, size)) = find_integer::<isize>(line) {
+                commit!();
+                out.push(Token::String(Cow::Owned(int_12(number))));
+
+                advance!(size);
+                continue 'next_slice;
+            }
+
+            _len = MAX_CHUNK;
 
             'same_slice:
-            while len > 0 {
-                len = len.min(line.len());
-                let sub = &line[0..len];
+            while _len > 0 {
+                _len = _len.min(line.len());
+                let sub = &line[.._len];
 
                 //  There is a tengwa currently being constructed. Look for the
                 //      next modifier.
@@ -248,10 +260,10 @@ impl Rules for Quenya {
                         }
                     }
 
-                    //  If nothing has been found, allow `len` to decrement.
-                    len -= 1;
+                    //  If nothing has been found, allow `_len` to decrement.
+                    _len -= 1;
 
-                    if len > 0 {
+                    if _len > 0 {
                         //  If it is still positive, repeat the same check over
                         //      a new subslice.
                         continue 'same_slice;
@@ -283,13 +295,13 @@ impl Rules for Quenya {
                     }
 
                     if let ['y', _, ..] = sub {
-                        len = 1;
+                        _len = 1;
                         continue 'same_slice;
                     }
 
                     //  Look for punctuation marks.
                     if let Some(punct) = punctuation(sub) {
-                        out.push(Token::String(punct));
+                        out.push(Token::String(Cow::Borrowed(punct)));
 
                         _vowel_last = false;
                         advance!(sub.len());
@@ -336,10 +348,10 @@ impl Rules for Quenya {
                         continue 'next_slice;
                     }
 
-                    //  If nothing has been found, allow `len` to decrement.
-                    len -= 1;
+                    //  If nothing has been found, allow `_len` to decrement.
+                    _len -= 1;
 
-                    if len > 0 {
+                    if _len > 0 {
                         //  If it is still positive, repeat the same check over
                         //      a new subslice.
                         continue 'same_slice;

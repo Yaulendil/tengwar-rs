@@ -29,7 +29,7 @@ pub const PUNCT_DOT_3: &str = "";
 pub const PUNCT_DOT_4: &str = "";
 pub const PUNCT_DOT_5: &str = "";
 
-pub const PUNCT_DOT_S1: &str = " ";
+pub const PUNCT_DOT_S1: &str = "  ";
 pub const PUNCT_DOT_TRI: &str = "";
 pub const PUNCT_DOT_DIAM: &str = "";
 
@@ -38,8 +38,8 @@ pub const PUNCT_INTERR: &str = "";
 
 pub const PUNCT_LINE_1: &str = "";
 pub const PUNCT_LINE_2: &str = "";
-pub const PUNCT_LINE_S1: &str = " ";
-pub const PUNCT_LINE_S2: &str = " ";
+pub const PUNCT_LINE_S1: &str = "  ";
+pub const PUNCT_LINE_S2: &str = "  ";
 
 pub const PUNCT_PAREN: &str = "";
 pub const PUNCT_PAREN_L: &str = "";
