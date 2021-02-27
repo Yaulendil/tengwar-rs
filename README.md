@@ -9,7 +9,7 @@ The codepoints used are the ones found in [the ConScript Unicode Registry](https
 When run directly, reads all command-line arguments and prints them back in Tengwar, separated by spaces.
 
     > tengwar "Elen síla lúmenn' omentielvo."
-      ' .
+       
 
     > tengwar "Utúlie'n aurë! Aiya Eldalië ar Atanatári, utúlie'n aurë!"
-    ' !    , ' !
+            
