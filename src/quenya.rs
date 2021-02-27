@@ -61,7 +61,7 @@ const fn get_consonant(slice: &[char]) -> Option<Glyph> {
     match consonant_char(slice) {
         Some(cons) => Some(Glyph::with_cons(cons)),
         None => match slice {
-            &[a, b] if a == b => match consonant_char(&[slice[0]]) {
+            &[a, b] if a == b => match consonant_char(&[a]) {
                 Some(cons) => {
                     let mut glyph = Glyph::with_cons(cons);
                     glyph.long_cons = true;
@@ -90,32 +90,22 @@ const fn get_diphthong(slice: &[char]) -> Option<Glyph> {
 }
 
 
-const fn get_vowel(slice: &[char]) -> Option<(Tehta, bool, bool)> {
-    let (ch, palatal): (char, bool) = {
-        match slice {
-            ['y', v] => (*v, true),
-            [v] => (*v, false),
-            _ => { return None; }
-        }
-    };
+const fn get_vowel(slice: &[char]) -> Option<(Tehta, bool)> {
+    match slice {
+        ['a'] | ['ä'] => Some((TEHTA_A, false)),
+        ['e'] | ['ë'] => Some((TEHTA_E, false)),
+        ['i'] | ['ï'] => Some((TEHTA_I, false)),
+        ['o'] | ['ö'] => Some((TEHTA_O, false)),
+        ['u'] | ['ü'] => Some((TEHTA_U, false)),
 
-    let (vowel, long): (Tehta, bool) = match ch {
-        'a' | 'ä' => (TEHTA_A, false),
-        'e' | 'ë' => (TEHTA_E, false),
-        'i' | 'ï' => (TEHTA_I, false),
-        'o' | 'ö' => (TEHTA_O, false),
-        'u' | 'ü' => (TEHTA_U, false),
+        ['á'] | ['a', 'a'] => Some((TEHTA_A, true)),
+        ['é'] | ['e', 'e'] => Some((TEHTA_E, true)),
+        ['í'] | ['i', 'i'] => Some((TEHTA_I, true)),
+        ['ó'] | ['o', 'o'] => Some((TEHTA_O, true)),
+        ['ú'] | ['u', 'u'] => Some((TEHTA_U, true)),
 
-        'á' => (TEHTA_A, true),
-        'é' => (TEHTA_E, true),
-        'í' => (TEHTA_I, true),
-        'ó' => (TEHTA_O, true),
-        'ú' => (TEHTA_U, true),
-
-        _ => { return None; }
-    };
-
-    Some((vowel, long, palatal))
+        _ => None,
+    }
 }
 
 
@@ -240,19 +230,27 @@ impl Rules for Quenya {
 
                     //  Look for a vowel, if we need one.
                     if current.vowel.is_none() {
+                        if sub == ['y'] {
+                            current.palatal = true;
+
+                            _vowel_last = true;
+                            advance!();
+                            continue 'next_slice;
+                        }
+
                         //  If there is a diphthong, we need to commit the
                         //      current tengwa early, so that it is not misread
                         //      as a normal vowel.
-                        if get_diphthong(sub).is_some() {
+                        else if get_diphthong(sub).is_some() {
                             commit!();
                             continue 'same_slice;
                         }
 
                         //  Otherwise, we are free to check for a normal vowel.
-                        else if let Some((vowel, long, plt)) = get_vowel(sub) {
+                        else if let Some((vowel, long)) = get_vowel(sub) {
                             current.vowel = Some(vowel);
                             current.long_vowel = long;
-                            current.palatal |= plt;
+                            // current.palatal |= plt;
 
                             _vowel_last = true;
                             advance!(sub.len());
@@ -336,10 +334,9 @@ impl Rules for Quenya {
                     }
 
                     //  Look for a vowel.
-                    else if let Some((vowel, long, palatal)) = get_vowel(sub) {
+                    else if let Some((vowel, long)) = get_vowel(sub) {
                         let mut new = Glyph::with_vowel(vowel);
                         new.long_vowel = long;
-                        new.palatal = palatal;
 
                         tengwa = Some(new);
 
