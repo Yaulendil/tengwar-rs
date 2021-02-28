@@ -240,6 +240,16 @@ impl Rules for Quenya {
                             continue 'next_slice;
                         }
 
+                        //  In a cluster of "hl" or "hr", the H is transcribed
+                        //      as Halla instead of Hyarmen.
+                        else if current.cons == Some(TENGWA_HYARMEN)
+                            && matches!(sub, &['l', ..] | &['r', ..])
+                        {
+                            current.cons = Some(TENGWA_HALLA);
+                            commit!();
+                            continue 'same_slice;
+                        }
+
                         //  If there is a diphthong, we need to commit the
                         //      current tengwa early, so that it is not misread
                         //      as a normal vowel.
