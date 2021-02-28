@@ -148,7 +148,6 @@ impl Rules for Quenya {
         let mut line: &[char] = cvec.as_slice();
         let mut out: Vec<Token> = Vec::new();
         let mut tengwa: Option<Glyph> = None;
-        let mut _vowel_last: bool = false;
         let mut _len: usize = MAX_CHUNK;
 
         /// Move the working slice forward.
@@ -167,6 +166,13 @@ impl Rules for Quenya {
         /// Pass the first `char` in the slice through to the output unchanged.
         macro_rules! pass {
             () => { out.push(Token::Char(line[0])); };
+        }
+
+        macro_rules! vowel_last {
+            () => { matches!(
+                out.last(),
+                Some(Token::Tengwa(Glyph { vowel: Some(_), .. })),
+            ) };
         }
 
         'next_slice:
@@ -197,7 +203,6 @@ impl Rules for Quenya {
                             //  If the current tengwa has no vowel, we can apply
                             //      a Silmë Rincë to it.
                             if current.vowel.is_none() {
-                                _vowel_last = false;
                                 current.silme = true;
                                 advance!();
                                 continue 'next_slice;
@@ -209,7 +214,6 @@ impl Rules for Quenya {
                         &['s', 's'] => {
                             //  We cannot apply a Rincë for Essë. Commit this
                             //      tengwa and then try for a new one.
-                            _vowel_last = false;
                             commit!();
                             continue 'same_slice;
                         }
@@ -221,7 +225,6 @@ impl Rules for Quenya {
                             g.silme = true;
                             tengwa = Some(g);
 
-                            _vowel_last = false;
                             advance!();
                             continue 'next_slice;
                         }
@@ -233,7 +236,6 @@ impl Rules for Quenya {
                         if sub == ['y'] {
                             current.palatal = true;
 
-                            _vowel_last = true;
                             advance!();
                             continue 'next_slice;
                         }
@@ -242,6 +244,14 @@ impl Rules for Quenya {
                         //      current tengwa early, so that it is not misread
                         //      as a normal vowel.
                         else if get_diphthong(sub).is_some() {
+                            //  If a vowel sound follows Órë, it turns to Rómen,
+                            //      unless it is also preceded by a vowel.
+                            if current.cons == Some(TEMA_TINCO.single_sh)
+                                && !vowel_last!()
+                            {
+                                current.cons = Some(TENGWA_ROMEN);
+                            }
+
                             commit!();
                             continue 'same_slice;
                         }
@@ -250,9 +260,15 @@ impl Rules for Quenya {
                         else if let Some((vowel, long)) = get_vowel(sub) {
                             current.vowel = Some(vowel);
                             current.long_vowel = long;
-                            // current.palatal |= plt;
 
-                            _vowel_last = true;
+                            //  If a vowel sound follows Órë, it turns to Rómen,
+                            //      unless it is also preceded by a vowel.
+                            if current.cons == Some(TEMA_TINCO.single_sh)
+                                && !vowel_last!()
+                            {
+                                current.cons = Some(TENGWA_ROMEN);
+                            }
+
                             advance!(sub.len());
                             continue 'next_slice;
                         }
@@ -287,7 +303,6 @@ impl Rules for Quenya {
                         g.silme = true;
                         tengwa = Some(g);
 
-                        _vowel_last = false;
                         advance!();
                         continue 'next_slice;
                     }
@@ -301,7 +316,6 @@ impl Rules for Quenya {
                     if let Some(punct) = punctuation(sub) {
                         out.push(Token::String(Cow::Borrowed(punct)));
 
-                        _vowel_last = false;
                         advance!(sub.len());
                         continue 'next_slice;
                     }
@@ -312,14 +326,8 @@ impl Rules for Quenya {
                             new.palatal = true;
                         }
 
-                        // //  An Órë following a vowel turns to Rómen.
-                        // else if _vowel_last && new.cons == Some(TEMA_TINCO.special) {
-                        //     new.cons = Some(TENGWA_ROMEN);
-                        // }
-
                         tengwa = Some(new);
 
-                        _vowel_last = false;
                         advance!(sub.len());
                         continue 'next_slice;
                     }
@@ -328,7 +336,6 @@ impl Rules for Quenya {
                     else if let Some(new) = get_diphthong(sub) {
                         tengwa = Some(new);
 
-                        _vowel_last = true;
                         advance!(sub.len());
                         continue 'next_slice;
                     }
@@ -340,7 +347,6 @@ impl Rules for Quenya {
 
                         tengwa = Some(new);
 
-                        _vowel_last = true;
                         advance!(sub.len());
                         continue 'next_slice;
                     }
@@ -357,7 +363,6 @@ impl Rules for Quenya {
                     } else {
                         //  Otherwise, pass the first character through to the
                         //      output, unaffected, and move on.
-                        _vowel_last = false;
                         pass!();
                         advance!();
                         continue 'next_slice;

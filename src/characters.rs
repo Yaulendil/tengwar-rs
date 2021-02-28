@@ -343,15 +343,8 @@ impl Glyph {
             }
         }
 
-        //  If Órë takes a tehta, it turns to Rómen.
-        if base == TEMA_TINCO.double_sh {
-            if self.vowel.is_some() {
-                return (TENGWA_ROMEN, self.silme);
-            }
-        }
-
         //  If Silmë takes a tehta, it is inverted.
-        else if base == TENGWA_SILME {
+        if base == TENGWA_SILME {
             if self.vowel.is_some() {
                 return (TENGWA_SILME_NUQ, self.silme);
             }
