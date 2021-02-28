@@ -24,3 +24,7 @@ panic = "abort"
 
 [dependencies]
 itertools = "0.10.0"
+
+
+[features]
+double-vowels = []

@@ -48,16 +48,37 @@ pub const PUNCT_PAREN_R: &str = "";
 pub const PUNCT_EOF: &str = "";
 
 
-pub const TEHTA_A: Tehta = Tehta::basic('');
-// pub const TEHTA_A: Tehta = Tehta::basic('');
-/// Tecco
-pub const TEHTA_E: Tehta = Tehta::basic('');
-// pub const TEHTA_E: Tehta = Tehta::with_variant('', '');
-/// Tixë
-// pub const TEHTA_I: Tehta = Tehta::basic('');
-pub const TEHTA_I: Tehta = Tehta::with_variant('', '');
-pub const TEHTA_O: Tehta = Tehta::with_variant('', '');
-pub const TEHTA_U: Tehta = Tehta::with_variant('', '');
+#[cfg(feature = "double-vowels")]
+mod _vowels {
+    use super::Tehta;
+
+    pub const TEHTA_A: Tehta = Tehta::basic('');
+    // pub const TEHTA_A: Tehta = Tehta::basic('');
+    /// Tecco
+    pub const TEHTA_E: Tehta = Tehta::with_variant('', '');
+    /// Tixë
+    pub const TEHTA_I: Tehta = Tehta::with_variant('', '');
+    pub const TEHTA_O: Tehta = Tehta::with_variant('', '');
+    pub const TEHTA_U: Tehta = Tehta::with_variant('', '');
+}
+
+
+#[cfg(not(feature = "double-vowels"))]
+mod _vowels {
+    use super::Tehta;
+
+    pub const TEHTA_A: Tehta = Tehta::basic('');
+    // pub const TEHTA_A: Tehta = Tehta::basic('');
+    /// Tecco
+    pub const TEHTA_E: Tehta = Tehta::basic('');
+    /// Tixë
+    pub const TEHTA_I: Tehta = Tehta::basic('');
+    pub const TEHTA_O: Tehta = Tehta::basic('');
+    pub const TEHTA_U: Tehta = Tehta::basic('');
+}
+
+
+pub use _vowels::*;
 
 
 pub const TEMA_TINCO: Tema = Tema {
