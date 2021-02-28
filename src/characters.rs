@@ -82,40 +82,44 @@ pub use _vowels::*;
 
 
 pub const TEMA_TINCO: Tema = Tema {
-    base: '', // Tinco
-    voiced: '', // Ando
-    fric: '', // Thúlë
-    fric_voiced: '', // Anto
-    nasal: '', // Númen
-    special: '', // Órë
-    // e1: '', e2: '',
+    single_dn: '', // Tinco
+    double_dn: '', // Ando
+    single_up: '', // Thúlë
+    double_up: '', // Anto
+    double_sh: '', // Númen
+    single_sh: '', // Órë
+    single_ex: '',
+    double_ex: '',
 };
 pub const TEMA_PARMA: Tema = Tema {
-    base: '', // Parma
-    voiced: '', // Umbar
-    fric: '', // Formen
-    fric_voiced: '', // Ampa
-    nasal: '', // Malta
-    special: '', // Vala
-    // e1: '', e2: '',
+    single_dn: '', // Parma
+    double_dn: '', // Umbar
+    single_up: '', // Formen
+    double_up: '', // Ampa
+    double_sh: '', // Malta
+    single_sh: '', // Vala
+    single_ex: '',
+    double_ex: '',
 };
 pub const TEMA_CALMA: Tema = Tema {
-    base: '', // Calma
-    voiced: '', // Anga
-    fric: '', // Harma
-    fric_voiced: '', // Anca
-    nasal: '', // Ñoldo
-    special: '', // Anna
-    // e1: '', e2: '',
+    single_dn: '', // Calma
+    double_dn: '', // Anga
+    single_up: '', // Harma
+    double_up: '', // Anca
+    double_sh: '', // Ñoldo
+    single_sh: '', // Anna
+    single_ex: '',
+    double_ex: '',
 };
 pub const TEMA_QESSE: Tema = Tema {
-    base: '', // Qessë
-    voiced: '', // Ungwë
-    fric: '', // Hwesta
-    fric_voiced: '', // Unqë
-    nasal: '', // Ñwalmë
-    special: '', // Wilya
-    // e1: '', e2: '',
+    single_dn: '', // Qessë
+    double_dn: '', // Ungwë
+    single_up: '', // Hwesta
+    double_up: '', // Unqë
+    double_sh: '', // Ñwalmë
+    single_sh: '', // Wilya
+    single_ex: '',
+    double_ex: '',
 };
 
 
@@ -235,23 +239,39 @@ impl Tehta {
 }
 
 
+/// The Témar are the four series of the primary tengwar. Each Téma is composed
+///     of eight Tyeller, each modifying the tengwa in a different way, and is
+///     named after its base tengwa.
+///
+/// Only the first six Tyeller are used in Quenya.
 #[derive(Clone)]
 pub struct Tema {
-    pub base: char,
-    pub voiced: char,
-    pub fric: char,
-    pub fric_voiced: char,
-    pub nasal: char,
-    pub special: char,
+    /// A hanging Telco, and one Lúva.
+    ///     Typically represents a voiceless plosive.
+    pub single_dn: char,
+    /// A hanging Telco, and two Lúvar.
+    ///     Typically represents a voiced plosive.
+    pub double_dn: char,
+    /// A raised Telco, and one Lúva.
+    ///     Typically represents a voiceless fricative.
+    pub single_up: char,
+    /// A raised Telco, and two Lúvar.
+    ///     Typically represents either a voiced fricative or a nasalized
+    ///     voiceless plosive.
+    pub double_up: char,
+    /// A short Telco, and one Lúva.
+    ///     Typically represents a nasal long.
+    pub double_sh: char,
+    /// A short Telco, and two Lúvar.
+    ///     Typically represents a nasal short.
+    pub single_sh: char,
+    /// An extended Telco, and one Lúva.
+    ///     Not used in canonical sources.
+    pub single_ex: char,
+    /// An extended Telco, and two Lúvar.
+    ///     Not used in canonical sources.
+    pub double_ex: char,
 }
-
-
-pub type Tengwa = char;
-// #[derive(Clone)]
-// pub enum Tengwa {
-//     Regular(char),
-//     Irregular(char),
-// }
 
 
 /// Choose the appropriate form of sa-rincë for a base tengwa.
@@ -267,7 +287,7 @@ pub const fn mod_rince(base: char) -> char {
 #[derive(Clone, Default)]
 pub struct Glyph {
     /// A consonant character.
-    pub cons: Option<Tengwa>,
+    pub cons: Option<char>,
     /// A diacritical vowel to modify the consonant.
     pub vowel: Option<Tehta>,
     /// If Silmë follows another tengwa, the base character may be modified by
@@ -316,15 +336,15 @@ impl Glyph {
 
     const fn get_base(&self, base: char) -> (char, bool) {
         if self.silme {
-            if base == TEMA_PARMA.nasal {
+            if base == TEMA_PARMA.double_sh {
                 return ('', false);
-            } else if base == TEMA_PARMA.special {
+            } else if base == TEMA_PARMA.single_sh {
                 return ('', false);
             }
         }
 
         //  If Órë takes a tehta, it turns to Rómen.
-        if base == TEMA_TINCO.special {
+        if base == TEMA_TINCO.double_sh {
             if self.vowel.is_some() {
                 return (TENGWA_ROMEN, self.silme);
             }

@@ -8,39 +8,39 @@ const MAX_CHUNK: usize = 3;
 const fn consonant_char(slice: &[char]) -> Option<char> {
     Some(match slice {
         //  Regular
-        ['t']           /**/ => TEMA_TINCO.base,
-        ['n', 'd']      /**/ => TEMA_TINCO.voiced,
+        ['t']           /**/ => TEMA_TINCO.single_dn,
+        ['n', 'd']      /**/ => TEMA_TINCO.double_dn,
         ['þ']
         // | ['s']
-        | ['t', 'h']    /**/ => TEMA_TINCO.fric,
-        ['n', 't']      /**/ => TEMA_TINCO.fric_voiced,
-        ['n']           /**/ => TEMA_TINCO.nasal,
-        ['r']           /**/ => TEMA_TINCO.special,
+        | ['t', 'h']    /**/ => TEMA_TINCO.single_up,
+        ['n', 't']      /**/ => TEMA_TINCO.double_up,
+        ['n']           /**/ => TEMA_TINCO.double_sh,
+        ['r']           /**/ => TEMA_TINCO.single_sh,
 
-        ['p']           /**/ => TEMA_PARMA.base,
-        ['m', 'b']      /**/ => TEMA_PARMA.voiced,
-        ['f']           /**/ => TEMA_PARMA.fric,
-        ['m', 'p']      /**/ => TEMA_PARMA.fric_voiced,
-        ['m']           /**/ => TEMA_PARMA.nasal,
-        ['v']           /**/ => TEMA_PARMA.special,
+        ['p']           /**/ => TEMA_PARMA.single_dn,
+        ['m', 'b']      /**/ => TEMA_PARMA.double_dn,
+        ['f']           /**/ => TEMA_PARMA.single_up,
+        ['m', 'p']      /**/ => TEMA_PARMA.double_up,
+        ['m']           /**/ => TEMA_PARMA.double_sh,
+        ['v']           /**/ => TEMA_PARMA.single_sh,
 
         ['c']
-        | ['k']         /**/ => TEMA_CALMA.base,
+        | ['k']         /**/ => TEMA_CALMA.single_dn,
         ['n', 'g']
-        | ['g']         /**/ => TEMA_CALMA.voiced,
-        ['c', 'h']      /**/ => TEMA_CALMA.fric,
-        ['n', 'c']      /**/ => TEMA_CALMA.fric_voiced,
-        ['ñ']           /**/ => TEMA_CALMA.nasal,
-        ['y']           /**/ => TEMA_CALMA.special,
+        | ['g']         /**/ => TEMA_CALMA.double_dn,
+        ['c', 'h']      /**/ => TEMA_CALMA.single_up,
+        ['n', 'c']      /**/ => TEMA_CALMA.double_up,
+        ['ñ']           /**/ => TEMA_CALMA.double_sh,
+        ['y']           /**/ => TEMA_CALMA.single_sh,
 
         ['q', 'u']
         | ['q']
-        | ['c', 'w']    /**/ => TEMA_QESSE.base,
-        ['n', 'g', 'w'] /**/ => TEMA_QESSE.voiced,
-        ['h', 'w']      /**/ => TEMA_QESSE.fric,
-        ['n', 'q', 'u'] /**/ => TEMA_QESSE.fric_voiced,
-        ['n', 'w']      /**/ => TEMA_QESSE.nasal,
-        ['w']           /**/ => TEMA_QESSE.special,
+        | ['c', 'w']    /**/ => TEMA_QESSE.single_dn,
+        ['n', 'g', 'w'] /**/ => TEMA_QESSE.double_dn,
+        ['h', 'w']      /**/ => TEMA_QESSE.single_up,
+        ['n', 'q', 'u'] /**/ => TEMA_QESSE.double_up,
+        ['n', 'w']      /**/ => TEMA_QESSE.double_sh,
+        ['w']           /**/ => TEMA_QESSE.single_sh,
 
         //  Irregular
         ['r', 'd']      /**/ => TENGWA_ARDA,
@@ -217,7 +217,7 @@ impl Rules for Quenya {
                             //  This needs to be treated as if it were "cs".
                             commit!();
 
-                            let mut g = Glyph::with_cons(TEMA_CALMA.base);
+                            let mut g = Glyph::with_cons(TEMA_CALMA.single_dn);
                             g.silme = true;
                             tengwa = Some(g);
 
@@ -283,7 +283,7 @@ impl Rules for Quenya {
                     if sub == ['x'] {
                         commit!();
 
-                        let mut g = Glyph::with_cons(TEMA_CALMA.base);
+                        let mut g = Glyph::with_cons(TEMA_CALMA.single_dn);
                         g.silme = true;
                         tengwa = Some(g);
 
