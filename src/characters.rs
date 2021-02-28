@@ -6,6 +6,7 @@ pub const CARRIER_LONG: char = '';
 /// Telco
 pub const CARRIER_SHORT: char = '';
 
+pub const MOD_LABIAL: char = '';
 /// Long/double consonant.
 pub const MOD_LONG_CONS: char = '';
 /// Long vowel after consonant.
