@@ -285,10 +285,10 @@ pub struct Tema {
     ///     Typically represents either a voiced fricative or a nasalized
     ///     voiceless plosive.
     pub double_up: char,
-    /// A short Telco, and one Lúva.
+    /// A short Telco, and two Lúvar.
     ///     Typically represents a nasal long.
     pub double_sh: char,
-    /// A short Telco, and two Lúvar.
+    /// A short Telco, and one Lúva.
     ///     Typically represents a nasal short.
     pub single_sh: char,
     /// An extended Telco, and one Lúva.
