@@ -60,14 +60,10 @@ const fn consonant_char(slice: &[char]) -> Option<char> {
 
 const fn get_consonant(slice: &[char]) -> Option<Glyph> {
     match consonant_char(slice) {
-        Some(cons) => Some(Glyph::with_cons(cons)),
+        Some(cons) => Some(Glyph::new_cons(cons, false)),
         None => match slice {
             &[a, b] if a == b => match consonant_char(&[a]) {
-                Some(cons) => {
-                    let mut glyph = Glyph::with_cons(cons);
-                    glyph.long_cons = true;
-                    Some(glyph)
-                }
+                Some(cons) => Some(Glyph::new_cons(cons, true)),
                 None => None,
             }
             _ => None,
@@ -78,13 +74,13 @@ const fn get_consonant(slice: &[char]) -> Option<Glyph> {
 
 const fn get_diphthong(slice: &[char]) -> Option<Glyph> {
     match slice {
-        ['a', 'i'] => Some(Glyph::with_both(TENGWA_YANTA, TEHTA_A)),
-        ['o', 'i'] => Some(Glyph::with_both(TENGWA_YANTA, TEHTA_O)),
-        ['u', 'i'] => Some(Glyph::with_both(TENGWA_YANTA, TEHTA_U)),
+        ['a', 'i'] => Some(Glyph::new_both(TENGWA_YANTA, TEHTA_A)),
+        ['o', 'i'] => Some(Glyph::new_both(TENGWA_YANTA, TEHTA_O)),
+        ['u', 'i'] => Some(Glyph::new_both(TENGWA_YANTA, TEHTA_U)),
 
-        ['a', 'u'] => Some(Glyph::with_both(TENGWA_URE, TEHTA_A)),
-        ['e', 'u'] => Some(Glyph::with_both(TENGWA_URE, TEHTA_E)),
-        ['i', 'u'] => Some(Glyph::with_both(TENGWA_URE, TEHTA_I)),
+        ['a', 'u'] => Some(Glyph::new_both(TENGWA_URE, TEHTA_A)),
+        ['e', 'u'] => Some(Glyph::new_both(TENGWA_URE, TEHTA_E)),
+        ['i', 'u'] => Some(Glyph::new_both(TENGWA_URE, TEHTA_I)),
 
         _ => None,
     }
@@ -226,9 +222,9 @@ impl Rules for Quenya {
                             //  This needs to be treated as if it were "cs".
                             commit!();
 
-                            let mut g = Glyph::with_cons(TEMA_CALMA.single_dn);
-                            g.silme = true;
-                            tengwa = Some(g);
+                            tengwa = Some(Glyph::new_cons(
+                                TEMA_CALMA.single_dn, false,
+                            ).with_silme());
 
                             advance!();
                             continue 'next_slice;
@@ -314,9 +310,9 @@ impl Rules for Quenya {
                     if sub == ['x'] {
                         commit!();
 
-                        let mut g = Glyph::with_cons(TEMA_CALMA.single_dn);
-                        g.silme = true;
-                        tengwa = Some(g);
+                        tengwa = Some(Glyph::new_cons(
+                            TEMA_CALMA.single_dn, false,
+                        ).with_silme());
 
                         advance!();
                         continue 'next_slice;
@@ -360,10 +356,7 @@ impl Rules for Quenya {
 
                     //  Look for a vowel.
                     else if let Some((vowel, long)) = get_vowel(sub) {
-                        let mut new = Glyph::with_vowel(vowel);
-                        new.long_vowel = long;
-
-                        tengwa = Some(new);
+                        tengwa = Some(Glyph::new_vowel(vowel, long));
 
                         advance!(sub.len());
                         continue 'next_slice;

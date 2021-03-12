@@ -327,20 +327,9 @@ pub struct Glyph {
 
 
 impl Glyph {
-    pub const fn with_both(cons: char, vowel: Tehta) -> Self {
+    pub const fn new() -> Self {
         Self {
-            cons: Some(cons),
-            vowel: Some(vowel),
-            silme: false,
-            palatal: false,
-            long_cons: false,
-            long_vowel: false,
-        }
-    }
-
-    pub const fn with_cons(cons: char) -> Self {
-        Self {
-            cons: Some(cons),
+            cons: None,
             vowel: None,
             silme: false,
             palatal: false,
@@ -349,15 +338,38 @@ impl Glyph {
         }
     }
 
-    pub const fn with_vowel(vowel: Tehta) -> Self {
+    pub const fn new_both(cons: char, vowel: Tehta) -> Self {
         Self {
-            cons: None,
+            cons: Some(cons),
             vowel: Some(vowel),
-            silme: false,
-            palatal: false,
-            long_cons: false,
-            long_vowel: false,
+            ..Self::new()
         }
+    }
+
+    pub const fn new_cons(cons: char, long: bool) -> Self {
+        Self {
+            cons: Some(cons),
+            long_cons: long,
+            ..Self::new()
+        }
+    }
+
+    pub const fn new_vowel(vowel: Tehta, long: bool) -> Self {
+        Self {
+            vowel: Some(vowel),
+            long_vowel: long,
+            ..Self::new()
+        }
+    }
+
+    pub const fn with_palatal(mut self) -> Self {
+        self.palatal = true;
+        self
+    }
+
+    pub const fn with_silme(mut self) -> Self {
+        self.silme = true;
+        self
     }
 
     const fn get_base(&self, base: char) -> (char, bool) {
