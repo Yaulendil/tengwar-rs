@@ -35,7 +35,8 @@ const fn consonant_char(slice: &[char]) -> Option<char> {
 
         ['q', 'u']
         | ['q']
-        | ['c', 'w']    /**/ => TEMA_QESSE.single_dn,
+        | ['c', 'w']
+        | ['k', 'w']    /**/ => TEMA_QESSE.single_dn,
         ['n', 'g', 'w'] /**/ => TEMA_QESSE.double_dn,
         ['h', 'w']      /**/ => TEMA_QESSE.single_up,
         ['n', 'q', 'u'] /**/ => TEMA_QESSE.double_up,
@@ -131,6 +132,8 @@ const fn punctuation(slice: &[char]) -> Option<&'static str> {
         | [')'] => Some(PUNCT_PAREN),
         ['['] => Some(PUNCT_PAREN_L),
         [']'] => Some(PUNCT_PAREN_R),
+        ['“'] => Some(PUNCT_PAREN_L),
+        ['”'] => Some(PUNCT_PAREN_R),
 
         // [';'] => Some(PUNCT_),
 
@@ -148,7 +151,8 @@ impl Rules for Quenya {
         let mut line: &[char] = cvec.as_slice();
         let mut out: Vec<Token> = Vec::new();
         let mut tengwa: Option<Glyph> = None;
-        let mut _len: usize = MAX_CHUNK;
+        let mut sub: &[char];
+        let mut len: usize;
 
         /// Move the working slice forward.
         macro_rules! advance {
@@ -168,15 +172,16 @@ impl Rules for Quenya {
             () => { out.push(Token::Char(line[0])); };
         }
 
-        macro_rules! vowel_last {
-            () => { matches!(
-                out.last(),
-                Some(Token::Tengwa(Glyph { vowel: Some(_), .. })),
-            ) };
+        /// Check whether the most recently committed `Token` is a tengwa that
+        ///     matches a given pattern.
+        macro_rules! prev {
+            ($pat:pat) => { matches!( out.last(), Some(Token::Tengwa($pat)) ) };
         }
 
         'next_slice:
         while !line.is_empty() {
+            //  Check first whether a number can be found at the beginning of
+            //      the current line.
             if let Some((number, size)) = find_integer::<isize>(line) {
                 commit!();
                 out.push(Token::String(Cow::Owned(int_12(number))));
@@ -185,12 +190,12 @@ impl Rules for Quenya {
                 continue 'next_slice;
             }
 
-            _len = MAX_CHUNK;
+            len = MAX_CHUNK;
 
             'same_slice:
-            while _len > 0 {
-                _len = _len.min(line.len());
-                let sub = &line[.._len];
+            while len > 0 {
+                len = len.min(line.len());
+                sub = &line[..len];
 
                 //  There is a tengwa currently being constructed. Look for the
                 //      next modifier.
@@ -257,7 +262,7 @@ impl Rules for Quenya {
                             //  If a vowel sound follows Órë, it turns to Rómen,
                             //      unless it is also preceded by a vowel.
                             if current.cons == Some(TEMA_TINCO.single_sh)
-                                && !vowel_last!()
+                                && !prev!(Glyph { vowel: Some(_), .. })
                             {
                                 current.cons = Some(TENGWA_ROMEN);
                             }
@@ -274,7 +279,7 @@ impl Rules for Quenya {
                             //  If a vowel sound follows Órë, it turns to Rómen,
                             //      unless it is also preceded by a vowel.
                             if current.cons == Some(TEMA_TINCO.single_sh)
-                                && !vowel_last!()
+                                && !prev!(Glyph { vowel: Some(_), .. })
                             {
                                 current.cons = Some(TENGWA_ROMEN);
                             }
@@ -286,10 +291,10 @@ impl Rules for Quenya {
 
                     /*------------------*/
 
-                    //  If nothing has been found, allow `_len` to decrement.
-                    _len -= 1;
+                    //  If nothing has been found, allow `len` to decrement.
+                    len -= 1;
 
-                    if _len > 0 {
+                    if len > 0 {
                         //  If it is still positive, repeat the same check over
                         //      a new subslice.
                         continue 'same_slice;
@@ -317,9 +322,12 @@ impl Rules for Quenya {
                         continue 'next_slice;
                     }
 
+                    //  If we have no consonant, but the next character is `Y`,
+                    //      the next consonant can ONLY be `Y`. Cheat slightly
+                    //      to speed the process along.
                     if let ['y', _, ..] = sub {
-                        _len = 1;
-                        continue 'same_slice;
+                        len = 1;
+                        sub = &sub[..1];
                     }
 
                     //  Look for punctuation marks.
@@ -363,12 +371,12 @@ impl Rules for Quenya {
 
                     /*------------------*/
 
-                    //  If nothing has been found, allow `_len` to decrement.
-                    _len -= 1;
+                    //  If nothing has been found, allow `len` to decrement.
+                    len -= 1;
 
-                    if _len > 0 {
+                    if len > 0 {
                         //  If it is still positive, repeat the same check over
-                        //      a new subslice.
+                        //      a narrower part of the same slice.
                         continue 'same_slice;
                     } else {
                         //  Otherwise, pass the first character through to the
