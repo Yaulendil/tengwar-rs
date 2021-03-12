@@ -303,7 +303,7 @@ pub struct Tema {
 /// Choose the appropriate form of sa-rincë for a base tengwa.
 pub const fn mod_rince(base: char) -> char {
     match base {
-        '' | '' | '' | '' | '' | '' | '' | ''
+        '' | '' | '' | '' | '' | '' | '' | '' | '' | ''
         => MOD_SARINCE_R,
         _ => MOD_SARINCE_L,
     }

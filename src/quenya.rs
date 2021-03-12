@@ -190,7 +190,7 @@ impl Rules for Quenya {
 
             'same_slice:
             while len > 0 {
-                len = len.min(line.len());
+                len = line.len().min(len);
                 sub = &line[..len];
 
                 //  There is a tengwa currently being constructed. Look for the
@@ -201,9 +201,10 @@ impl Rules for Quenya {
                     //  Check for a special case.
                     match sub {
                         &['s'] => {
-                            //  If the current tengwa has no vowel, we can apply
-                            //      a Silmë Rincë to it.
-                            if current.vowel.is_none() {
+                            //  If the current tengwa has a consonant with no
+                            //      vowel, OR a vowel with no consonant, we can
+                            //      apply a Silmë Rincë to it.
+                            if current.vowel.is_some() ^ current.cons.is_some() {
                                 current.silme = true;
                                 advance!();
                                 continue 'next_slice;
