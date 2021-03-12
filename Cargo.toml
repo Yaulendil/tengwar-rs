@@ -27,4 +27,5 @@ itertools = "0.10.0"
 
 
 [features]
-double-vowels = []
+long-vowel-double = []
+long-vowel-unique = []

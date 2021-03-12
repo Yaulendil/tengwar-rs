@@ -49,22 +49,7 @@ pub const PUNCT_PAREN_R: &str = "";
 pub const PUNCT_EOF: &str = "";
 
 
-#[cfg(feature = "double-vowels")]
-mod _vowels {
-    use super::Tehta;
-
-    pub const TEHTA_A: Tehta = Tehta::basic('');
-    // pub const TEHTA_A: Tehta = Tehta::basic('');
-    /// Tecco
-    pub const TEHTA_E: Tehta = Tehta::with_variant('', '');
-    /// Tixë
-    pub const TEHTA_I: Tehta = Tehta::with_variant('', '');
-    pub const TEHTA_O: Tehta = Tehta::with_variant('', '');
-    pub const TEHTA_U: Tehta = Tehta::with_variant('', '');
-}
-
-
-#[cfg(not(feature = "double-vowels"))]
+#[cfg(not(any(feature = "long-vowel-double", feature = "long-vowel-unique")))]
 mod _vowels {
     use super::Tehta;
 
@@ -76,6 +61,36 @@ mod _vowels {
     pub const TEHTA_I: Tehta = Tehta::basic('');
     pub const TEHTA_O: Tehta = Tehta::basic('');
     pub const TEHTA_U: Tehta = Tehta::basic('');
+}
+
+
+#[cfg(feature = "long-vowel-double")]
+mod _vowels {
+    use super::Tehta;
+
+    pub const TEHTA_A: Tehta = Tehta::basic('');
+    // pub const TEHTA_A: Tehta = Tehta::basic('');
+    /// Tecco
+    pub const TEHTA_E: Tehta = Tehta::with_double('');
+    /// Tixë
+    pub const TEHTA_I: Tehta = Tehta::with_double('');
+    pub const TEHTA_O: Tehta = Tehta::with_double('');
+    pub const TEHTA_U: Tehta = Tehta::with_double('');
+}
+
+
+#[cfg(all(feature = "long-vowel-unique", not(feature = "long-vowel-double")))]
+mod _vowels {
+    use super::Tehta;
+
+    pub const TEHTA_A: Tehta = Tehta::basic('');
+    // pub const TEHTA_A: Tehta = Tehta::basic('');
+    /// Tecco
+    pub const TEHTA_E: Tehta = Tehta::with_variant('', '');
+    /// Tixë
+    pub const TEHTA_I: Tehta = Tehta::with_variant('', '');
+    pub const TEHTA_O: Tehta = Tehta::with_variant('', '');
+    pub const TEHTA_U: Tehta = Tehta::with_variant('', '');
 }
 
 
@@ -211,26 +226,36 @@ pub fn int_12(n: isize) -> String {
 pub struct Tehta {
     pub base: char,
     pub long: Option<char>,
+    pub double: bool,
 }
 
 
 impl Tehta {
     pub const fn basic(base: char) -> Self {
-        Self { base, long: None }
+        Self { base, long: None, double: false }
+    }
+
+    pub const fn with_double(base: char) -> Self {
+        Self { base, long: None, double: true }
     }
 
     pub const fn with_variant(base: char, long: char) -> Self {
-        Self { base, long: Some(long) }
+        Self { base, long: Some(long), double: false }
     }
 
     pub fn write(&self, f: &mut Formatter<'_>, long: bool) -> fmt::Result {
         if long {
-            match self.long {
-                Some(variant) => f.write_char(variant),
-                None => {
-                    // f.write_char(MOD_LONG_VOWEL)?;
-                    f.write_char(carrier(true))?;
-                    f.write_char(self.base)
+            if self.double {
+                f.write_char(self.base)?;
+                f.write_char(self.base)
+            } else {
+                match self.long {
+                    Some(variant) => f.write_char(variant),
+                    None => {
+                        // f.write_char(MOD_LONG_VOWEL)?;
+                        f.write_char(carrier(true))?;
+                        f.write_char(self.base)
+                    }
                 }
             }
         } else {
