@@ -4,10 +4,7 @@ mod quenya;
 
 pub use characters::{int_10, int_12};
 pub use quenya::Quenya;
-use std::{
-    borrow::Cow,
-    fmt::{self, Write},
-};
+use std::{borrow::Cow, fmt::{self, Write}};
 
 
 pub trait Rules {
@@ -22,7 +19,7 @@ pub trait ToTengwar {
 
 impl<T: AsRef<str>> ToTengwar for T {
     fn to_tengwar<R: Rules>(&self) -> String {
-        Quenya::transcribe(self)
+        R::transcribe(self)
     }
 }
 
