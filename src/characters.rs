@@ -49,15 +49,22 @@ pub const PUNCT_PAREN_R: &str = "";
 pub const PUNCT_EOF: &str = "";
 
 
+/// The diacritic for an `A` vowel, in its standard three-dot form.
+#[cfg(not(feature = "circumflex"))]
+const _A: char = '';
+
+
+/// The diacritic for an `A` vowel, in its alternate circumflex-like form.
+#[cfg(feature = "circumflex")]
+const _A: char = '';
+
+
 #[cfg(not(any(feature = "long-vowel-double", feature = "long-vowel-unique")))]
 mod _vowels {
-    use super::Tehta;
+    use super::{_A, Tehta};
 
-    pub const TEHTA_A: Tehta = Tehta::basic('');
-    // pub const TEHTA_A: Tehta = Tehta::basic('');
-    /// Tecco
+    pub const TEHTA_A: Tehta = Tehta::basic(_A);
     pub const TEHTA_E: Tehta = Tehta::basic('');
-    /// Tixë
     pub const TEHTA_I: Tehta = Tehta::basic('');
     pub const TEHTA_O: Tehta = Tehta::basic('');
     pub const TEHTA_U: Tehta = Tehta::basic('');
@@ -66,13 +73,10 @@ mod _vowels {
 
 #[cfg(feature = "long-vowel-double")]
 mod _vowels {
-    use super::Tehta;
+    use super::{_A, Tehta};
 
-    pub const TEHTA_A: Tehta = Tehta::basic('');
-    // pub const TEHTA_A: Tehta = Tehta::basic('');
-    /// Tecco
+    pub const TEHTA_A: Tehta = Tehta::basic(_A);
     pub const TEHTA_E: Tehta = Tehta::with_double('');
-    /// Tixë
     pub const TEHTA_I: Tehta = Tehta::with_double('');
     pub const TEHTA_O: Tehta = Tehta::with_double('');
     pub const TEHTA_U: Tehta = Tehta::with_double('');
@@ -81,13 +85,10 @@ mod _vowels {
 
 #[cfg(all(feature = "long-vowel-unique", not(feature = "long-vowel-double")))]
 mod _vowels {
-    use super::Tehta;
+    use super::{_A, Tehta};
 
-    pub const TEHTA_A: Tehta = Tehta::basic('');
-    // pub const TEHTA_A: Tehta = Tehta::basic('');
-    /// Tecco
+    pub const TEHTA_A: Tehta = Tehta::basic(_A);
     pub const TEHTA_E: Tehta = Tehta::with_variant('', '');
-    /// Tixë
     pub const TEHTA_I: Tehta = Tehta::with_variant('', '');
     pub const TEHTA_O: Tehta = Tehta::with_variant('', '');
     pub const TEHTA_U: Tehta = Tehta::with_variant('', '');

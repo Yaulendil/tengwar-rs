@@ -27,5 +27,6 @@ itertools = "0.10.0"
 
 
 [features]
+circumflex = []
 long-vowel-double = []
 long-vowel-unique = []
