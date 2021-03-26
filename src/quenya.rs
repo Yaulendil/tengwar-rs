@@ -168,11 +168,11 @@ impl Rules for Quenya {
             () => { out.push(Token::Char(line[0])); };
         }
 
-        /// Check whether the most recently committed `Token` is a tengwa that
-        ///     matches a given pattern.
-        macro_rules! prev {
-            ($pat:pat) => { matches!( out.last(), Some(Token::Tengwa($pat)) ) };
-        }
+        // /// Check whether the most recently committed `Token` is a tengwa that
+        // ///     matches a given pattern.
+        // macro_rules! prev {
+        //     ($pat:pat) => { matches!( out.last(), Some(Token::Tengwa($pat)) ) };
+        // }
 
         'next_slice:
         while !line.is_empty() {
@@ -256,10 +256,9 @@ impl Rules for Quenya {
                         //      current tengwa early, so that it is not misread
                         //      as a normal vowel.
                         else if get_diphthong(sub).is_some() {
-                            //  If a vowel sound follows Órë, it turns to Rómen,
-                            //      unless it is also preceded by a vowel.
+                            //  If a vowel sound follows Órë, it turns to Rómen.
                             if current.cons == Some(TEMA_TINCO.single_sh)
-                                && !prev!(Glyph { vowel: Some(_), .. })
+                                // && !prev!(Glyph { vowel: Some(_), .. })
                             {
                                 current.cons = Some(TENGWA_ROMEN);
                             }
@@ -273,10 +272,9 @@ impl Rules for Quenya {
                             current.vowel = Some(vowel);
                             current.long_vowel = long;
 
-                            //  If a vowel sound follows Órë, it turns to Rómen,
-                            //      unless it is also preceded by a vowel.
+                            //  If a vowel sound follows Órë, it turns to Rómen.
                             if current.cons == Some(TEMA_TINCO.single_sh)
-                                && !prev!(Glyph { vowel: Some(_), .. })
+                                // && !prev!(Glyph { vowel: Some(_), .. })
                             {
                                 current.cons = Some(TENGWA_ROMEN);
                             }
