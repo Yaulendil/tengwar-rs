@@ -9,6 +9,7 @@ const fn consonant_char(slice: &[char]) -> Option<char> {
     Some(match slice {
         //  Regular
         ['t']           /**/ => TEMA_TINCO.single_dn,
+        ['d'] |
         ['n', 'd']      /**/ => TEMA_TINCO.double_dn,
         ['þ']
         // | ['s']
@@ -18,6 +19,7 @@ const fn consonant_char(slice: &[char]) -> Option<char> {
         ['r']           /**/ => TEMA_TINCO.single_sh,
 
         ['p']           /**/ => TEMA_PARMA.single_dn,
+        ['b'] |
         ['m', 'b']      /**/ => TEMA_PARMA.double_dn,
         ['f']           /**/ => TEMA_PARMA.single_up,
         ['m', 'p']      /**/ => TEMA_PARMA.double_up,
