@@ -5,7 +5,7 @@ use std::borrow::Cow;
 const MAX_CHUNK: usize = 3;
 
 
-const fn consonant_char(slice: &[char]) -> Option<char> {
+pub const fn consonant_char(slice: &[char]) -> Option<char> {
     Some(match slice {
         //  Regular
         ['t']           /**/ => TEMA_TINCO.single_dn,
@@ -74,7 +74,7 @@ const fn get_consonant(slice: &[char]) -> Option<Glyph> {
 }
 
 
-const fn get_diphthong(slice: &[char]) -> Option<Glyph> {
+pub const fn get_diphthong(slice: &[char]) -> Option<Glyph> {
     match slice {
         ['a', 'i'] => Some(Glyph::new_both(TENGWA_YANTA, TEHTA_A)),
         ['o', 'i'] => Some(Glyph::new_both(TENGWA_YANTA, TEHTA_O)),
@@ -89,7 +89,7 @@ const fn get_diphthong(slice: &[char]) -> Option<Glyph> {
 }
 
 
-const fn get_vowel(slice: &[char]) -> Option<(Tehta, bool)> {
+pub const fn get_vowel(slice: &[char]) -> Option<(Tehta, bool)> {
     match slice {
         ['a'] | ['ä'] => Some((TEHTA_A, false)),
         ['e'] | ['ë'] => Some((TEHTA_E, false)),
@@ -109,7 +109,7 @@ const fn get_vowel(slice: &[char]) -> Option<(Tehta, bool)> {
 
 
 //  Source: https://www.at.mansbjorkman.net/teng_punctuation.htm
-const fn punctuation(slice: &[char]) -> Option<&'static str> {
+pub const fn punctuation(slice: &[char]) -> Option<&'static str> {
     match slice {
         ['\''] => Some(PUNCT_DOT_1),
         [','] => Some(PUNCT_DOT_1),

@@ -1,6 +1,6 @@
 pub mod characters;
 pub mod etc;
-mod quenya;
+pub mod quenya;
 
 pub use characters::{int_10, int_12};
 pub use quenya::Quenya;
