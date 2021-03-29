@@ -7,7 +7,7 @@ fn main() {
     let args = std::env::args().skip(1);
 
     if args.len() > 0 {
-        print!("{}", args.intersperse(String::from(" "))
+        print!("{}", Itertools::intersperse(args, String::from(" "))
             .collect::<String>()
             .to_tengwar::<Quenya>());
         exit(stdout().write(b"\n").is_err() as i32);
