@@ -68,6 +68,7 @@ mod _vowels {
     pub const TEHTA_I: Tehta = Tehta::basic('');
     pub const TEHTA_O: Tehta = Tehta::basic('');
     pub const TEHTA_U: Tehta = Tehta::basic('');
+    pub const TEHTA_Y: Tehta = Tehta::basic('');
 }
 
 
@@ -80,6 +81,7 @@ mod _vowels {
     pub const TEHTA_I: Tehta = Tehta::with_double('');
     pub const TEHTA_O: Tehta = Tehta::with_double('');
     pub const TEHTA_U: Tehta = Tehta::with_double('');
+    pub const TEHTA_Y: Tehta = Tehta::basic('');
 }
 
 
@@ -92,6 +94,7 @@ mod _vowels {
     pub const TEHTA_I: Tehta = Tehta::with_variant('', '');
     pub const TEHTA_O: Tehta = Tehta::with_variant('', '');
     pub const TEHTA_U: Tehta = Tehta::with_variant('', '');
+    pub const TEHTA_Y: Tehta = Tehta::basic('');
 }
 
 
@@ -263,6 +266,12 @@ impl Tehta {
             f.write_char(self.base)
         }
     }
+
+    /// Returns true if the long variant of this Tehta would be written with the
+    ///     extended "Ára" Telco.
+    pub const fn uses_ara(&self) -> bool {
+        !self.double && self.long.is_none()
+    }
 }
 
 
@@ -320,10 +329,17 @@ pub struct Glyph {
     /// If Silmë follows another tengwa, the base character may be modified by
     ///     a sa-rincë instead.
     pub silme: bool,
+    /// A labialized consonant is represented by an additional diacritic.
+    pub nasal: bool,
+    /// A labialized consonant is represented by an additional diacritic.
+    pub labial: bool,
     /// A palatalized vowel is represented by an additional diacritic.
     pub palatal: bool,
     pub long_cons: bool,
     pub long_vowel: bool,
+    /// Indicates whether a long vowel using the extended "Ára" Telco should be
+    ///     placed before this glyph.
+    pub long_first: bool,
 }
 
 
@@ -333,9 +349,12 @@ impl Glyph {
             cons: None,
             vowel: None,
             silme: false,
+            nasal: false,
+            labial: false,
             palatal: false,
             long_cons: false,
             long_vowel: false,
+            long_first: false,
         }
     }
 
@@ -361,6 +380,16 @@ impl Glyph {
             long_vowel: long,
             ..Self::new()
         }
+    }
+
+    pub const fn with_labial(mut self) -> Self {
+        self.labial = true;
+        self
+    }
+
+    pub const fn with_nasal(mut self) -> Self {
+        self.nasal = true;
+        self
     }
 
     pub const fn with_palatal(mut self) -> Self {
@@ -403,30 +432,84 @@ impl Glyph {
 
 impl fmt::Display for Glyph {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        let Glyph { cons, vowel, silme, palatal, long_cons, long_vowel } = self;
-        let (base, rince): (char, bool) = match cons {
-            Some(ch) => self.get_base(*ch),
-            None => (carrier(*long_vowel), *silme),
-        };
+        let Glyph {
+            cons, vowel, silme,
+            nasal, labial, palatal,
+            long_cons, long_vowel, long_first,
+        } = self;
 
-        f.write_char(base)?;
+        let vowel_first: bool = *long_first
+            && (*long_vowel || *labial)
+            && cons.is_some();
 
-        if *long_cons {
-            f.write_char(MOD_LONG_CONS)?;
+        if vowel_first {
+            if let Some(vowel) = vowel {
+                if vowel.uses_ara() && *long_vowel {
+                    vowel.write(f, true)?;
+                } else {
+                    f.write_char(carrier(*long_vowel))?;
+                    vowel.write(f, false)?;
+                }
+            }
+
+            let (base, rince) = self.get_base(cons.unwrap());
+
+            f.write_char(base)?;
+
+            if *nasal {
+                f.write_char(MOD_NASAL)?;
+            }
+
+            if *long_cons {
+                f.write_char(MOD_LONG_CONS)?;
+            }
+
+            if *labial {
+                f.write_char(MOD_LABIAL)?;
+            }
+
+            if *palatal {
+                f.write_char(MOD_PALATAL)?;
+            }
+
+            if rince {
+                f.write_char(mod_rince(base))?;
+            }
+
+            Ok(())
+        } else {
+            let (base, rince): (char, bool) = match cons {
+                Some(ch) => self.get_base(*ch),
+                None => (carrier(*long_vowel), *silme),
+            };
+
+            f.write_char(base)?;
+
+            if *nasal {
+                f.write_char(MOD_NASAL)?;
+            }
+
+            if *long_cons {
+                f.write_char(MOD_LONG_CONS)?;
+            }
+
+            if *labial {
+                f.write_char(MOD_LABIAL)?;
+            }
+
+            if *palatal {
+                f.write_char(MOD_PALATAL)?;
+            }
+
+            if let Some(vowel) = vowel {
+                vowel.write(f, *long_vowel && cons.is_some())?;
+            }
+
+            if rince {
+                f.write_char(mod_rince(base))?;
+            }
+
+            Ok(())
         }
-
-        if *palatal {
-            f.write_char(MOD_PALATAL)?;
-        }
-
-        if let Some(vowel) = vowel {
-            vowel.write(f, *long_vowel && cons.is_some())?;
-        }
-
-        if rince {
-            f.write_char(mod_rince(base))?;
-        }
-
-        Ok(())
     }
 }
