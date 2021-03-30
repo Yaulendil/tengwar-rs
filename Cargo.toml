@@ -23,6 +23,7 @@ panic = "abort"
 
 
 [dependencies]
+argh = "0.1.4"
 itertools = "0.10.0"
 
 

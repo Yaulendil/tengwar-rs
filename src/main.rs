@@ -1,22 +1,134 @@
-use itertools::Itertools;
-use std::{io::{stdin, stdout, BufRead, Write}, process::exit};
-use tengwar::{Quenya, ToTengwar};
+use argh::{from_env, FromArgs};
+use std::{
+    io::{BufRead, stdin, stdout, Write},
+    process::exit,
+};
+use tengwar::{Quenya, Rules};
+
+
+#[derive(Debug)]
+enum Mode {
+    Quenya,
+    /*Sindarin,*/
+    /*Beleriand,*/
+    /*English,*/
+}
+
+
+impl Mode {
+    const DEFAULT: Mode = Mode::Quenya;
+
+    const fn new(
+        quenya: bool,
+        /*sindarin: bool,*/
+        /*beleriand: bool,*/
+        /*english: bool,*/
+    ) -> Result<Mode, u32> {
+        let n = quenya as u32
+            /*+ sindarin as u32*/
+            /*+ beleriand as u32*/
+            /*+ english as u32*/;
+
+        if n == 0 {
+            Ok(Mode::DEFAULT)
+        } else if n > 1 {
+            Err(n)
+        } else if quenya {
+            Ok(Mode::Quenya)
+        /*} else if sindarin {
+            Ok(Mode::Sindarin)*/
+        /*} else if beleriand {
+            Ok(Mode::Beleriand)*/
+        /*} else if english {
+            Ok(Mode::English)*/
+        } else {
+            Err(0)
+        }
+    }
+
+    fn rules<T: AsRef<str>>(&self) -> fn(T) -> String {
+        match self {
+            Mode::Quenya => { Quenya::transcribe }
+            /*Mode::Sindarin => { Sindarin::transcribe }*/
+            /*Mode::Beleriand => { Beleriand::transcribe }*/
+            /*Mode::English => { English::transcribe }*/
+        }
+    }
+}
+
+
+/**
+Transliterate text into the Tengwar of Rúmil.
+
+Since the Tengwar are simply a writing system, and not a full language, there
+are various orthographical modes that can be used for transliteration. The
+default is that of Quenya, but others are available for selection by command
+line switches.
+
+# Exit Status
+
+0  -- Success.
+1  -- Error while writing output.
+2+ -- Too many mode switches. Status is set to number of switches.
+*/ //  NOTE: Block comment is necessary here to properly lay out help text.
+#[derive(FromArgs)]
+struct Command {
+    /// transliterate in the Quenya mode (default)
+    #[argh(switch, short = 'q')]
+    quenya: bool,
+
+    /*/// transliterate in the Sindarin mode
+    #[argh(switch, short = 's')]
+    sindarin: bool,*/
+
+    /*/// transliterate in the Mode of Beleriand
+    #[argh(switch, short = 'b')]
+    beleriand: bool,*/
+
+    /*/// transliterate in the English mode
+    #[argh(switch, short = 'e')]
+    english: bool,*/
+
+    /// text to be transliterated
+    #[argh(positional)]
+    text: Vec<String>,
+}
+
+
+impl Command {
+    const fn mode(&self) -> Result<Mode, u32> {
+        Mode::new(
+            self.quenya,
+            /*self.sindarin,*/
+            /*self.beleriand,*/
+            /*self.english,*/
+        )
+    }
+}
 
 
 fn main() {
-    let args = std::env::args().skip(1);
+    let cmd: Command = from_env();
 
-    if args.len() > 0 {
-        print!("{}", Itertools::intersperse(args, String::from(" "))
-            .collect::<String>()
-            .to_tengwar::<Quenya>());
-        exit(stdout().write(b"\n").is_err() as i32);
-    } else {
-        let stream = stdin();
-        let mut lines = stream.lock().lines();
+    match cmd.mode() {
+        Ok(mode) => {
+            let xliterate: fn(String) -> String = mode.rules();
 
-        while let Some(Ok(line)) = lines.next() {
-            println!("{}", line.to_tengwar::<Quenya>());
+            if cmd.text.is_empty() {
+                for line in stdin().lock().lines()
+                    .filter_map(|x| x.ok())
+                    .map(xliterate)
+                {
+                    println!("{}", line);
+                }
+            } else {
+                print!("{}", xliterate(cmd.text.join(" ")));
+                exit(stdout().write(b"\n").is_err() as i32);
+            }
+        }
+        Err(n) => {
+            eprintln!("Multiple modes selected.");
+            exit(n as i32);
         }
     }
 }
