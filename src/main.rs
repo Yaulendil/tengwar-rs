@@ -63,7 +63,7 @@ impl Mode {
 
 
 /**
-Transliterate text into the Tengwar of Rúmil.
+Transliterate text into the Tengwar of Fëanor.
 
 Since the Tengwar are simply a writing system, and not a full language, there
 are various orthographical modes that can be used for transliteration. The
