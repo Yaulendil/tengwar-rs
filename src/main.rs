@@ -10,6 +10,7 @@ use tengwar::{Beleriand, Quenya, Rules, Sindarin};
 enum Mode {
     Quenya,
     Sindarin,
+    Gondor,
     Beleriand,
     /*English,*/
 }
@@ -21,11 +22,13 @@ impl Mode {
     const fn new(
         quenya: bool,
         sindarin: bool,
+        gondor: bool,
         beleriand: bool,
         /*english: bool,*/
     ) -> Result<Mode, u32> {
         let n = quenya as u32
             + sindarin as u32
+            + gondor as u32
             + beleriand as u32
             /*+ english as u32*/;
 
@@ -37,6 +40,8 @@ impl Mode {
             Ok(Mode::Quenya)
         } else if sindarin {
             Ok(Mode::Sindarin)
+        } else if gondor {
+            Ok(Mode::Gondor)
         } else if beleriand {
             Ok(Mode::Beleriand)
         /*} else if english {
@@ -49,7 +54,7 @@ impl Mode {
     fn rules<T: AsRef<str>>(&self) -> fn(T) -> String {
         match self {
             Mode::Quenya => { Quenya::transcribe }
-            Mode::Sindarin => { Sindarin::transcribe }
+            Mode::Sindarin | Mode::Gondor => { Sindarin::transcribe }
             Mode::Beleriand => { Beleriand::transcribe }
             /*Mode::English => { English::transcribe }*/
         }
@@ -81,6 +86,11 @@ struct Command {
     #[argh(switch, short = 's')]
     sindarin: bool,
 
+    /// transliterate in the Mode of Gondor (experimental)
+    /// (identical to `--sindarin`)
+    #[argh(switch, short = 'g')]
+    gondor: bool,
+
     /// transliterate in the Mode of Beleriand (experimental)
     #[argh(switch, short = 'b')]
     beleriand: bool,
@@ -100,6 +110,7 @@ impl Command {
         Mode::new(
             self.quenya,
             self.sindarin,
+            self.gondor,
             self.beleriand,
             /*self.english,*/
         )
