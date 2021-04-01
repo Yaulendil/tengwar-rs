@@ -3,14 +3,14 @@ use std::{
     io::{BufRead, stdin, stdout, Write},
     process::exit,
 };
-use tengwar::{Quenya, Rules, Sindarin};
+use tengwar::{Beleriand, Quenya, Rules, Sindarin};
 
 
 #[derive(Debug)]
 enum Mode {
     Quenya,
     Sindarin,
-    /*Beleriand,*/
+    Beleriand,
     /*English,*/
 }
 
@@ -21,12 +21,12 @@ impl Mode {
     const fn new(
         quenya: bool,
         sindarin: bool,
-        /*beleriand: bool,*/
+        beleriand: bool,
         /*english: bool,*/
     ) -> Result<Mode, u32> {
         let n = quenya as u32
             + sindarin as u32
-            /*+ beleriand as u32*/
+            + beleriand as u32
             /*+ english as u32*/;
 
         if n == 0 {
@@ -37,8 +37,8 @@ impl Mode {
             Ok(Mode::Quenya)
         } else if sindarin {
             Ok(Mode::Sindarin)
-        /*} else if beleriand {
-            Ok(Mode::Beleriand)*/
+        } else if beleriand {
+            Ok(Mode::Beleriand)
         /*} else if english {
             Ok(Mode::English)*/
         } else {
@@ -50,7 +50,7 @@ impl Mode {
         match self {
             Mode::Quenya => { Quenya::transcribe }
             Mode::Sindarin => { Sindarin::transcribe }
-            /*Mode::Beleriand => { Beleriand::transcribe }*/
+            Mode::Beleriand => { Beleriand::transcribe }
             /*Mode::English => { English::transcribe }*/
         }
     }
@@ -81,9 +81,9 @@ struct Command {
     #[argh(switch, short = 's')]
     sindarin: bool,
 
-    /*/// transliterate in the Mode of Beleriand
+    /// transliterate in the Mode of Beleriand (experimental)
     #[argh(switch, short = 'b')]
-    beleriand: bool,*/
+    beleriand: bool,
 
     /*/// transliterate in the English mode
     #[argh(switch, short = 'e')]
@@ -100,7 +100,7 @@ impl Command {
         Mode::new(
             self.quenya,
             self.sindarin,
-            /*self.beleriand,*/
+            self.beleriand,
             /*self.english,*/
         )
     }

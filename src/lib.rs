@@ -1,8 +1,10 @@
+pub mod beleriand;
 pub mod characters;
 pub mod etc;
 pub mod quenya;
 pub mod sindarin;
 
+pub use beleriand::Beleriand;
 pub use characters::{int_10, int_12};
 pub use quenya::Quenya;
 pub use sindarin::Sindarin;

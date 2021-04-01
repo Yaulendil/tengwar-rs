@@ -49,6 +49,9 @@ pub const PUNCT_PAREN_R: &str = "";
 pub const PUNCT_EOF: &str = "";
 
 
+pub const TEHTA_CIRCUMFLEX: Tehta = Tehta::basic('');
+
+
 /// The diacritic for an `A` vowel, in its standard three-dot form.
 #[cfg(not(feature = "circumflex"))]
 const _A: char = '';
