@@ -127,7 +127,7 @@ pub const TEMA_PARMA: Tema = Tema {
 pub const TEMA_CALMA: Tema = Tema {
     single_dn: '', // Calma
     double_dn: '', // Anga
-    single_up: '', // Harma
+    single_up: '', // Aha
     double_up: '', // Anca
     double_sh: '', // Ñoldo
     single_sh: '', // Anna
@@ -138,7 +138,7 @@ pub const TEMA_QESSE: Tema = Tema {
     single_dn: '', // Qessë
     double_dn: '', // Ungwë
     single_up: '', // Hwesta
-    double_up: '', // Unqë
+    double_up: '', // Unquë
     double_sh: '', // Ñwalmë
     single_sh: '', // Wilya
     single_ex: '',

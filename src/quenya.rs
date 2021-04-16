@@ -9,18 +9,17 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
     Some(match slice {
         //  Regular
         ['t']           /**/ => TEMA_TINCO.single_dn,
-        ['d'] |
-        ['n', 'd']      /**/ => TEMA_TINCO.double_dn,
+        ['d']
+        | ['n', 'd']    /**/ => TEMA_TINCO.double_dn,
         ['þ']
-        // | ['s']
         | ['t', 'h']    /**/ => TEMA_TINCO.single_up,
         ['n', 't']      /**/ => TEMA_TINCO.double_up,
         ['n']           /**/ => TEMA_TINCO.double_sh,
         ['r']           /**/ => TEMA_TINCO.single_sh,
 
         ['p']           /**/ => TEMA_PARMA.single_dn,
-        ['b'] |
-        ['m', 'b']      /**/ => TEMA_PARMA.double_dn,
+        ['b']
+        | ['m', 'b']    /**/ => TEMA_PARMA.double_dn,
         ['f']           /**/ => TEMA_PARMA.single_up,
         ['m', 'p']      /**/ => TEMA_PARMA.double_up,
         ['m']           /**/ => TEMA_PARMA.double_sh,
@@ -35,14 +34,15 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         ['ñ']           /**/ => TEMA_CALMA.double_sh,
         ['y']           /**/ => TEMA_CALMA.single_sh,
 
-        ['q', 'u']
-        | ['q']
+        ['q']
+        | ['q', 'u']
         | ['c', 'w']
         | ['k', 'w']    /**/ => TEMA_QESSE.single_dn,
         ['n', 'g', 'w'] /**/ => TEMA_QESSE.double_dn,
         ['h', 'w']      /**/ => TEMA_QESSE.single_up,
-        ['n', 'q', 'u'] /**/ => TEMA_QESSE.double_up,
-        ['n', 'w']      /**/ => TEMA_QESSE.double_sh,
+        ['n', 'q', 'u']
+        | ['n', 'q']    /**/ => TEMA_QESSE.double_up,
+        ['ñ', 'w']      /**/ => TEMA_QESSE.double_sh,
         ['w']           /**/ => TEMA_QESSE.single_sh,
 
         //  Irregular
@@ -170,11 +170,11 @@ impl Rules for Quenya {
             () => { out.push(Token::Char(line[0])); };
         }
 
-        // /// Check whether the most recently committed `Token` is a tengwa that
-        // ///     matches a given pattern.
-        // macro_rules! prev {
-        //     ($pat:pat) => { matches!( out.last(), Some(Token::Tengwa($pat)) ) };
-        // }
+        /// Check whether the most recently committed `Token` is a tengwa that
+        ///     matches a given pattern.
+        macro_rules! prev {
+            ($pat:pat) => { matches!( out.last(), Some(Token::Tengwa($pat)) ) };
+        }
 
         'next_slice:
         while !line.is_empty() {
@@ -339,6 +339,22 @@ impl Rules for Quenya {
                     else if let Some(mut new) = get_consonant(sub) {
                         if sub == ['y'] {
                             new.palatal = true;
+                        }
+
+                        //  This letter is Medial or Final.
+                        if prev!(..) {
+                            //  Medial H is represented by Aha, not Hyarmen.
+                            if new.cons == Some(TENGWA_HYARMEN) {
+                                new.cons = Some(TEMA_CALMA.single_up);
+                            }
+                        }
+
+                        //  This letter is Initial.
+                        else {
+                            //  Initial NGW is represented by Ñwalmë, not Ungwë.
+                            if new.cons == Some(TEMA_QESSE.double_dn) {
+                                new.cons = Some(TEMA_QESSE.double_sh);
+                            }
                         }
 
                         tengwa = Some(new);
