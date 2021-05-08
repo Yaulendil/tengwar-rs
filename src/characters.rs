@@ -6,13 +6,64 @@ pub const CARRIER_LONG: char = '';
 /// Telco
 pub const CARRIER_SHORT: char = '';
 
-pub const MOD_LABIAL: char = '';
+
+/// One acute accent above a tengwa.
+pub const DC_OVER_ACUTE_1: char = '';
+/// Two acute accents above a tengwa.
+pub const DC_OVER_ACUTE_2: char = '';
+/// One grave accent above a tengwa.
+pub const DC_OVER_GRAVE: char = '';
+
+/// A diacritic similar to a circumflex.
+pub const DC_OVER_CIRCUMFLEX: char = '';
+
+/// One dot above a tengwa.
+pub const DC_OVER_DOT_1: char = '';
+/// Two dots above a tengwa, arranged horizontally.
+pub const DC_OVER_DOT_2: char = '';
+/// Three dots above a tengwa, with one above the others.
+pub const DC_OVER_DOT_3: char = '';
+/// Three dots above a tengwa, with one below the others.
+pub const DC_OVER_DOT_3_INV: char = '';
+
+pub const DC_OVER_HOOK_L_1: char = '';
+pub const DC_OVER_HOOK_L_2: char = '';
+
+pub const DC_OVER_HOOK_R_1: char = '';
+pub const DC_OVER_HOOK_R_2: char = '';
+
+pub const DC_OVER_LINE: char = '';
+pub const DC_OVER_WAVE: char = '';
+
+
+/// One acute accent below a tengwa.
+pub const DC_UNDER_ACUTE_1: char = '';
+/// One inverted acute accent below a tengwa.
+pub const DC_UNDER_ACUTE_2: char = '';
+
+/// One dot below a tengwa.
+pub const DC_UNDER_DOT_1: char = '';
+/// Two dots below a tengwa, arranged horizontally.
+pub const DC_UNDER_DOT_2: char = '';
+/// Three dots below a tengwa, with one below the others.
+pub const DC_UNDER_DOT_3: char = '';
+
+pub const DC_UNDER_HOOK_L_1: char = '';
+pub const DC_UNDER_HOOK_R_1: char = '';
+pub const DC_UNDER_LINE_H: char = '';
+pub const DC_UNDER_LINE_V: char = '';
+
+pub const DC_UNDER_RING: char = '';
+
+
+pub const MOD_LABIAL: char = DC_OVER_WAVE;
 /// Long/double consonant.
-pub const MOD_LONG_CONS: char = '';
+pub const MOD_LONG_CONS: char = DC_UNDER_LINE_H;
 /// Long vowel after consonant.
-pub const MOD_LONG_VOWEL: char = '';
-pub const MOD_NASAL: char = '';
-pub const MOD_PALATAL: char = '';
+pub const MOD_LONG_VOWEL: char = DC_UNDER_LINE_V;
+
+pub const MOD_NASAL: char = DC_OVER_LINE;
+pub const MOD_PALATAL: char = DC_UNDER_DOT_2;
 pub const MOD_SARINCE_L: char = '';
 pub const MOD_SARINCE_R: char = '';
 
@@ -49,55 +100,55 @@ pub const PUNCT_PAREN_R: &str = "";
 pub const PUNCT_EOF: &str = "";
 
 
-pub const TEHTA_CIRCUMFLEX: Tehta = Tehta::basic('');
+pub const TEHTA_CIRCUMFLEX: Tehta = Tehta::basic(DC_OVER_CIRCUMFLEX);
 
 
 /// The diacritic for an `A` vowel, in its standard three-dot form.
 #[cfg(not(feature = "circumflex"))]
-const _A: char = '';
+const _A: char = DC_OVER_DOT_3;
 
 
 /// The diacritic for an `A` vowel, in its alternate circumflex-like form.
 #[cfg(feature = "circumflex")]
-const _A: char = '';
+const _A: char = DC_OVER_CIRCUMFLEX;
 
 
 #[cfg(not(any(feature = "long-vowel-double", feature = "long-vowel-unique")))]
 mod _vowels {
-    use super::{_A, Tehta};
+    use super::*;
 
     pub const TEHTA_A: Tehta = Tehta::basic(_A);
-    pub const TEHTA_E: Tehta = Tehta::basic('');
-    pub const TEHTA_I: Tehta = Tehta::basic('');
-    pub const TEHTA_O: Tehta = Tehta::basic('');
-    pub const TEHTA_U: Tehta = Tehta::basic('');
-    pub const TEHTA_Y: Tehta = Tehta::basic('');
+    pub const TEHTA_E: Tehta = Tehta::basic(DC_OVER_ACUTE_1);
+    pub const TEHTA_I: Tehta = Tehta::basic(DC_OVER_DOT_1);
+    pub const TEHTA_O: Tehta = Tehta::basic(DC_OVER_HOOK_R_1);
+    pub const TEHTA_U: Tehta = Tehta::basic(DC_OVER_HOOK_L_1);
+    pub const TEHTA_Y: Tehta = Tehta::basic(DC_OVER_DOT_2);
 }
 
 
 #[cfg(feature = "long-vowel-double")]
 mod _vowels {
-    use super::{_A, Tehta};
+    use super::*;
 
     pub const TEHTA_A: Tehta = Tehta::basic(_A);
-    pub const TEHTA_E: Tehta = Tehta::with_double('');
-    pub const TEHTA_I: Tehta = Tehta::with_double('');
-    pub const TEHTA_O: Tehta = Tehta::with_double('');
-    pub const TEHTA_U: Tehta = Tehta::with_double('');
-    pub const TEHTA_Y: Tehta = Tehta::basic('');
+    pub const TEHTA_E: Tehta = Tehta::with_double(DC_OVER_ACUTE_1);
+    pub const TEHTA_I: Tehta = Tehta::with_double(DC_OVER_DOT_1);
+    pub const TEHTA_O: Tehta = Tehta::with_double(DC_OVER_HOOK_R_1);
+    pub const TEHTA_U: Tehta = Tehta::with_double(DC_OVER_HOOK_L_1);
+    pub const TEHTA_Y: Tehta = Tehta::basic(DC_OVER_DOT_2);
 }
 
 
 #[cfg(all(feature = "long-vowel-unique", not(feature = "long-vowel-double")))]
 mod _vowels {
-    use super::{_A, Tehta};
+    use super::*;
 
     pub const TEHTA_A: Tehta = Tehta::basic(_A);
-    pub const TEHTA_E: Tehta = Tehta::with_variant('', '');
-    pub const TEHTA_I: Tehta = Tehta::with_variant('', '');
-    pub const TEHTA_O: Tehta = Tehta::with_variant('', '');
-    pub const TEHTA_U: Tehta = Tehta::with_variant('', '');
-    pub const TEHTA_Y: Tehta = Tehta::basic('');
+    pub const TEHTA_E: Tehta = Tehta::with_variant(DC_OVER_ACUTE_1, DC_OVER_ACUTE_2);
+    pub const TEHTA_I: Tehta = Tehta::with_variant(DC_OVER_DOT_1, DC_OVER_DOT_2);
+    pub const TEHTA_O: Tehta = Tehta::with_variant(DC_OVER_HOOK_R_1, DC_OVER_HOOK_R_2);
+    pub const TEHTA_U: Tehta = Tehta::with_variant(DC_OVER_HOOK_L_1, DC_OVER_HOOK_L_2);
+    pub const TEHTA_Y: Tehta = Tehta::basic(DC_OVER_DOT_2);
 }
 
 
@@ -200,7 +251,7 @@ pub fn int_10(n: isize) -> String {
 
     for &digit in iter {
         out.push(NUMERAL[digit]);
-        out.push('');
+        out.push(DC_OVER_DOT_1);
     }
 
     out
@@ -217,12 +268,12 @@ pub fn int_12(n: isize) -> String {
     //  Mark the least significant digit uniquely.
     if let Some(&first) = iter.next() {
         out.push(NUMERAL[first]);
-        out.push('');
+        out.push(DC_UNDER_RING);
     }
 
     for &digit in iter {
         out.push(NUMERAL[digit]);
-        out.push('');
+        out.push(DC_UNDER_DOT_1);
     }
 
     out
