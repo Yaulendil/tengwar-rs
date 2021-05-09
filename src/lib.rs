@@ -43,7 +43,7 @@ impl<T: AsRef<str>> ToTengwar for T {
     fn to_tengwar<R: Rules>(&self) -> String {
         const ZWJ: char = '‍';
 
-        let mut iter = R::transcribe(self).into_iter().peekable();
+        let mut iter = R::tokens(self).into_iter().peekable();
         let mut post: String = String::new();
 
         while let Some(a) = iter.next() {
