@@ -367,7 +367,8 @@ pub struct Tema {
 /// Choose the appropriate form of sa-rincë for a base tengwa.
 pub const fn mod_rince(base: char) -> char {
     match base {
-        '' | '' | '' | '' | '' | '' | '' | '' | '' | ''
+        // '' | '' | '' | '' | '' | '' | '' | '' | '' | ''
+        ''
         => MOD_SARINCE_R,
         _ => MOD_SARINCE_L,
     }
@@ -457,13 +458,13 @@ impl Glyph {
     }
 
     const fn get_base(&self, base: char) -> (char, bool) {
-        if self.silme {
-            if base == TEMA_PARMA.double_sh {
-                return ('', false);
-            } else if base == TEMA_PARMA.single_sh {
-                return ('', false);
-            }
-        }
+        // if self.silme {
+        //     if base == TEMA_PARMA.double_sh {
+        //         return ('', false);
+        //     } else if base == TEMA_PARMA.single_sh {
+        //         return ('', false);
+        //     }
+        // }
 
         //  If Silmë takes a tehta, it is inverted.
         if base == TENGWA_SILME {
