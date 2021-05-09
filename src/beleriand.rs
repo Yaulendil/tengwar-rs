@@ -135,7 +135,7 @@ pub struct Beleriand;
 
 
 impl Rules for Beleriand {
-    fn transcribe(input: impl AsRef<str>) -> String {
+    fn tokens(input: impl AsRef<str>) -> Vec<Token> {
         let cvec: Vec<char> = input.as_ref().to_lowercase().chars().collect();
         let mut line: &[char] = cvec.as_slice();
         let mut out: Vec<Token> = Vec::new();
@@ -352,6 +352,6 @@ impl Rules for Beleriand {
             }
         }
 
-        out.iter().map(|t| t.to_string()).collect()
+        out
     }
 }
