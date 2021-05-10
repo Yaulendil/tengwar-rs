@@ -5,7 +5,7 @@ pub mod quenya;
 pub mod sindarin;
 
 pub use beleriand::Beleriand;
-pub use characters::{int_10, int_12};
+pub use characters::{Glyph, int_10, int_12, ligature_valid};
 pub use quenya::Quenya;
 pub use sindarin::Sindarin;
 use std::{borrow::Cow, fmt::{self, Write}};
@@ -34,11 +34,8 @@ impl<T: AsRef<str>> ToTengwar for T {
 
     /// Transliterate this text into the Tengwar. A post-processor will run over
     ///     it to insert zero-width joiners and create ligatures where possible.
-    ///     Joiner characters are inserted between all `Tengwa` tokens. This
-    ///     should have no effect in most places, but any pairs of tengwar that
-    ///     can be joined will be.
-    //  TODO: Create reference list of ligatures instead. This bruteforce method
-    //      is a wasteful hack.
+    ///     This affects the text data itself, but should not have any visible
+    ///     effect with a font that does not support the ligatures.
     #[cfg(feature = "ligatures-zwj")]
     fn to_tengwar<R: Rules>(&self) -> String {
         const ZWJ: char = '‍';
@@ -46,13 +43,15 @@ impl<T: AsRef<str>> ToTengwar for T {
         let mut iter = R::tokens(self).into_iter().peekable();
         let mut post: String = String::new();
 
-        while let Some(a) = iter.next() {
-            write!(post, "{}", a).expect("Error writing String");
+        while let Some(token) = iter.next() {
+            write!(post, "{}", token).expect("Error writing String");
 
-            if matches!(a, Token::Tengwa { .. })
-                && matches!(iter.peek(),Some(Token::Tengwa { .. }))
-            {
-                post.push(ZWJ);
+            if let Token::Tengwa(prev) = token {
+                if let Some(Token::Tengwa(next)) = iter.peek() {
+                    if ligature_valid(&prev, &next) {
+                        post.push(ZWJ);
+                    }
+                }
             }
         }
 
@@ -64,7 +63,7 @@ impl<T: AsRef<str>> ToTengwar for T {
 pub enum Token {
     Char(char),
     String(Cow<'static, str>),
-    Tengwa(characters::Glyph),
+    Tengwa(Glyph),
 }
 
 
@@ -73,7 +72,7 @@ impl fmt::Display for Token {
         match self {
             Self::Char(chr) => f.write_char(*chr),
             Self::String(s) => f.write_str(&s),
-            Self::Tengwa(t) => t.fmt(f),
+            Self::Tengwa(t) => <Glyph as fmt::Display>::fmt(t, f),
         }
     }
 }

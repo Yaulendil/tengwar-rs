@@ -20,26 +20,20 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         ['p']           /**/ => TEMA_PARMA.single_dn,
         ['b']           /**/ => TEMA_PARMA.double_dn,
         ['f']           /**/ => TEMA_PARMA.single_up,
-        // ['v']           /**/ => TEMA_PARMA.double_up,
+        ['v']           /**/ => TEMA_PARMA.double_up,
         ['m']           /**/ => TEMA_PARMA.double_sh,
-        ['v']           /**/ => TEMA_PARMA.single_sh,
+        // ['v']           /**/ => TEMA_PARMA.single_sh,
 
-        ['c']
-        | ['k']         /**/ => TEMA_CALMA.single_dn,
-        ['g']           /**/ => TEMA_CALMA.double_dn,
-        ['c', 'h']      /**/ => TEMA_CALMA.single_up,
-        ['n', 'c']      /**/ => TEMA_CALMA.double_up,
-        ['ñ']           /**/ => TEMA_CALMA.double_sh,
         // ['y']           /**/ => TEMA_CALMA.single_sh,
 
-        // ['q', 'u']
-        // | ['q']
-        // | ['c', 'w']
-        // | ['k', 'w']    /**/ => TEMA_QESSE.single_dn,
-        // ['n', 'g', 'w'] /**/ => TEMA_QESSE.double_dn,
-        // ['h', 'w']      /**/ => TEMA_QESSE.single_up,
-        // ['n', 'q', 'u'] /**/ => TEMA_QESSE.double_up,
-        // ['n', 'w']      /**/ => TEMA_QESSE.double_sh,
+        ['c']
+        | ['k']         /**/ => TEMA_QESSE.single_dn,
+        ['g']           /**/ => TEMA_QESSE.double_dn,
+        ['c', 'h']
+        | ['k', 'h']    /**/ => TEMA_QESSE.single_up,
+        ['g', 'h']      /**/ => TEMA_QESSE.double_up,
+        ['ñ']
+        | ['n', 'g']    /**/ => TEMA_QESSE.double_sh,
         ['w']           /**/ => TEMA_QESSE.single_sh,
 
         //  Irregular
@@ -53,7 +47,6 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         ['h']           /**/ => TENGWA_HYARMEN,
         ['h', 'w']      /**/ => TENGWA_HWESTA_SINDARINWA,
         ['j']           /**/ => TENGWA_YANTA,
-        // ['u']           /**/ => TENGWA_URE,
 
         _ => { return None; }
     })
@@ -84,7 +77,7 @@ pub const fn get_diphthong(slice: &[char]) -> Option<Glyph> {
         ['u', 'i'] => Some(Glyph::new_both(TEMA_CALMA.single_sh, TEHTA_U)),
 
         ['a', 'u']
-        /*| ['a', 'w']*/ => Some(Glyph::new_both(TENGWA_URE, TEHTA_A)),
+        | ['a', 'w'] => Some(Glyph::new_both(TENGWA_URE, TEHTA_A)),
 
         _ => None,
     }

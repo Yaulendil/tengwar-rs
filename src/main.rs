@@ -3,7 +3,7 @@ use std::{
     io::{BufRead, stdin, stdout, Write},
     process::exit,
 };
-use tengwar::{Beleriand, Quenya, Rules, Sindarin};
+use tengwar::{Beleriand, Quenya, Sindarin, ToTengwar};
 
 
 #[derive(Debug)]
@@ -53,10 +53,11 @@ impl Mode {
 
     fn rules<T: AsRef<str>>(&self) -> fn(T) -> String {
         match self {
-            Mode::Quenya => { Quenya::transcribe }
-            Mode::Sindarin | Mode::Gondor => { Sindarin::transcribe }
-            Mode::Beleriand => { Beleriand::transcribe }
-            /*Mode::English => { English::transcribe }*/
+            Mode::Quenya => { |s| s.to_tengwar::<Quenya>() }
+            Mode::Sindarin
+            | Mode::Gondor => { |s| s.to_tengwar::<Sindarin>() }
+            Mode::Beleriand => { |s| s.to_tengwar::<Beleriand>() }
+            /*Mode::English => { |s| s.to_tengwar::<English>() }*/
         }
     }
 }
@@ -78,7 +79,7 @@ line switches.
 */ //  NOTE: Block comment is necessary here to properly lay out help text.
 #[derive(FromArgs)]
 struct Command {
-    /// transliterate in the Quenya mode (default)
+    /// transliterate in the Classical (Quenya) mode (default)
     #[argh(switch, short = 'q')]
     quenya: bool,
 

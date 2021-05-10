@@ -132,7 +132,8 @@ mod _vowels {
 
     pub const TEHTA_A: Tehta = Tehta::basic(_A);
     pub const TEHTA_E: Tehta = Tehta::with_double(DC_OVER_ACUTE_1);
-    pub const TEHTA_I: Tehta = Tehta::with_double(DC_OVER_DOT_1);
+    // pub const TEHTA_I: Tehta = Tehta::with_double(DC_OVER_DOT_1);
+    pub const TEHTA_I: Tehta = Tehta::basic(DC_OVER_DOT_1);
     pub const TEHTA_O: Tehta = Tehta::with_double(DC_OVER_HOOK_R_1);
     pub const TEHTA_U: Tehta = Tehta::with_double(DC_OVER_HOOK_L_1);
     pub const TEHTA_Y: Tehta = Tehta::basic(DC_OVER_DOT_2);
@@ -145,7 +146,8 @@ mod _vowels {
 
     pub const TEHTA_A: Tehta = Tehta::basic(_A);
     pub const TEHTA_E: Tehta = Tehta::with_variant(DC_OVER_ACUTE_1, DC_OVER_ACUTE_2);
-    pub const TEHTA_I: Tehta = Tehta::with_variant(DC_OVER_DOT_1, DC_OVER_DOT_2);
+    // pub const TEHTA_I: Tehta = Tehta::with_variant(DC_OVER_DOT_1, DC_OVER_DOT_2);
+    pub const TEHTA_I: Tehta = Tehta::basic(DC_OVER_DOT_1);
     pub const TEHTA_O: Tehta = Tehta::with_variant(DC_OVER_HOOK_R_1, DC_OVER_HOOK_R_2);
     pub const TEHTA_U: Tehta = Tehta::with_variant(DC_OVER_HOOK_L_1, DC_OVER_HOOK_L_2);
     pub const TEHTA_Y: Tehta = Tehta::basic(DC_OVER_DOT_2);
@@ -196,6 +198,8 @@ pub const TEMA_QESSE: Tema = Tema {
     double_ex: '',
 };
 
+pub const TENGWA_CURL_SINGLE: char = '';
+pub const TENGWA_CURL_DOUBLE: char = '';
 
 pub const TENGWA_ROMEN: char = '';
 pub const TENGWA_ARDA: char = '';
@@ -364,11 +368,26 @@ pub struct Tema {
 }
 
 
+/// Determine whether two `Glyph`s can be joined by a zero-width joiner. These
+///     rules are based on the "Tengwar Telcontar" font.
+pub const fn ligature_valid(prev: &Glyph, next: &Glyph) -> bool {
+    //  TODO
+    true
+}
+
+
 /// Choose the appropriate form of sa-rincë for a base tengwa.
+#[cfg(not(feature = "alt-rince"))]
+pub const fn mod_rince(_base: char) -> char {
+    MOD_SARINCE_L
+}
+
+
+/// Choose the appropriate form of sa-rincë for a base tengwa.
+#[cfg(feature = "alt-rince")]
 pub const fn mod_rince(base: char) -> char {
     match base {
-        // '' | '' | '' | '' | '' | '' | '' | '' | '' | ''
-        ''
+        '' | '' | '' | '' | '' | '' | '' | ''
         => MOD_SARINCE_R,
         _ => MOD_SARINCE_L,
     }
@@ -384,13 +403,15 @@ pub struct Glyph {
     /// If Silmë follows another tengwa, the base character may be modified by
     ///     a sa-rincë instead.
     pub silme: bool,
-    /// A labialized consonant is represented by an additional diacritic.
+    /// A nasalized consonant is typically represented by an overbar.
     pub nasal: bool,
     /// A labialized consonant is represented by an additional diacritic.
     pub labial: bool,
     /// A palatalized vowel is represented by an additional diacritic.
     pub palatal: bool,
+    /// A lengthened consonant is typically represented by an underbar.
     pub long_cons: bool,
+    /// A lengthened vowel can be represented in various ways.
     pub long_vowel: bool,
     /// Indicates whether a long vowel using the extended "Ára" Telco should be
     ///     placed before this glyph.
@@ -458,14 +479,7 @@ impl Glyph {
     }
 
     const fn get_base(&self, base: char) -> (char, bool) {
-        // if self.silme {
-        //     if base == TEMA_PARMA.double_sh {
-        //         return ('', false);
-        //     } else if base == TEMA_PARMA.single_sh {
-        //         return ('', false);
-        //     }
-        // }
-
+        #[cfg(feature = "nuquernar")]
         //  If Silmë takes a tehta, it is inverted.
         if base == TENGWA_SILME {
             if self.vowel.is_some() {
@@ -473,8 +487,9 @@ impl Glyph {
             }
         }
 
+        #[cfg(feature = "nuquernar")]
         //  If Essë takes a tehta, it is inverted.
-        else if base == TENGWA_ESSE {
+        if base == TENGWA_ESSE {
             if self.vowel.is_some() {
                 return (TENGWA_ESSE_NUQ, self.silme);
             }

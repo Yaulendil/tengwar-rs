@@ -204,9 +204,8 @@ impl Rules for Quenya {
                     match sub {
                         &['s'] => {
                             //  If the current tengwa has a consonant with no
-                            //      vowel, OR a vowel with no consonant, we can
-                            //      apply a Silmë Rincë to it.
-                            if current.vowel.is_some() ^ current.cons.is_some() {
+                            //      vowel, we can apply a Silmë Rincë to it.
+                            if current.cons.is_some() && current.vowel.is_none() {
                                 current.silme = true;
                                 advance!();
                                 continue 'next_slice;
@@ -309,8 +308,6 @@ impl Rules for Quenya {
                     /*------------------*/
 
                     if sub == ['x'] {
-                        commit!();
-
                         tengwa = Some(Glyph::new_cons(
                             TEMA_CALMA.single_dn, false,
                         ).with_silme());
