@@ -38,7 +38,7 @@ impl<T: AsRef<str>> ToTengwar for T {
     ///     effect with a font that does not support the ligatures.
     #[cfg(feature = "ligatures-zwj")]
     fn to_tengwar<R: Rules>(&self) -> String {
-        const ZWJ: char = '‍';
+        use characters::ZWJ;
 
         let mut iter = R::tokens(self).into_iter().peekable();
         let mut post: String = String::new();

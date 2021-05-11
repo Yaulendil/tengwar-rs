@@ -223,6 +223,8 @@ pub const TENGWA_HALLA: char = '';
 pub const TENGWA_WAIA: char = '';
 pub const TENGWA_OSSE: char = '';
 
+pub const ZWJ: char = '‍';
+
 
 pub const fn carrier(long: bool) -> char {
     if long { CARRIER_LONG } else { CARRIER_SHORT }
@@ -368,11 +370,27 @@ pub struct Tema {
 }
 
 
+pub const fn can_be_nuquerna(c: char) -> bool {
+    c == TENGWA_SILME || c == TENGWA_ESSE
+}
+
+
+#[cfg(feature = "ligatures-zwj")]
+const fn ligates_with_ara(base: char) -> bool {
+    // (TEMA_TINCO.single_dn..TENGWA_HWESTA_SINDARINWA).contains(&base)
+    (TEMA_TINCO.single_dn <= base && base <= TENGWA_HWESTA_SINDARINWA)
+        && base != TENGWA_SILME_NUQ
+        && base != TENGWA_ESSE_NUQ
+}
+
+
 /// Determine whether two `Glyph`s can be joined by a zero-width joiner. These
 ///     rules are based on the "Tengwar Telcontar" font.
 pub const fn ligature_valid(prev: &Glyph, next: &Glyph) -> bool {
-    //  TODO
-    true
+    !(prev.vowel.is_some() && (next.cons.is_none() || matches!(
+        prev.cons,
+        Some(TENGWA_SILME) |  Some(TENGWA_ESSE),
+    )))
 }
 
 
@@ -487,9 +505,8 @@ impl Glyph {
             }
         }
 
-        #[cfg(feature = "nuquernar")]
         //  If Essë takes a tehta, it is inverted.
-        if base == TENGWA_ESSE {
+        else if base == TENGWA_ESSE {
             if self.vowel.is_some() {
                 return (TENGWA_ESSE_NUQ, self.silme);
             }
@@ -519,6 +536,10 @@ impl fmt::Display for Glyph {
                 } else {
                     f.write_char(carrier(*long_vowel))?;
                     vowel.write(f, false)?;
+                }
+
+                #[cfg(feature = "ligatures-zwj")] {
+                    f.write_char(ZWJ)?;
                 }
             }
 
@@ -572,7 +593,36 @@ impl fmt::Display for Glyph {
             }
 
             if let Some(vowel) = vowel {
-                vowel.write(f, *long_vowel && cons.is_some())?;
+                #[allow(unused_mut)]
+                let mut long: bool = *long_vowel && cons.is_some();
+
+                #[cfg(any(feature = "ligatures-zwj", not(feature = "nuquernar")))]
+                if long {
+                    if vowel.uses_ara() {
+                        #[cfg(feature = "ligatures-zwj")]
+                        if ligates_with_ara(base) {
+                            f.write_char(ZWJ)?;
+                        }
+                    } else {
+                        #[cfg(not(feature = "nuquernar"))]
+                        //  This tengwa has a Nuquerna variant, but it will not
+                        //      be used. However, it has a long vowel attached,
+                        //      which, without intervention, will use a variant.
+                        //      The long vowel should be put on an Ára carrier
+                        //      instead to decrease visual chaos.
+                        if can_be_nuquerna(base) {
+                            #[cfg(feature = "ligatures-zwj")]
+                            if ligates_with_ara(base) {
+                                f.write_char(ZWJ)?;
+                            }
+
+                            f.write_char(carrier(true))?;
+                            long = false;
+                        }
+                    }
+                }
+
+                vowel.write(f, long)?;
             }
 
             if rince {
