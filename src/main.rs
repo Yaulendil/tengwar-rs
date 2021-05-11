@@ -51,31 +51,40 @@ impl Mode {
         }
     }
 
-    fn rules<T: AsRef<str>>(&self) -> fn(T) -> String {
-        match self {
-            Mode::Quenya => { |s| s.to_tengwar::<Quenya>() }
-            Mode::Sindarin
-            | Mode::Gondor => { |s| s.to_tengwar::<Sindarin>() }
-            Mode::Beleriand => { |s| s.to_tengwar::<Beleriand>() }
-            /*Mode::English => { |s| s.to_tengwar::<English>() }*/
+    fn rules<T: AsRef<str>>(&self, ligatures: bool) -> fn(T) -> String {
+        if ligatures {
+            match self {
+                Mode::Quenya => { |s| s.to_tengwar_ligated::<Quenya>() }
+                Mode::Sindarin
+                | Mode::Gondor => { |s| s.to_tengwar_ligated::<Sindarin>() }
+                Mode::Beleriand => { |s| s.to_tengwar_ligated::<Beleriand>() }
+                /*Mode::English => { |s| s.to_tengwar_ligated::<English>() }*/
+            }
+        } else {
+            match self {
+                Mode::Quenya => { |s| s.to_tengwar::<Quenya>() }
+                Mode::Sindarin
+                | Mode::Gondor => { |s| s.to_tengwar::<Sindarin>() }
+                Mode::Beleriand => { |s| s.to_tengwar::<Beleriand>() }
+                /*Mode::English => { |s| s.to_tengwar::<English>() }*/
+            }
         }
     }
 }
 
 
 /**
-Transliterate text into the Tengwar of Fëanor.
+Transliterate text into the Tengwar of Fëanaro.
 
 Since the Tengwar are simply a writing system, and not a full language, there
 are various orthographical modes that can be used for transliteration. The
-default is that of Quenya, but others are available for selection by command
-line switches.
+default is the Classical Mode, mainly used for Quenya, but others are available
+for selection by command line switches.
 
-# Exit Status
-
-0  -- Success.
-1  -- Error while writing output.
-2+ -- Too many mode switches. Status is set to number of switches.
+Exit Status:
+  0  -- Success.
+  1  -- Error while writing output.
+  2+ -- Too many mode switches. Status is set to number of switches.
 */ //  NOTE: Block comment is necessary here to properly lay out help text.
 #[derive(FromArgs)]
 struct Command {
@@ -99,6 +108,10 @@ struct Command {
     /*/// transliterate in the English mode
     #[argh(switch, short = 'e')]
     english: bool,*/
+
+    /// use zero-width joiners to ligate output
+    #[argh(switch, short = 'l')]
+    ligatures: bool,
 
     /// text to be transliterated
     #[argh(positional)]
@@ -124,7 +137,7 @@ fn main() {
 
     match cmd.mode() {
         Ok(mode) => {
-            let xliterate: fn(String) -> String = mode.rules();
+            let xliterate: fn(String) -> String = mode.rules(cmd.ligatures);
 
             if cmd.text.is_empty() {
                 for line in stdin().lock().lines()

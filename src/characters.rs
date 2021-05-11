@@ -375,9 +375,7 @@ pub const fn can_be_nuquerna(c: char) -> bool {
 }
 
 
-#[cfg(feature = "ligatures-zwj")]
 const fn ligates_with_ara(base: char) -> bool {
-    // (TEMA_TINCO.single_dn..TENGWA_HWESTA_SINDARINWA).contains(&base)
     (TEMA_TINCO.single_dn <= base && base <= TENGWA_HWESTA_SINDARINWA)
         && base != TENGWA_SILME_NUQ
         && base != TENGWA_ESSE_NUQ
@@ -517,8 +515,8 @@ impl Glyph {
 }
 
 
-impl fmt::Display for Glyph {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+impl Glyph {
+    pub fn write(&self, f: &mut Formatter<'_>, ligatures: bool) -> fmt::Result {
         let Glyph {
             cons, vowel, silme,
             nasal, labial, palatal,
@@ -538,7 +536,7 @@ impl fmt::Display for Glyph {
                     vowel.write(f, false)?;
                 }
 
-                #[cfg(feature = "ligatures-zwj")] {
+                if ligatures {
                     f.write_char(ZWJ)?;
                 }
             }
@@ -593,14 +591,11 @@ impl fmt::Display for Glyph {
             }
 
             if let Some(vowel) = vowel {
-                #[allow(unused_mut)]
                 let mut long: bool = *long_vowel && cons.is_some();
 
-                #[cfg(any(feature = "ligatures-zwj", not(feature = "nuquernar")))]
                 if long {
                     if vowel.uses_ara() {
-                        #[cfg(feature = "ligatures-zwj")]
-                        if ligates_with_ara(base) {
+                        if ligatures && ligates_with_ara(base) {
                             f.write_char(ZWJ)?;
                         }
                     } else {
@@ -611,8 +606,7 @@ impl fmt::Display for Glyph {
                         //      The long vowel should be put on an Ára carrier
                         //      instead to decrease visual chaos.
                         if can_be_nuquerna(base) {
-                            #[cfg(feature = "ligatures-zwj")]
-                            if ligates_with_ara(base) {
+                            if ligatures && ligates_with_ara(base) {
                                 f.write_char(ZWJ)?;
                             }
 
@@ -631,5 +625,12 @@ impl fmt::Display for Glyph {
 
             Ok(())
         }
+    }
+}
+
+
+impl fmt::Display for Glyph {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        self.write(f, false)
     }
 }
