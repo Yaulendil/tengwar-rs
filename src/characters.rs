@@ -388,16 +388,26 @@ const fn ligates_with_ara(base: char) -> bool {
     (TEMA_TINCO.single_dn <= base && base <= TENGWA_HWESTA_SINDARINWA)
         && base != TENGWA_SILME_NUQ
         && base != TENGWA_ESSE_NUQ
+        && base != TENGWA_ESSE
 }
 
 
 /// Determine whether two `Glyph`s can be joined by a zero-width joiner. These
-///     rules are based on the "Tengwar Telcontar" font.
+///     rules are based on the "Tengwar Telcontar" font, and are to some degree
+///     based on opinion.
 pub const fn ligature_valid(prev: &Glyph, next: &Glyph) -> bool {
-    !(prev.vowel.is_some() && (next.cons.is_none() || matches!(
-        prev.cons,
-        Some(TENGWA_SILME) |  Some(TENGWA_ESSE),
-    )))
+    if matches!(prev.cons, Some(TENGWA_SILME) | Some(TENGWA_ESSE)) {
+        !(prev.vowel.is_some() && next.vowel.is_some()) && match next.cons {
+            Some(con) => can_be_nuquerna(con)
+                || (TEMA_TINCO.single_dn <= con && con <= TENGWA_ARDA),
+            None => false,
+        }
+    } else if let (Some(left), Some(right)) = (prev.cons, next.cons) {
+        TEMA_TINCO.single_dn <= left && left <= TENGWA_ARDA
+            && TEMA_TINCO.single_dn <= right && right <= TENGWA_ARDA
+    } else {
+        !(prev.vowel.is_some() && next.vowel.is_some())
+    }
 }
 
 
@@ -526,102 +536,84 @@ impl Glyph {
             long_cons, long_vowel, long_first,
         } = self;
 
-        let vowel_first: bool = *long_first
-            && (*long_vowel || *labial)
-            && cons.is_some();
+        #[cfg_attr(feature = "nuquernar", allow(unused_mut))]
+        let mut long: bool = *long_vowel && cons.is_some();
 
-        if vowel_first {
-            if let Some(vowel) = vowel {
-                if *long_vowel && vowel.uses_ara() {
-                    vowel.write(f, true)?;
+        let vowel_post: Option<&Tehta> = match vowel {
+            Some(tehta) => {
+                if long && *long_first {
+                    if tehta.uses_ara() && !ligatures {
+                        tehta.write(f, true)?;
+                        None
+                    } else if cfg!(not(feature = "nuquernar"))
+                        && !ligatures && can_be_nuquerna(base)
+                    {
+                        //  NOTE: This may not be necessary if ZWJ ligatures are
+                        //      enabled, because the long carrier following the
+                        //      tengwa will be integrated.
+                        f.write_char(carrier(true))?;
+                        tehta.write(f, false)?;
+                        None
+                    } else {
+                        Some(tehta)
+                    }
                 } else {
-                    f.write_char(carrier(false))?;
-                    vowel.write(f, false)?;
-                }
-
-                if ligatures {
-                    f.write_char(ZWJ)?;
+                    Some(tehta)
                 }
             }
+            _ => None,
+        };
 
-            f.write_char(base)?;
+        f.write_char(base)?;
 
-            if *nasal {
-                f.write_char(MOD_NASAL)?;
-            }
+        if *nasal {
+            f.write_char(MOD_NASAL)?;
+        }
 
-            if *long_cons {
-                f.write_char(MOD_LONG_CONS)?;
-            }
+        if *long_cons {
+            f.write_char(MOD_LONG_CONS)?;
+        }
 
-            if *labial {
-                f.write_char(MOD_LABIAL)?;
-            }
+        if *labial {
+            f.write_char(MOD_LABIAL)?;
+        }
 
-            if *palatal {
-                f.write_char(MOD_PALATAL)?;
-            }
+        if *palatal {
+            f.write_char(MOD_PALATAL)?;
+        }
 
-            if *silme {
-                f.write_char(mod_rince(base))?;
-            }
-
-            Ok(())
-        } else {
-            f.write_char(base)?;
-
-            if *nasal {
-                f.write_char(MOD_NASAL)?;
-            }
-
-            if *long_cons {
-                f.write_char(MOD_LONG_CONS)?;
-            }
-
-            if *labial {
-                f.write_char(MOD_LABIAL)?;
-            }
-
-            if *palatal {
-                f.write_char(MOD_PALATAL)?;
-            }
-
-            if let Some(vowel) = vowel {
-                #[allow(unused_mut)]
-                let mut long: bool = *long_vowel && cons.is_some();
-
-                if long {
-                    if vowel.uses_ara() {
+        if let Some(vowel) = vowel_post {
+            if long {
+                if vowel.uses_ara() {
+                    if ligatures && ligates_with_ara(base) {
+                        f.write_char(ZWJ)?;
+                    }
+                } else {
+                    #[cfg(not(feature = "nuquernar"))]
+                    //  This tengwa has a Nuquerna variant, but it will not
+                    //      be used. However, it has a long vowel attached,
+                    //      which, without intervention, will use a variant.
+                    //      The long vowel should be put on an Ára carrier
+                    //      instead to decrease visual chaos.
+                    if can_be_nuquerna(base) {
                         if ligatures && ligates_with_ara(base) {
                             f.write_char(ZWJ)?;
                         }
-                    } else {
-                        #[cfg(not(feature = "nuquernar"))]
-                        //  This tengwa has a Nuquerna variant, but it will not
-                        //      be used. However, it has a long vowel attached,
-                        //      which, without intervention, will use a variant.
-                        //      The long vowel should be put on an Ára carrier
-                        //      instead to decrease visual chaos.
-                        if can_be_nuquerna(base) {
-                            if ligatures && ligates_with_ara(base) {
-                                f.write_char(ZWJ)?;
-                            }
 
-                            f.write_char(carrier(true))?;
-                            long = false;
-                        }
+                        f.write_char(carrier(true))?;
+                        long = false;
                     }
                 }
-
-                vowel.write(f, long)?;
             }
 
-            if *silme {
-                f.write_char(mod_rince(base))?;
-            }
-
-            Ok(())
+            vowel.write(f, long)?;
         }
+
+        if *silme {
+            f.write_char(mod_rince(base))?;
+        }
+
+        Ok(())
     }
 }
 
