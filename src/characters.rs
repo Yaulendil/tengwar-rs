@@ -375,6 +375,15 @@ pub const fn can_be_nuquerna(c: char) -> bool {
 }
 
 
+pub const fn nuquerna(c: char) -> char {
+    match c {
+        TENGWA_SILME => TENGWA_SILME_NUQ,
+        TENGWA_ESSE => TENGWA_ESSE_NUQ,
+        other => other,
+    }
+}
+
+
 const fn ligates_with_ara(base: char) -> bool {
     (TEMA_TINCO.single_dn <= base && base <= TENGWA_HWESTA_SINDARINWA)
         && base != TENGWA_SILME_NUQ
@@ -493,30 +502,24 @@ impl Glyph {
         self.silme = true;
         self
     }
-
-    const fn get_base(&self, base: char) -> (char, bool) {
-        #[cfg(feature = "nuquernar")]
-        //  If Silmë takes a tehta, it is inverted.
-        if base == TENGWA_SILME {
-            if self.vowel.is_some() {
-                return (TENGWA_SILME_NUQ, self.silme);
-            }
-        }
-
-        //  If Essë takes a tehta, it is inverted.
-        else if base == TENGWA_ESSE {
-            if self.vowel.is_some() {
-                return (TENGWA_ESSE_NUQ, self.silme);
-            }
-        }
-
-        (base, self.silme)
-    }
 }
 
 
 impl Glyph {
+    pub const fn base(&self) -> char {
+        match self {
+            #[cfg(feature = "nuquernar")]
+            &Glyph { cons: Some(con), vowel: Some(ref vowel), long_vowel, .. } if {
+                can_be_nuquerna(con) && (!long_vowel || !vowel.uses_ara())
+            } => nuquerna(con),
+
+            &Glyph { cons: Some(con), .. } => con,
+            &Glyph { long_vowel, .. } => carrier(long_vowel),
+        }
+    }
+
     pub fn write(&self, f: &mut Formatter<'_>, ligatures: bool) -> fmt::Result {
+        let base: char = self.base();
         let Glyph {
             cons, vowel, silme,
             nasal, labial, palatal,
@@ -529,10 +532,10 @@ impl Glyph {
 
         if vowel_first {
             if let Some(vowel) = vowel {
-                if vowel.uses_ara() && *long_vowel {
+                if *long_vowel && vowel.uses_ara() {
                     vowel.write(f, true)?;
                 } else {
-                    f.write_char(carrier(*long_vowel))?;
+                    f.write_char(carrier(false))?;
                     vowel.write(f, false)?;
                 }
 
@@ -540,8 +543,6 @@ impl Glyph {
                     f.write_char(ZWJ)?;
                 }
             }
-
-            let (base, rince) = self.get_base(cons.unwrap());
 
             f.write_char(base)?;
 
@@ -561,17 +562,12 @@ impl Glyph {
                 f.write_char(MOD_PALATAL)?;
             }
 
-            if rince {
+            if *silme {
                 f.write_char(mod_rince(base))?;
             }
 
             Ok(())
         } else {
-            let (base, rince): (char, bool) = match cons {
-                Some(ch) => self.get_base(*ch),
-                None => (carrier(*long_vowel), *silme),
-            };
-
             f.write_char(base)?;
 
             if *nasal {
@@ -591,6 +587,7 @@ impl Glyph {
             }
 
             if let Some(vowel) = vowel {
+                #[allow(unused_mut)]
                 let mut long: bool = *long_vowel && cons.is_some();
 
                 if long {
@@ -619,7 +616,7 @@ impl Glyph {
                 vowel.write(f, long)?;
             }
 
-            if rince {
+            if *silme {
                 f.write_char(mod_rince(base))?;
             }
 

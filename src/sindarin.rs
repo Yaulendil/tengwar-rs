@@ -218,23 +218,16 @@ impl Rules for Sindarin {
                                 current.silme = true;
                                 advance!();
                                 continue 'next_slice;
-                            } else {
-                                commit!();
-                                continue 'same_slice;
                             }
-                        }
-                        &['s', 's'] => {
-                            //  We cannot apply a Rincë for Essë. Commit this
-                            //      tengwa and then try for a new one.
-                            commit!();
-                            continue 'same_slice;
                         }
                         &['x'] => {
                             //  This needs to be treated as if it were "cs".
-                            commit!();
+                            if current.cons.is_some() {
+                                commit!();
+                            }
 
                             tengwa = Some(Glyph::new_cons(
-                                TEMA_CALMA.single_dn, false,
+                                TEMA_QESSE.single_dn, false,
                             ).with_silme());
 
                             advance!();
@@ -271,57 +264,6 @@ impl Rules for Sindarin {
                         }
                     }
 
-                    /*//  Look for a vowel, if we need one.
-                    if current.vowel.is_none() {
-                        if sub == ['y'] {
-                            current.palatal = true;
-
-                            advance!();
-                            continue 'next_slice;
-                        }
-
-                        //  In a cluster of "hl" or "hr", the H is transcribed
-                        //      as Halla instead of Hyarmen.
-                        else if current.cons == Some(TENGWA_HYARMEN)
-                            && matches!(sub, &['l', ..] | &['r', ..])
-                        {
-                            current.cons = Some(TENGWA_HALLA);
-                            commit!();
-                            continue 'same_slice;
-                        }
-
-                        //  If there is a diphthong, we need to commit the
-                        //      current tengwa early, so that it is not misread
-                        //      as a normal vowel.
-                        else if get_diphthong(sub).is_some() {
-                            //  If a vowel sound follows Órë, it turns to Rómen.
-                            if current.cons == Some(TEMA_TINCO.single_sh)
-                                // && !prev!(Glyph { vowel: Some(_), .. })
-                            {
-                                current.cons = Some(TENGWA_ROMEN);
-                            }
-
-                            commit!();
-                            continue 'same_slice;
-                        }
-
-                        //  Otherwise, we are free to check for a normal vowel.
-                        else if let Some((vowel, long)) = get_vowel(sub) {
-                            current.vowel = Some(vowel);
-                            current.long_vowel = long;
-
-                            //  If a vowel sound follows Órë, it turns to Rómen.
-                            if current.cons == Some(TEMA_TINCO.single_sh)
-                                // && !prev!(Glyph { vowel: Some(_), .. })
-                            {
-                                current.cons = Some(TENGWA_ROMEN);
-                            }
-
-                            advance!(sub.len());
-                            continue 'next_slice;
-                        }
-                    }*/
-
                     /*------------------*/
 
                     //  If nothing has been found, allow `len` to decrement.
@@ -346,7 +288,7 @@ impl Rules for Sindarin {
 
                     if sub == ['x'] {
                         tengwa = Some(Glyph::new_cons(
-                            TEMA_CALMA.single_dn, false,
+                            TEMA_QESSE.single_dn, false,
                         ).with_silme());
 
                         advance!();
