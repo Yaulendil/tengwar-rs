@@ -126,7 +126,7 @@ mod _vowels {
 }
 
 
-#[cfg(feature = "long-vowel-double")]
+#[cfg(all(feature = "long-vowel-double", not(feature = "long-vowel-unique")))]
 mod _vowels {
     use super::*;
 
@@ -140,7 +140,7 @@ mod _vowels {
 }
 
 
-#[cfg(all(feature = "long-vowel-unique", not(feature = "long-vowel-double")))]
+#[cfg(feature = "long-vowel-unique")]
 mod _vowels {
     use super::*;
 
