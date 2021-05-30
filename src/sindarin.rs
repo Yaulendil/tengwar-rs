@@ -306,7 +306,7 @@ impl Rules for Sindarin {
                         }
                         &[only] => if let Some(punct) = punctuation(*only) {
                             //  Look for punctuation marks.
-                            out.push(Token::String(Cow::Borrowed(punct)));
+                            out.push(Token::Char(punct));
 
                             advance!(sub.len());
                             continue 'next_slice;
