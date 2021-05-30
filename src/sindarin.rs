@@ -176,6 +176,15 @@ impl Rules for Sindarin {
 
         'next_slice:
         while !line.is_empty() {
+            if let &[escape @ '\\', ignore, ..] = line {
+                commit!();
+                out.push(Token::Char(escape));
+                out.push(Token::Char(ignore));
+
+                advance!(2);
+                continue 'next_slice;
+            }
+
             //  Check first whether a number can be found at the beginning of
             //      the current line.
             if let Some((number, size)) = find_integer::<isize>(line) {
