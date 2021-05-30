@@ -5,7 +5,7 @@ pub mod quenya;
 pub mod sindarin;
 
 pub use beleriand::Beleriand;
-pub use characters::{Glyph, int_10, int_12, ligature_valid};
+pub use characters::{Glyph, int_10, int_12, ligature_valid, punctuation};
 pub use quenya::Quenya;
 pub use sindarin::Sindarin;
 use std::{borrow::Cow, fmt::{self, Write}};

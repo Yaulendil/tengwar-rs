@@ -108,7 +108,7 @@ pub const fn get_vowel(slice: &[char]) -> Option<(Tehta, bool)> {
 }
 
 
-//  Source: https://www.at.mansbjorkman.net/teng_punctuation.htm
+/*//  Source: https://www.at.mansbjorkman.net/teng_punctuation.htm
 pub const fn punctuation(slice: &[char]) -> Option<&'static str> {
     match slice {
         ['\''] => Some(PUNCT_DOT_1),
@@ -137,7 +137,7 @@ pub const fn punctuation(slice: &[char]) -> Option<&'static str> {
 
         _ => None,
     }
-}
+}*/
 
 
 pub struct Quenya;
@@ -307,33 +307,34 @@ impl Rules for Quenya {
                 else {
                     /*------------------*/
 
-                    if sub == ['x'] {
-                        tengwa = Some(Glyph::new_cons(
-                            TEMA_CALMA.single_dn, false,
-                        ).with_silme());
+                    match &sub {
+                        &['x'] => {
+                            tengwa = Some(Glyph::new_cons(
+                                TEMA_CALMA.single_dn, false,
+                            ).with_silme());
 
-                        advance!();
-                        continue 'next_slice;
-                    }
+                            advance!();
+                            continue 'next_slice;
+                        }
+                        &[only] => if let Some(punct) = punctuation(*only) {
+                            //  Look for punctuation marks.
+                            out.push(Token::String(Cow::Borrowed(punct)));
 
-                    //  If we have no consonant, but the next character is `Y`,
-                    //      the next consonant can ONLY be `Y`. Cheat slightly
-                    //      to speed the process along.
-                    if let ['y', _, ..] = sub {
-                        len = 1;
-                        sub = &sub[..1];
-                    }
-
-                    //  Look for punctuation marks.
-                    if let Some(punct) = punctuation(sub) {
-                        out.push(Token::String(Cow::Borrowed(punct)));
-
-                        advance!(sub.len());
-                        continue 'next_slice;
+                            advance!(sub.len());
+                            continue 'next_slice;
+                        }
+                        &['y', _, ..] => {
+                            //  If we have no consonant, but the next character
+                            //      is `Y`, the next consonant can ONLY be `Y`.
+                            //      Cheat slightly to speed the process along.
+                            len = 1;
+                            sub = &sub[..1];
+                        }
+                        _ => {}
                     }
 
                     //  Look for a consonant.
-                    else if let Some(mut new) = get_consonant(sub) {
+                    if let Some(mut new) = get_consonant(sub) {
                         if sub == ['y'] {
                             new.palatal = true;
                         }

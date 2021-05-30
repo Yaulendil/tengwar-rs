@@ -99,7 +99,7 @@ pub const fn get_vowel(slice: &[char]) -> Option<Glyph> {
 }
 
 
-//  Source: https://www.at.mansbjorkman.net/teng_punctuation.htm
+/*//  Source: https://www.at.mansbjorkman.net/teng_punctuation.htm
 pub const fn punctuation(slice: &[char]) -> Option<&'static str> {
     match slice {
         ['\''] => Some(PUNCT_DOT_1),
@@ -128,7 +128,7 @@ pub const fn punctuation(slice: &[char]) -> Option<&'static str> {
 
         _ => None,
     }
-}
+}*/
 
 
 pub struct Beleriand;
@@ -230,19 +230,29 @@ impl Rules for Beleriand {
                 else {
                     /*------------------*/
 
-                    //  Check for an X. This should not happen in Sindarin, but
-                    //      just in case, make sure we can handle it, because it
-                    //      needs to be treated as two different characters. It
-                    //      must be hacked in.
-                    if sub == ['x'] {
-                        out.push(Token::Tengwa(Glyph::new_cons(
-                            TEMA_CALMA.single_dn,
-                            false,
-                        )));
-                        tengwa = Some(Glyph::new_cons(TENGWA_SILME, false));
+                    match &sub {
+                        //  Check for an X. This should not happen in Sindarin,
+                        //      but just in case, make sure we can handle it,
+                        //      because it needs to be treated as two different
+                        //      characters. It must be hacked in.
+                        &['x'] => {
+                            out.push(Token::Tengwa(Glyph::new_cons(
+                                TEMA_CALMA.single_dn,
+                                false,
+                            )));
+                            tengwa = Some(Glyph::new_cons(TENGWA_SILME, false));
 
-                        advance!();
-                        continue 'next_slice;
+                            advance!();
+                            continue 'next_slice;
+                        }
+                        &[only] => if let Some(punct) = punctuation(*only) {
+                            //  Look for punctuation marks.
+                            out.push(Token::String(Cow::Borrowed(punct)));
+
+                            advance!(sub.len());
+                            continue 'next_slice;
+                        }
+                        _ => {}
                     }
 
                     if !matches!(out.last(), Some(Token::Tengwa(Glyph { .. }))) {
@@ -265,16 +275,8 @@ impl Rules for Beleriand {
                         }
                     }
 
-                    //  Look for punctuation marks.
-                    if let Some(punct) = punctuation(sub) {
-                        out.push(Token::String(Cow::Borrowed(punct)));
-
-                        advance!(sub.len());
-                        continue 'next_slice;
-                    }
-
                     //  Look for a consonant.
-                    else if let Some(new) = get_consonant(sub) {
+                    if let Some(new) = get_consonant(sub) {
                         tengwa = Some(new);
 
                         advance!(sub.len());
