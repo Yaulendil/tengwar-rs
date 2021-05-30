@@ -100,6 +100,39 @@ pub const PUNCT_PAREN_R: &str = "";
 pub const PUNCT_EOF: &str = "";
 
 
+/// Convert non-tengwar punctuation marker into one from the tengwar block.
+///     Where unambiguous replacements are not known, this is chosen, admittedly
+///     arbitrarily, based on superficial similarity.
+///
+/// Only single characters are returned; compound punctuation thus may be
+///     constructed from similar basic marks, such as `:-` and `::`.
+pub const fn punctuation(chr: char) -> Option<&'static str> {
+    //  TODO: Return `Option<char>` and change all `PUNCT_` consts, as well as
+    //      all call sites, to operate with `char`s.
+    Some(match chr {
+        '\'' | '.' | ',' => PUNCT_DOT_1,
+        ':' => PUNCT_DOT_2,
+        '⁝' => PUNCT_DOT_3,
+        //  `PUNCT_DOT_4` is composed of two concatenated `PUNCT_DOT_2`, and
+        //      should be constructed from a pair of colons.
+        '⸭' => PUNCT_DOT_5,
+
+        '⁘' | '⁛' | '…' => PUNCT_DOT_DIAM,
+
+        '-' => PUNCT_LINE_1,
+        '=' => PUNCT_LINE_2,
+
+        '?' => PUNCT_INTERR,
+        '!' => PUNCT_EXCLAM,
+        '(' | ')' => PUNCT_PAREN,
+        '[' | '“' => PUNCT_PAREN_L,
+        ']' | '”' | '„' => PUNCT_PAREN_R,
+
+        _ => { return None; }
+    })
+}
+
+
 pub const TEHTA_CIRCUMFLEX: Tehta = Tehta::basic(DC_OVER_CIRCUMFLEX);
 
 
