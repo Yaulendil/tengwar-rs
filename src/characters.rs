@@ -445,20 +445,28 @@ pub const fn ligature_valid(prev: &Glyph, next: &Glyph) -> bool {
 }
 
 
+pub const fn rince_valid(base: char) -> bool {
+    !matches!(base, '' | '' | '' | '' | '' | '')
+}
+
+
 /// Choose the appropriate form of sa-rincë for a base tengwa.
 #[cfg(not(feature = "alt-rince"))]
-pub const fn mod_rince(_base: char) -> char {
-    MOD_SARINCE_L
+pub const fn mod_rince(_base: char, _is_final: bool) -> char {
+    MOD_SARINCE_R
 }
 
 
 /// Choose the appropriate form of sa-rincë for a base tengwa.
 #[cfg(feature = "alt-rince")]
-pub const fn mod_rince(base: char) -> char {
-    match base {
-        '' | '' | '' | '' | '' | '' | '' | ''
-        => MOD_SARINCE_R,
-        _ => MOD_SARINCE_L,
+pub const fn mod_rince(base: char, is_final: bool) -> char {
+    if is_final {
+        match base {
+            ''..='' | '' | '' | '' => MOD_SARINCE_L,
+            _ => MOD_SARINCE_R,
+        }
+    } else {
+        MOD_SARINCE_R
     }
 }
 
@@ -485,6 +493,8 @@ pub struct Glyph {
     /// Indicates whether a long vowel using the extended "Ára" Telco should be
     ///     placed before this glyph.
     pub long_first: bool,
+    /// This glyph is the final one in a word, and may use a more ornate rincë.
+    pub is_final: bool,
 }
 
 
@@ -500,6 +510,7 @@ impl Glyph {
             long_cons: false,
             long_vowel: false,
             long_first: false,
+            is_final: false,
         }
     }
 
@@ -568,6 +579,7 @@ impl Glyph {
             cons, vowel, silme,
             nasal, labial, palatal,
             long_cons, long_vowel, long_first,
+            is_final,
         } = self;
 
         #[cfg_attr(feature = "nuquernar", allow(unused_mut))]
@@ -576,7 +588,7 @@ impl Glyph {
         let vowel_post: Option<&Tehta> = match vowel {
             Some(tehta) => {
                 if long && *long_first {
-                    if tehta.uses_ara() && !ligatures {
+                    if !ligatures && tehta.uses_ara() {
                         tehta.write(f, true)?;
                         None
                     } else if cfg!(not(feature = "nuquernar"))
@@ -644,7 +656,7 @@ impl Glyph {
         }
 
         if *silme {
-            f.write_char(mod_rince(base))?;
+            f.write_char(mod_rince(base, *is_final))?;
         }
 
         Ok(())

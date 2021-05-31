@@ -8,22 +8,22 @@ pub use beleriand::Beleriand;
 pub use characters::{Glyph, int_10, int_12, ligature_valid, punctuation};
 pub use quenya::Quenya;
 pub use sindarin::Sindarin;
-use std::{borrow::Cow, fmt::{self, Write}};
+use std::{
+    borrow::Cow,
+    fmt::{self, Write},
+    iter::{Peekable, FromIterator},
+};
 
 
 pub trait Rules {
     fn tokens(input: impl AsRef<str>) -> Vec<Token>;
 
     fn transcribe(input: impl AsRef<str>) -> String {
-        Self::tokens(input).into_iter()
-            .map(|t| t.to_string())
-            .collect::<String>()
+        TokenIter::from(Self::tokens(input)).collect::<String>()
     }
 
     fn transcribe_with_ligatures(input: impl AsRef<str>) -> String {
-        Self::tokens(input).into_iter()
-            .map(|t| t.ligated().to_string())
-            .collect::<String>()
+        TokenIter::from(Self::tokens(input)).ligated().collect::<String>()
     }
 }
 
@@ -47,7 +47,7 @@ impl<T: AsRef<str>> ToTengwar for T {
     fn to_tengwar_ligated<R: Rules>(&self) -> String {
         use characters::ZWJ;
 
-        let mut iter = R::tokens(self).into_iter().map(Token::ligated).peekable();
+        let mut iter = TokenIter::from(R::tokens(self)).ligated().peekable();
         let mut post: String = String::new();
 
         while let Some(token) = iter.next() {
@@ -94,5 +94,52 @@ impl fmt::Display for Token {
             Self::Tengwa(t) => t.write(f, false),
             Self::TengwaLigated(t) => t.write(f, true),
         }
+    }
+}
+
+
+impl FromIterator<Token> for String {
+    fn from_iter<T: IntoIterator<Item=Token>>(iter: T) -> Self {
+        let mut buf = String::new();
+
+        for token in iter {
+            write!(buf, "{}", token).expect("Error writing String");
+        }
+
+        buf
+    }
+}
+
+
+struct TokenIter<I: Iterator<Item=Token>> {
+    pub inner: Peekable<I>,
+}
+
+
+impl<I: Iterator<Item=Token>> TokenIter<I> {
+    fn ligated(self) -> impl Iterator<Item=Token> {
+        self.map(Token::ligated)
+    }
+}
+
+
+impl<T: IntoIterator<Item=Token>> From<T> for TokenIter<T::IntoIter> {
+    fn from(iter: T) -> Self {
+        Self { inner: iter.into_iter().peekable() }
+    }
+}
+
+
+impl<I: Iterator<Item=Token>> Iterator for TokenIter<I> {
+    type Item = Token;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let mut next: Option<Token> = self.inner.next();
+
+        if let Some(Token::Tengwa(Glyph { is_final, .. })) = &mut next {
+            *is_final = !matches!(self.inner.peek(), Some(Token::Tengwa(..)));
+        }
+
+        next
     }
 }

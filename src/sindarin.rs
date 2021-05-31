@@ -223,7 +223,7 @@ impl Rules for Sindarin {
                         &['s'] => {
                             //  If the current tengwa has a consonant, we can
                             //      apply a Silmë Rincë to it.
-                            if current.cons.is_some() {
+                            if current.cons.map(rince_valid) == Some(true) {
                                 current.silme = true;
                                 advance!();
                                 continue 'next_slice;

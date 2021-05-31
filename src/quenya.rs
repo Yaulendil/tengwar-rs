@@ -214,14 +214,16 @@ impl Rules for Quenya {
                         &['s'] => {
                             //  If the current tengwa has a consonant with no
                             //      vowel, we can apply a Silmë Rincë to it.
-                            if current.cons.is_some() && current.vowel.is_none() {
-                                current.silme = true;
-                                advance!();
-                                continue 'next_slice;
-                            } else {
-                                commit!();
-                                continue 'same_slice;
+                            if let Some(base) = &current.cons {
+                                if rince_valid(*base) && current.vowel.is_none() {
+                                    current.silme = true;
+                                    advance!();
+                                    continue 'next_slice;
+                                }
                             }
+
+                            commit!();
+                            continue 'same_slice;
                         }
                         &['s', 's'] => {
                             //  We cannot apply a Rincë for Essë. Commit this
@@ -268,7 +270,7 @@ impl Rules for Quenya {
                         else if get_diphthong(sub).is_some() {
                             //  If a vowel sound follows Órë, it turns to Rómen.
                             if current.cons == Some(TEMA_TINCO.single_sh)
-                                // && !prev!(Glyph { vowel: Some(_), .. })
+                                && !current.silme
                             {
                                 current.cons = Some(TENGWA_ROMEN);
                             }
@@ -284,7 +286,7 @@ impl Rules for Quenya {
 
                             //  If a vowel sound follows Órë, it turns to Rómen.
                             if current.cons == Some(TEMA_TINCO.single_sh)
-                                // && !prev!(Glyph { vowel: Some(_), .. })
+                                && !current.silme
                             {
                                 current.cons = Some(TENGWA_ROMEN);
                             }
