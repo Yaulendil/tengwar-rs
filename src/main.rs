@@ -54,19 +54,19 @@ impl Mode {
     fn rules<T: AsRef<str>>(&self, ligatures: bool) -> fn(T) -> String {
         if ligatures {
             match self {
-                Mode::Quenya => Quenya::transcribe,
-                Mode::Sindarin
-                | Mode::Gondor => Sindarin::transcribe,
-                Mode::Beleriand => Beleriand::transcribe,
-                /*Mode::English => English::transcribe,*/
-            }
-        } else {
-            match self {
                 Mode::Quenya => Quenya::transcribe_with_ligatures,
                 Mode::Sindarin
                 | Mode::Gondor => Sindarin::transcribe_with_ligatures,
                 Mode::Beleriand => Beleriand::transcribe_with_ligatures,
                 /*Mode::English => English::transcribe_with_ligatures,*/
+            }
+        } else {
+            match self {
+                Mode::Quenya => Quenya::transcribe,
+                Mode::Sindarin
+                | Mode::Gondor => Sindarin::transcribe,
+                Mode::Beleriand => Beleriand::transcribe,
+                /*Mode::English => English::transcribe,*/
             }
         }
     }
