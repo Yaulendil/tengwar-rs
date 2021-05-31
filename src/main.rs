@@ -3,7 +3,7 @@ use std::{
     io::{BufRead, stdin, stdout, Write},
     process::exit,
 };
-use tengwar::{Beleriand, Quenya, Sindarin, ToTengwar};
+use tengwar::{Beleriand, Quenya, Rules, Sindarin};
 
 
 #[derive(Debug)]
@@ -54,19 +54,19 @@ impl Mode {
     fn rules<T: AsRef<str>>(&self, ligatures: bool) -> fn(T) -> String {
         if ligatures {
             match self {
-                Mode::Quenya => { |s| s.to_tengwar_ligated::<Quenya>() }
+                Mode::Quenya => Quenya::transcribe,
                 Mode::Sindarin
-                | Mode::Gondor => { |s| s.to_tengwar_ligated::<Sindarin>() }
-                Mode::Beleriand => { |s| s.to_tengwar_ligated::<Beleriand>() }
-                /*Mode::English => { |s| s.to_tengwar_ligated::<English>() }*/
+                | Mode::Gondor => Sindarin::transcribe,
+                Mode::Beleriand => Beleriand::transcribe,
+                /*Mode::English => English::transcribe,*/
             }
         } else {
             match self {
-                Mode::Quenya => { |s| s.to_tengwar::<Quenya>() }
+                Mode::Quenya => Quenya::transcribe_with_ligatures,
                 Mode::Sindarin
-                | Mode::Gondor => { |s| s.to_tengwar::<Sindarin>() }
-                Mode::Beleriand => { |s| s.to_tengwar::<Beleriand>() }
-                /*Mode::English => { |s| s.to_tengwar::<English>() }*/
+                | Mode::Gondor => Sindarin::transcribe_with_ligatures,
+                Mode::Beleriand => Beleriand::transcribe_with_ligatures,
+                /*Mode::English => English::transcribe_with_ligatures,*/
             }
         }
     }

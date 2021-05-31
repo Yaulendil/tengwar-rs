@@ -11,7 +11,7 @@ pub use sindarin::Sindarin;
 use std::{
     borrow::Cow,
     fmt::{self, Write},
-    iter::{Peekable, FromIterator},
+    iter::{FromIterator, Peekable},
 };
 
 
@@ -45,24 +45,7 @@ impl<T: AsRef<str>> ToTengwar for T {
     ///     This affects the text data itself, but should not have any visible
     ///     effect with a font that does not support the ligatures.
     fn to_tengwar_ligated<R: Rules>(&self) -> String {
-        use characters::ZWJ;
-
-        let mut iter = TokenIter::from(R::tokens(self)).ligated().peekable();
-        let mut post: String = String::new();
-
-        while let Some(token) = iter.next() {
-            write!(post, "{}", token).expect("Error writing String");
-
-            if let Token::TengwaLigated(prev) = token {
-                if let Some(Token::TengwaLigated(next)) = iter.peek() {
-                    if ligature_valid(&prev, &next) {
-                        post.push(ZWJ);
-                    }
-                }
-            }
-        }
-
-        post
+        R::transcribe_with_ligatures(self)
     }
 }
 
@@ -99,11 +82,24 @@ impl fmt::Display for Token {
 
 
 impl FromIterator<Token> for String {
-    fn from_iter<T: IntoIterator<Item=Token>>(iter: T) -> Self {
+    fn from_iter<T>(iter: T) -> Self
+        where
+            T: IntoIterator<Item=Token>,
+            T::IntoIter: Iterator<Item=Token>,
+    {
+        let mut iter = iter.into_iter().peekable();
         let mut buf = String::new();
 
-        for token in iter {
+        while let Some(token) = iter.next() {
             write!(buf, "{}", token).expect("Error writing String");
+
+            if let Token::TengwaLigated(prev) = token {
+                if let Some(Token::TengwaLigated(next)) = iter.peek() {
+                    if ligature_valid(&prev, &next) {
+                        buf.push(characters::ZWJ);
+                    }
+                }
+            }
         }
 
         buf
