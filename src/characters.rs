@@ -26,13 +26,17 @@ pub const DC_OVER_DOT_3: char = '';
 /// Three dots above a tengwa, with one below the others.
 pub const DC_OVER_DOT_3_INV: char = '';
 
+/// A line above a tengwa, which curls to the left.
 pub const DC_OVER_HOOK_L_1: char = '';
 pub const DC_OVER_HOOK_L_2: char = '';
 
+/// A line above a tengwa, which curls to the right.
 pub const DC_OVER_HOOK_R_1: char = '';
 pub const DC_OVER_HOOK_R_2: char = '';
 
+/// A horizontal overline
 pub const DC_OVER_LINE: char = '';
+/// A wavy horizontal overline.
 pub const DC_OVER_WAVE: char = '';
 
 
@@ -48,23 +52,35 @@ pub const DC_UNDER_DOT_2: char = '';
 /// Three dots below a tengwa, with one below the others.
 pub const DC_UNDER_DOT_3: char = '';
 
+/// A line below a tengwa, which curls to the left.
 pub const DC_UNDER_HOOK_L_1: char = '';
+/// A line below a tengwa, which curls to the right.
 pub const DC_UNDER_HOOK_R_1: char = '';
+/// A horizontal underline.
 pub const DC_UNDER_LINE_H: char = '';
+/// A vertical line below a tengwa. Has various meanings but usually pertains to
+///     the vowel marking above it.
 pub const DC_UNDER_LINE_V: char = '';
 
+/// An unfilled circle below a tengwa. Most often used to denote the least
+///     significant digit in a duodecimal figure.
 pub const DC_UNDER_RING: char = '';
 
 
+/// Marking to denote a sound that leads into a "w" sound.
 pub const MOD_LABIAL: char = DC_OVER_WAVE;
 /// Long/double consonant.
 pub const MOD_LONG_CONS: char = DC_UNDER_LINE_H;
 /// Long vowel after consonant.
 pub const MOD_LONG_VOWEL: char = DC_UNDER_LINE_V;
 
+/// Marking to denote a sound preceded by M or N.
 pub const MOD_NASAL: char = DC_OVER_LINE;
+/// Marking to denote a sound that leads into a "y" sound.
 pub const MOD_PALATAL: char = DC_UNDER_DOT_2;
+/// An ornate flourish added to a tengwa to indicate a following sibilant.
 pub const MOD_SARINCE_L: char = '';
+/// A small hook added to a tengwa to indicate a following sibilant.
 pub const MOD_SARINCE_R: char = '';
 
 /// Index in this array corresponds to the numerical value of the character.
@@ -75,6 +91,7 @@ pub const NUMERAL: [char; 12] = [
 ];
 
 
+/// A single dot positioned inside the preceding character.
 pub const PUNCT_DOT_0: char = '';
 pub const PUNCT_DOT_1: char = '';
 pub const PUNCT_DOT_2: char = '';
@@ -93,17 +110,8 @@ pub const PUNCT_PAREN: char = '';
 pub const PUNCT_PAREN_L: char = '';
 pub const PUNCT_PAREN_R: char = '';
 
+/// A compound marking most often denoting the end of a passage.
 pub const PUNCT_EOF: &str = "";
-
-
-// pub const PUNCT_DOT_4: &str = "";
-//
-// pub const PUNCT_DOT_S1: &str = "  ";
-// pub const PUNCT_DOT_TRI: &str = "";
-// pub const PUNCT_DOT_DIAM: &str = "";
-//
-// pub const PUNCT_LINE_S1: &str = "  ";
-// pub const PUNCT_LINE_S2: &str = "  ";
 
 
 /// Convert non-tengwar punctuation marker into one from the tengwar block.
@@ -192,6 +200,7 @@ mod _vowels {
 pub use _vowels::*;
 
 
+/// The T-series, with an open bow to the right.
 pub const TEMA_TINCO: Tema = Tema {
     single_dn: '', // Tinco
     double_dn: '', // Ando
@@ -202,6 +211,7 @@ pub const TEMA_TINCO: Tema = Tema {
     single_ex: '',
     double_ex: '',
 };
+/// The P-series, with a closed bow to the right.
 pub const TEMA_PARMA: Tema = Tema {
     single_dn: '', // Parma
     double_dn: '', // Umbar
@@ -212,6 +222,7 @@ pub const TEMA_PARMA: Tema = Tema {
     single_ex: '',
     double_ex: '',
 };
+/// The C-series, with an open bow to the left.
 pub const TEMA_CALMA: Tema = Tema {
     single_dn: '', // Calma
     double_dn: '', // Anga
@@ -222,6 +233,7 @@ pub const TEMA_CALMA: Tema = Tema {
     single_ex: '',
     double_ex: '',
 };
+/// The Q-series, with a closed bow to the left.
 pub const TEMA_QESSE: Tema = Tema {
     single_dn: '', // Qessë
     double_dn: '', // Ungwë
@@ -233,8 +245,10 @@ pub const TEMA_QESSE: Tema = Tema {
     double_ex: '',
 };
 
-pub const TENGWA_CURL_SINGLE: char = '';
-pub const TENGWA_CURL_DOUBLE: char = '';
+/// A variant of Vala with an extra hook.
+pub const TENGWA_CURL_SINGLE: char = '';
+/// A variant of Malta with an extra hook.
+pub const TENGWA_CURL_DOUBLE: char = '';
 
 pub const TENGWA_ROMEN: char = '';
 pub const TENGWA_ARDA: char = '';
@@ -258,9 +272,11 @@ pub const TENGWA_HALLA: char = '';
 pub const TENGWA_WAIA: char = '';
 pub const TENGWA_OSSE: char = '';
 
+/// "Zero-Width Joiner", used for forming ligatures.
 pub const ZWJ: char = '‍';
 
 
+/// Return a carrier mark appropriate for whether a vowel is long.
 pub const fn carrier(long: bool) -> char {
     if long { CARRIER_LONG } else { CARRIER_SHORT }
 }
@@ -283,6 +299,7 @@ fn int(mut n: isize, base: isize) -> (bool, Vec<usize>) {
 }
 
 
+/// Render an integer into text form as tengwar.
 pub fn int_10(n: isize) -> String {
     let (neg, digits): (bool, Vec<usize>) = int(n, 10);
     let mut out = String::with_capacity(neg as usize + digits.len() * 6);
@@ -299,6 +316,7 @@ pub fn int_10(n: isize) -> String {
 }
 
 
+/// Render an integer into text form as tengwar, in duodecimal (base-12).
 pub fn int_12(n: isize) -> String {
     let (neg, digits): (bool, Vec<usize>) = int(n, 12);
     let mut out = String::with_capacity(neg as usize + digits.len() * 6);
@@ -408,11 +426,13 @@ pub struct Tema {
 }
 
 
+/// Check whether a tengwa has an inverted variant.
 pub const fn can_be_nuquerna(c: char) -> bool {
     c == TENGWA_SILME || c == TENGWA_ESSE
 }
 
 
+/// Convert a tengwa to its inverted variant.
 pub const fn nuquerna(c: char) -> char {
     match c {
         TENGWA_SILME => TENGWA_SILME_NUQ,
@@ -422,6 +442,8 @@ pub const fn nuquerna(c: char) -> char {
 }
 
 
+/// Check whether a base tengwa is suitable for ligation with the extended
+///     carrier mark. This is to some degree based on opinion.
 const fn ligates_with_ara(base: char) -> bool {
     (TEMA_TINCO.single_dn <= base && base <= TENGWA_HWESTA_SINDARINWA)
         && base != TENGWA_SILME_NUQ
@@ -449,6 +471,8 @@ pub const fn ligature_valid(prev: &Glyph, next: &Glyph) -> bool {
 }
 
 
+/// Check whether a base tengwa is suitable to receive a sa-rincë. This is to
+///     some degree based on opinion.
 pub const fn rince_valid(base: char) -> bool {
     !matches!(base, '' | '' | '' | '' | '' | '')
 }
@@ -475,6 +499,9 @@ pub const fn mod_rince(base: char, is_final: bool) -> char {
 }
 
 
+/// A single base tengwa, and all of its modifications. This includes the vowel
+///     marking, flags for additional diacritics, flags for consonant and vowel
+///     length, and an indicator of finality.
 #[derive(Clone, Default)]
 pub struct Glyph {
     /// A consonant character.
@@ -503,6 +530,7 @@ pub struct Glyph {
 
 
 impl Glyph {
+    /// Define a new empty glyph.
     pub const fn new() -> Self {
         Self {
             cons: None,
@@ -518,6 +546,7 @@ impl Glyph {
         }
     }
 
+    /// Define a glyph with both a base character and a diacritical `Tehta`.
     pub const fn new_both(cons: char, vowel: Tehta) -> Self {
         Self {
             cons: Some(cons),
@@ -526,6 +555,7 @@ impl Glyph {
         }
     }
 
+    /// Define a glyph with only a base character. It may be marked as Long.
     pub const fn new_cons(cons: char, long: bool) -> Self {
         Self {
             cons: Some(cons),
@@ -534,6 +564,7 @@ impl Glyph {
         }
     }
 
+    /// Define a glyph with only a diacritical Tehta. It may be marked as Long.
     pub const fn new_vowel(vowel: Tehta, long: bool) -> Self {
         Self {
             vowel: Some(vowel),
@@ -542,21 +573,28 @@ impl Glyph {
         }
     }
 
+    /// Mark this glyph as being labialized. It will be rendered with a wavy
+    ///     overbar.
     pub const fn with_labial(mut self) -> Self {
         self.labial = true;
         self
     }
 
+    /// Mark this glyph as being nasalized. It will be rendered overlined.
     pub const fn with_nasal(mut self) -> Self {
         self.nasal = true;
         self
     }
 
+    /// Mark this glyph as being palatalized. It will be rendered with a pair of
+    ///     dots below it.
     pub const fn with_palatal(mut self) -> Self {
         self.palatal = true;
         self
     }
 
+    /// Mark this glyph as being followed by a sibilant. It may be rendered with
+    ///     a flourish.
     pub const fn with_silme(mut self) -> Self {
         self.silme = true;
         self
@@ -565,11 +603,13 @@ impl Glyph {
 
 
 impl Glyph {
+    /// Determine the base character to be used for this glyph. If one is not
+    ///     set, an appropriate "carrier" mark will be returned instead.
     pub const fn base(&self) -> char {
         match self {
             #[cfg(feature = "nuquernar")]
             &Glyph { cons: Some(con), vowel: Some(ref vowel), long_vowel, .. } if {
-                can_be_nuquerna(con) && (!long_vowel || !vowel.uses_ara())
+                can_be_nuquerna(con) && !(long_vowel && vowel.uses_ara())
             } => nuquerna(con),
 
             &Glyph { cons: Some(con), .. } => con,
