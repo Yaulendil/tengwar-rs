@@ -15,21 +15,35 @@ use std::{
 };
 
 
+/// A trait implementing the rules for converting text into the Tengwar.
+///
+/// The only required method is the one to produce a sequence of Tokens; This
+///     can be collected into a `String` easily enough.
 pub trait Rules {
+    /// Produce a sequence of Tokens representing the Tengwar form of some text.
     fn tokens(input: impl AsRef<str>) -> Vec<Token>;
 
+    /// Produce a sequence of Tokens, and then immediately post-process and
+    ///     collect them into a `String`.
     fn transcribe(input: impl AsRef<str>) -> String {
         TokenIter::from(Self::tokens(input)).collect::<String>()
     }
 
+    /// Produce a sequence of Tokens, and then immediately post-process and
+    ///     collect them into a `String`. Zero-Width Joiners will be included in
+    ///     the output data to form ligatures where appropriate.
     fn transcribe_with_ligatures(input: impl AsRef<str>) -> String {
         TokenIter::from(Self::tokens(input)).ligated().collect::<String>()
     }
 }
 
 
+/// A very small trait serving to implement ergonomic transliteration methods
+///     directly onto text objects.
 pub trait ToTengwar {
+    /// Transliterate this object into the Tengwar.
     fn to_tengwar<R: Rules>(&self) -> String;
+    /// Transliterate this object into the Tengwar, with ligature processing.
     fn to_tengwar_ligated<R: Rules>(&self) -> String;
 }
 
@@ -50,17 +64,25 @@ impl<T: AsRef<str>> ToTengwar for T {
 }
 
 
+/// A small container for either plain text or a glyph specification. Serves as
+///     the top level of throughput for the transliteration process.
 pub enum Token {
+    /// A single Unicode codepoint.
     Char(char),
+    /// UTF-8 text data.
     String(Cow<'static, str>),
+    /// A specified base character and any extra tags it requires.
     Tengwa(Glyph),
+    /// A glyph specification, but specifically one that should be ligated, if
+    ///     it is appropriate.
     //  TODO: Find a way to do this that sucks less.
     TengwaLigated(Glyph),
 }
 
 
 impl Token {
-    fn ligated(self) -> Self {
+    /// Mark this Token as one that should, if possible, be ligated.
+    pub fn ligated(self) -> Self {
         match self {
             Self::Tengwa(t) => Self::TengwaLigated(t),
             other => other,
@@ -108,7 +130,7 @@ impl FromIterator<Token> for String {
 
 
 struct TokenIter<I: Iterator<Item=Token>> {
-    pub inner: Peekable<I>,
+    inner: Peekable<I>,
 }
 
 
