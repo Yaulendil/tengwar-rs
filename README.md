@@ -16,6 +16,12 @@ The codepoints used are the ones defined by the [Free Tengwar Font Project](http
     based on the mapping in [the ConScript Unicode Registry](https://en.wikipedia.org/wiki/Tengwar#ConScript_Unicode_Registry),
     and will only correctly render if a font is installed that includes them.
 
+## Installation
+
+With [Cargo](https://github.com/rust-lang/cargo) installed, the following command will build and install from [crates.io](https://crates.io) automatically:
+
+    cargo install tengwar
+
 ## Usage
 
 When run directly, reads all command-line arguments and prints them back in Tengwar, separated by spaces:
