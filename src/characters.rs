@@ -134,7 +134,8 @@ pub const fn punctuation(chr: char) -> Option<char> {
 }
 
 
-pub const TEHTA_CIRCUMFLEX: Tehta = Tehta::basic(DC_OVER_CIRCUMFLEX);
+/// A diacritical marking resembling a circumflex.
+pub const TEHTA_CIRCUMFLEX: Tehta = Tehta::Single(DC_OVER_CIRCUMFLEX);
 
 
 /// The diacritic for an `A` vowel, in its standard three-dot form.
@@ -151,12 +152,12 @@ const _A: char = DC_OVER_CIRCUMFLEX;
 mod _vowels {
     use super::*;
 
-    pub const TEHTA_A: Tehta = Tehta::basic(_A);
-    pub const TEHTA_E: Tehta = Tehta::basic(DC_OVER_ACUTE_1);
-    pub const TEHTA_I: Tehta = Tehta::basic(DC_OVER_DOT_1);
-    pub const TEHTA_O: Tehta = Tehta::basic(DC_OVER_HOOK_R_1);
-    pub const TEHTA_U: Tehta = Tehta::basic(DC_OVER_HOOK_L_1);
-    pub const TEHTA_Y: Tehta = Tehta::basic(DC_OVER_DOT_2);
+    pub const TEHTA_A: Tehta = Tehta::Single(_A);
+    pub const TEHTA_E: Tehta = Tehta::Single(DC_OVER_ACUTE_1);
+    pub const TEHTA_I: Tehta = Tehta::Single(DC_OVER_DOT_1);
+    pub const TEHTA_O: Tehta = Tehta::Single(DC_OVER_HOOK_R_1);
+    pub const TEHTA_U: Tehta = Tehta::Single(DC_OVER_HOOK_L_1);
+    pub const TEHTA_Y: Tehta = Tehta::Single(DC_OVER_DOT_2);
 }
 
 
@@ -164,13 +165,13 @@ mod _vowels {
 mod _vowels {
     use super::*;
 
-    pub const TEHTA_A: Tehta = Tehta::basic(_A);
-    pub const TEHTA_E: Tehta = Tehta::with_double(DC_OVER_ACUTE_1);
-    // pub const TEHTA_I: Tehta = Tehta::with_double(DC_OVER_DOT_1);
-    pub const TEHTA_I: Tehta = Tehta::basic(DC_OVER_DOT_1);
-    pub const TEHTA_O: Tehta = Tehta::with_double(DC_OVER_HOOK_R_1);
-    pub const TEHTA_U: Tehta = Tehta::with_double(DC_OVER_HOOK_L_1);
-    pub const TEHTA_Y: Tehta = Tehta::basic(DC_OVER_DOT_2);
+    pub const TEHTA_A: Tehta = Tehta::Single(_A);
+    pub const TEHTA_E: Tehta = Tehta::Double(DC_OVER_ACUTE_1);
+    // pub const TEHTA_I: Tehta = Tehta::Double(DC_OVER_DOT_1);
+    pub const TEHTA_I: Tehta = Tehta::Single(DC_OVER_DOT_1);
+    pub const TEHTA_O: Tehta = Tehta::Double(DC_OVER_HOOK_R_1);
+    pub const TEHTA_U: Tehta = Tehta::Double(DC_OVER_HOOK_L_1);
+    pub const TEHTA_Y: Tehta = Tehta::Single(DC_OVER_DOT_2);
 }
 
 
@@ -178,13 +179,13 @@ mod _vowels {
 mod _vowels {
     use super::*;
 
-    pub const TEHTA_A: Tehta = Tehta::basic(_A);
-    pub const TEHTA_E: Tehta = Tehta::with_variant(DC_OVER_ACUTE_1, DC_OVER_ACUTE_2);
-    // pub const TEHTA_I: Tehta = Tehta::with_variant(DC_OVER_DOT_1, DC_OVER_DOT_2);
-    pub const TEHTA_I: Tehta = Tehta::basic(DC_OVER_DOT_1);
-    pub const TEHTA_O: Tehta = Tehta::with_variant(DC_OVER_HOOK_R_1, DC_OVER_HOOK_R_2);
-    pub const TEHTA_U: Tehta = Tehta::with_variant(DC_OVER_HOOK_L_1, DC_OVER_HOOK_L_2);
-    pub const TEHTA_Y: Tehta = Tehta::basic(DC_OVER_DOT_2);
+    pub const TEHTA_A: Tehta = Tehta::Single(_A);
+    pub const TEHTA_E: Tehta = Tehta::Altern(DC_OVER_ACUTE_1, DC_OVER_ACUTE_2);
+    // pub const TEHTA_I: Tehta = Tehta::Altern(DC_OVER_DOT_1, DC_OVER_DOT_2);
+    pub const TEHTA_I: Tehta = Tehta::Single(DC_OVER_DOT_1);
+    pub const TEHTA_O: Tehta = Tehta::Altern(DC_OVER_HOOK_R_1, DC_OVER_HOOK_R_2);
+    pub const TEHTA_U: Tehta = Tehta::Altern(DC_OVER_HOOK_L_1, DC_OVER_HOOK_L_2);
+    pub const TEHTA_Y: Tehta = Tehta::Single(DC_OVER_DOT_2);
 }
 
 
@@ -320,51 +321,54 @@ pub fn int_12(n: isize) -> String {
 }
 
 
+/// A diacritical vowel marker that may be rendered in an alternate "long" form.
 #[derive(Clone)]
-pub struct Tehta {
-    pub base: char,
-    pub long: Option<char>,
-    pub double: bool,
+pub enum Tehta {
+    /// There is only one form that this diacritic can take. The long form must
+    ///     be rendered with an extended carrier mark.
+    Single(char),
+    /// There is one form that this diacritic can take, but it may be repeated
+    ///     for the long form.
+    Double(char),
+    /// This diacritic has an alternate character to represent its long form.
+    Altern(char, char),
 }
 
 
 impl Tehta {
-    pub const fn basic(base: char) -> Self {
-        Self { base, long: None, double: false }
-    }
-
-    pub const fn with_double(base: char) -> Self {
-        Self { base, long: None, double: true }
-    }
-
-    pub const fn with_variant(base: char, long: char) -> Self {
-        Self { base, long: Some(long), double: false }
-    }
-
+    /// Write this Tehta into a Formatter. The provided boolean argument will
+    ///     determine whether the basic short form or the variable long form is
+    ///     written.
     pub fn write(&self, f: &mut Formatter<'_>, long: bool) -> fmt::Result {
-        if long {
-            if self.double {
-                f.write_char(self.base)?;
-                f.write_char(self.base)
-            } else {
-                match self.long {
-                    Some(variant) => f.write_char(variant),
-                    None => {
-                        // f.write_char(MOD_LONG_VOWEL)?;
-                        f.write_char(carrier(true))?;
-                        f.write_char(self.base)
-                    }
+        match self {
+            &Self::Single(mark) => {
+                if long {
+                    f.write_char(carrier(true))?;
+                }
+
+                f.write_char(mark)
+            }
+            &Self::Double(mark) => {
+                if long {
+                    f.write_char(mark)?;
+                }
+
+                f.write_char(mark)
+            }
+            &Self::Altern(mark, alt) => {
+                if long {
+                    f.write_char(mark)
+                } else {
+                    f.write_char(alt)
                 }
             }
-        } else {
-            f.write_char(self.base)
         }
     }
 
     /// Returns true if the long variant of this Tehta would be written with the
     ///     extended "Ára" Telco.
     pub const fn uses_ara(&self) -> bool {
-        !self.double && self.long.is_none()
+        matches!(self, Self::Single(..))
     }
 }
 
