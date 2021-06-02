@@ -1,6 +1,6 @@
 [package]
 name = "tengwar"
-description = "Transliterate romanized text into J.R.R. Tolkien's Tengwar."
+description = "Transliterate latin text into J.R.R. Tolkien's Tengwar."
 version = "0.7.0"
 
 authors = ["Yaulendil <davarice@protonmail.com>"]
