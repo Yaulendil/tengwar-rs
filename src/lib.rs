@@ -1,5 +1,5 @@
 pub mod characters;
-pub mod etc;
+pub(crate) mod etc;
 pub mod mode;
 
 pub use characters::{Glyph, int_10, int_12, ligature_valid, punctuation};
