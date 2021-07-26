@@ -3,13 +3,12 @@ use std::{
     io::{BufRead, stdin, stdout, Write},
     process::exit,
 };
-use tengwar::{Beleriand, Quenya, Rules, Sindarin};
+use tengwar::{Beleriand, Gondor, Quenya, Rules};
 
 
 #[derive(Debug)]
 enum Mode {
     Quenya,
-    Sindarin,
     Gondor,
     Beleriand,
     /*English,*/
@@ -21,13 +20,11 @@ impl Mode {
 
     const fn new(
         quenya: bool,
-        sindarin: bool,
         gondor: bool,
         beleriand: bool,
         /*english: bool,*/
     ) -> Result<Mode, u32> {
         let n = quenya as u32
-            + sindarin as u32
             + gondor as u32
             + beleriand as u32
             /*+ english as u32*/;
@@ -38,8 +35,6 @@ impl Mode {
             Err(n)
         } else if quenya {
             Ok(Mode::Quenya)
-        } else if sindarin {
-            Ok(Mode::Sindarin)
         } else if gondor {
             Ok(Mode::Gondor)
         } else if beleriand {
@@ -55,16 +50,14 @@ impl Mode {
         if ligatures {
             match self {
                 Mode::Quenya => Quenya::transcribe_with_ligatures,
-                Mode::Sindarin
-                | Mode::Gondor => Sindarin::transcribe_with_ligatures,
+                Mode::Gondor => Gondor::transcribe_with_ligatures,
                 Mode::Beleriand => Beleriand::transcribe_with_ligatures,
                 /*Mode::English => English::transcribe_with_ligatures,*/
             }
         } else {
             match self {
                 Mode::Quenya => Quenya::transcribe,
-                Mode::Sindarin
-                | Mode::Gondor => Sindarin::transcribe,
+                Mode::Gondor => Gondor::transcribe,
                 Mode::Beleriand => Beleriand::transcribe,
                 /*Mode::English => English::transcribe,*/
             }
@@ -92,12 +85,7 @@ struct Command {
     #[argh(switch, short = 'q')]
     quenya: bool,
 
-    /// transliterate in the Sindarin mode (experimental)
-    #[argh(switch, short = 's')]
-    sindarin: bool,
-
     /// transliterate in the Mode of Gondor (experimental)
-    /// (identical to `--sindarin`)
     #[argh(switch, short = 'g')]
     gondor: bool,
 
@@ -123,7 +111,6 @@ impl Command {
     const fn mode(&self) -> Result<Mode, u32> {
         Mode::new(
             self.quenya,
-            self.sindarin,
             self.gondor,
             self.beleriand,
             /*self.english,*/

@@ -6,8 +6,8 @@ fn quenya(line: impl AsRef<str>) {
 }
 
 
-fn sindarin(line: impl AsRef<str>) {
-    println!("{}", line.to_tengwar::<Sindarin>());
+fn gondor(line: impl AsRef<str>) {
+    println!("{}", line.to_tengwar::<Gondor>());
 }
 
 
@@ -26,14 +26,14 @@ fn test_quenya() {
 
 
 #[test]
-fn test_sindarin() {
-    sindarin("edhellen:");
-    sindarin(
+fn test_gondor() {
+    gondor("edhellen:");
+    gondor(
         "tau pui cí dau bui gí thau afui\
         \nacho adho ampa anca nau mui engi orë\
         \nvala anna awae-feleg aro rhau alo lhau sau\
         \nsau esso hau iau úrë ossë\
         \nhalla chae dwae gwae"
     );
-    // sindarin("hrívë, hlócë");
+    // gondor("hrívë, hlócë");
 }

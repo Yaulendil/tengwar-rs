@@ -137,10 +137,10 @@ pub const fn punctuation(slice: &[char]) -> Option<&'static str> {
 }*/
 
 
-pub struct Sindarin;
+pub struct Gondor;
 
 
-impl Rules for Sindarin {
+impl Rules for Gondor {
     fn tokens(input: impl AsRef<str>) -> Vec<Token> {
         let cvec: Vec<char> = input.as_ref().to_lowercase().chars().collect();
         let mut line: &[char] = cvec.as_slice();
