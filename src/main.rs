@@ -74,7 +74,7 @@ impl Mode {
 
 
 /**
-Transliterate text into the Tengwar of Fëanaro.
+Transliterate text into the Tengwar of Fëanáro.
 
 Since the Tengwar are simply a writing system, and not a full language, there
 are various orthographical modes that can be used for transliteration. The

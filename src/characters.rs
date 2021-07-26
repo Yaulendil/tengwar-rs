@@ -34,7 +34,7 @@ pub const DC_OVER_HOOK_L_2: char = '';
 pub const DC_OVER_HOOK_R_1: char = '';
 pub const DC_OVER_HOOK_R_2: char = '';
 
-/// A horizontal overline
+/// A horizontal overline.
 pub const DC_OVER_LINE: char = '';
 /// A wavy horizontal overline.
 pub const DC_OVER_WAVE: char = '';
