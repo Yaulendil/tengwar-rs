@@ -5,9 +5,9 @@
 use std::fmt::{Formatter, self, Write};
 
 
-/// Ára
+/// Ára, a carrier marking for a "long" vowel.
 pub const CARRIER_LONG: char = '';
-/// Telco
+/// Telco, a carrier marking for a "short" vowel.
 pub const CARRIER_SHORT: char = '';
 
 
@@ -32,10 +32,12 @@ pub const DC_OVER_DOT_3_INV: char = '';
 
 /// A line above a tengwa, which curls to the left.
 pub const DC_OVER_HOOK_L_1: char = '';
+/// Two left-curling lines above a tengwa.
 pub const DC_OVER_HOOK_L_2: char = '';
 
 /// A line above a tengwa, which curls to the right.
 pub const DC_OVER_HOOK_R_1: char = '';
+/// Two right-curling lines above a tengwa.
 pub const DC_OVER_HOOK_R_2: char = '';
 
 /// A horizontal overline.
@@ -97,21 +99,37 @@ pub const NUMERAL: [char; 12] = [
 
 /// A single dot positioned inside the preceding character.
 pub const PUNCT_DOT_0: char = '';
+/// One dot, at middle height.
 pub const PUNCT_DOT_1: char = '';
+/// Two dots, resembling an ASCII colon.
 pub const PUNCT_DOT_2: char = '';
+/// Three dots, arranged vertically.
 pub const PUNCT_DOT_3: char = '';
+/// Four dots in a diamond configuration.
 pub const PUNCT_DOT_4: char = '';
+/// Five dots in a plus-shape.
 pub const PUNCT_DOT_5: char = '';
 
+/// A wavy vertical line, used to express strong feeling.
 pub const PUNCT_EXCLAM: char = '';
+/// A variant exclamatory marking, used in the contract given to Bilbo Baggins
+///     by Thorin Oakenshield.
 pub const PUNCT_THORIN: char = '';
+/// A symbol resembling a capital `B`, serving as an interrogative marking.
 pub const PUNCT_INTERR: char = '';
 
+/// A single horizontal line with a wave, resembling a tilde.
 pub const PUNCT_LINE_1: char = '';
+/// Two horizontal waved lines, stacked vertically.
 pub const PUNCT_LINE_2: char = '';
 
+/// An ornate vertical bar, used as a parenthesis (both opening and closing).
 pub const PUNCT_PAREN: char = '';
+/// The opening of a pair of parenthetical markings, used to indicate that the
+///     text enclosed uses a different mode of the Tengwar.
 pub const PUNCT_PAREN_L: char = '';
+/// The closing of a pair of parenthetical markings, used to indicate that the
+///     text enclosed uses a different mode of the Tengwar.
 pub const PUNCT_PAREN_R: char = '';
 
 /// A compound marking most often denoting the end of a passage.
@@ -168,11 +186,17 @@ const _A: char = DC_OVER_CIRCUMFLEX;
 mod _vowels {
     use super::*;
 
+    /// A diacritical Tehta used in most systems to represent the `A` vowel.
     pub const TEHTA_A: Tehta = Tehta::Single(_A);
+    /// A diacritical Tehta used in most systems to represent the `E` vowel.
     pub const TEHTA_E: Tehta = Tehta::Single(DC_OVER_ACUTE_1);
+    /// A diacritical Tehta used in most systems to represent the `I` vowel.
     pub const TEHTA_I: Tehta = Tehta::Single(DC_OVER_DOT_1);
+    /// A diacritical Tehta used in most systems to represent the `O` vowel.
     pub const TEHTA_O: Tehta = Tehta::Single(DC_OVER_HOOK_R_1);
+    /// A diacritical Tehta used in most systems to represent the `U` vowel.
     pub const TEHTA_U: Tehta = Tehta::Single(DC_OVER_HOOK_L_1);
+    /// A diacritical Tehta used in the Sindarin modes to represent the `Y` vowel.
     pub const TEHTA_Y: Tehta = Tehta::Single(DC_OVER_DOT_2);
 }
 
@@ -181,12 +205,17 @@ mod _vowels {
 mod _vowels {
     use super::*;
 
+    /// A diacritical Tehta used in most systems to represent the `A` vowel.
     pub const TEHTA_A: Tehta = Tehta::Single(_A);
+    /// A diacritical Tehta used in most systems to represent the `E` vowel.
     pub const TEHTA_E: Tehta = Tehta::Double(DC_OVER_ACUTE_1);
-    // pub const TEHTA_I: Tehta = Tehta::Double(DC_OVER_DOT_1);
+    /// A diacritical Tehta used in most systems to represent the `I` vowel.
     pub const TEHTA_I: Tehta = Tehta::Single(DC_OVER_DOT_1);
+    /// A diacritical Tehta used in most systems to represent the `O` vowel.
     pub const TEHTA_O: Tehta = Tehta::Double(DC_OVER_HOOK_R_1);
+    /// A diacritical Tehta used in most systems to represent the `U` vowel.
     pub const TEHTA_U: Tehta = Tehta::Double(DC_OVER_HOOK_L_1);
+    /// A diacritical Tehta used in the Sindarin modes to represent the `Y` vowel.
     pub const TEHTA_Y: Tehta = Tehta::Single(DC_OVER_DOT_2);
 }
 
@@ -195,12 +224,17 @@ mod _vowels {
 mod _vowels {
     use super::*;
 
+    /// A diacritical Tehta used in most systems to represent the `A` vowel.
     pub const TEHTA_A: Tehta = Tehta::Single(_A);
+    /// A diacritical Tehta used in most systems to represent the `E` vowel.
     pub const TEHTA_E: Tehta = Tehta::Altern(DC_OVER_ACUTE_1, DC_OVER_ACUTE_2);
-    // pub const TEHTA_I: Tehta = Tehta::Altern(DC_OVER_DOT_1, DC_OVER_DOT_2);
+    /// A diacritical Tehta used in most systems to represent the `I` vowel.
     pub const TEHTA_I: Tehta = Tehta::Single(DC_OVER_DOT_1);
+    /// A diacritical Tehta used in most systems to represent the `O` vowel.
     pub const TEHTA_O: Tehta = Tehta::Altern(DC_OVER_HOOK_R_1, DC_OVER_HOOK_R_2);
+    /// A diacritical Tehta used in most systems to represent the `U` vowel.
     pub const TEHTA_U: Tehta = Tehta::Altern(DC_OVER_HOOK_L_1, DC_OVER_HOOK_L_2);
+    /// A diacritical Tehta used in the Sindarin modes to represent the `Y` vowel.
     pub const TEHTA_Y: Tehta = Tehta::Single(DC_OVER_DOT_2);
 }
 
