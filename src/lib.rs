@@ -1,13 +1,9 @@
-pub mod beleriand;
 pub mod characters;
 pub mod etc;
-pub mod gondor;
-pub mod quenya;
+pub mod mode;
 
-pub use beleriand::Beleriand;
 pub use characters::{Glyph, int_10, int_12, ligature_valid, punctuation};
-pub use gondor::Gondor;
-pub use quenya::Quenya;
+pub use mode::{Beleriand, Gondor, Quenya};
 use std::{
     borrow::Cow,
     fmt::{self, Write},
@@ -58,6 +54,7 @@ pub trait Rules {
 
 /// A very small trait serving to implement ergonomic transliteration methods
 ///     directly onto text objects.
+///
 /// TODO: Split into two Traits. Ligation may not be applicable to everything.
 pub trait ToTengwar {
     /// Transliterate this object into the Tengwar.
