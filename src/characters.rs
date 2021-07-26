@@ -1,3 +1,7 @@
+//! This file contains the basic constants and data structures required to work
+//!     effectively with the Tengwar.
+//  TODO: Document EVERY ITEM in this file.
+
 use std::fmt::{Formatter, self, Write};
 
 
@@ -128,6 +132,10 @@ pub const fn punctuation(chr: char) -> Option<char> {
         '⁘' | '⁛' | '…' => PUNCT_DOT_4,
         '⸭' => PUNCT_DOT_5,
 
+        //  NOTE: The Tilde `~` is not converted here because it is used to
+        //      denote a specific type of whitespace in LaTeX. Because usage
+        //      within LaTeX macros is the primary motivator for the creation of
+        //      this program, Tildes are purposefully passed through unaffected.
         '-' => PUNCT_LINE_1,
         '=' => PUNCT_LINE_2,
 

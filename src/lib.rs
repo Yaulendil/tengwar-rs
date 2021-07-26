@@ -15,6 +15,24 @@ use std::{
 };
 
 
+/// Convert a compatible object (typically text) into the Tengwar.
+///
+/// This function merely calls a Trait method, but is likely the most readily
+///     discoverable part of the library when using code completion tools.
+pub fn transliterate<R: Rules>(text: impl ToTengwar) -> String {
+    text.to_tengwar::<R>()
+}
+
+
+/// Convert a compatible object into the Tengwar, using Zero-Width Joiners to
+///     form ligatures.
+///
+/// The ligated counterpart of `transliterate()`.
+pub fn transliterate_ligated<R: Rules>(text: impl ToTengwar) -> String {
+    text.to_tengwar_ligated::<R>()
+}
+
+
 /// A trait implementing the rules for converting text into the Tengwar.
 ///
 /// The only required method is the one to produce a sequence of Tokens; This
@@ -40,6 +58,7 @@ pub trait Rules {
 
 /// A very small trait serving to implement ergonomic transliteration methods
 ///     directly onto text objects.
+/// TODO: Split into two Traits. Ligation may not be applicable to everything.
 pub trait ToTengwar {
     /// Transliterate this object into the Tengwar.
     fn to_tengwar<R: Rules>(&self) -> String;
