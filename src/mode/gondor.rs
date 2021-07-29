@@ -105,38 +105,6 @@ pub const fn get_vowel(slice: &[char]) -> Option<(Tehta, bool)> {
 }
 
 
-/*//  Source: https://www.at.mansbjorkman.net/teng_punctuation.htm
-pub const fn punctuation(slice: &[char]) -> Option<&'static str> {
-    match slice {
-        ['\''] => Some(PUNCT_DOT_1),
-        [','] => Some(PUNCT_DOT_1),
-        ['.'] => Some(PUNCT_DOT_2),
-        [':'] => Some(PUNCT_DOT_3),
-        [' ', ',', ' ']
-        | [',', ' '] => Some(PUNCT_DOT_S1),
-        ['.', '.', '.'] => Some(PUNCT_DOT_DIAM),
-
-        [' ', ';', ' ']
-        | [';', ' '] => Some(PUNCT_LINE_S1),
-        [';'] => Some(PUNCT_LINE_1),
-        ['-'] => Some(PUNCT_LINE_2),
-        ['?'] => Some(PUNCT_INTERR),
-        ['!'] => Some(PUNCT_EXCLAM),
-
-        ['(']
-        | [')'] => Some(PUNCT_PAREN),
-        ['['] => Some(PUNCT_PAREN_L),
-        [']'] => Some(PUNCT_PAREN_R),
-        ['“'] => Some(PUNCT_PAREN_L),
-        ['”'] => Some(PUNCT_PAREN_R),
-
-        // [';'] => Some(PUNCT_),
-
-        _ => None,
-    }
-}*/
-
-
 pub struct Gondor;
 
 
