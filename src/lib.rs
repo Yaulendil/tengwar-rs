@@ -24,7 +24,7 @@ pub fn transliterate<R: Rules>(text: impl ToTengwar) -> String {
 ///     form ligatures.
 ///
 /// The ligated counterpart of `transliterate()`.
-pub fn transliterate_ligated<R: Rules>(text: impl ToTengwar) -> String {
+pub fn transliterate_ligated<R: Rules>(text: impl ToTengwarLigated) -> String {
     text.to_tengwar_ligated::<R>()
 }
 
@@ -54,13 +54,9 @@ pub trait Rules {
 
 /// A very small trait serving to implement ergonomic transliteration methods
 ///     directly onto text objects.
-///
-/// TODO: Split into two Traits. Ligation may not be applicable to everything.
 pub trait ToTengwar {
     /// Transliterate this object into the Tengwar.
     fn to_tengwar<R: Rules>(&self) -> String;
-    /// Transliterate this object into the Tengwar, with ligature processing.
-    fn to_tengwar_ligated<R: Rules>(&self) -> String;
 }
 
 
@@ -69,7 +65,18 @@ impl<T: AsRef<str>> ToTengwar for T {
     fn to_tengwar<R: Rules>(&self) -> String {
         R::transcribe(self)
     }
+}
 
+
+/// A very small trait serving to implement ergonomic transliteration methods
+///     with ligation directly onto text objects.
+pub trait ToTengwarLigated {
+    /// Transliterate this object into the Tengwar, with ligature processing.
+    fn to_tengwar_ligated<R: Rules>(&self) -> String;
+}
+
+
+impl<T: AsRef<str>> ToTengwarLigated for T {
     /// Transliterate this text into the Tengwar. A post-processor will run over
     ///     it to insert zero-width joiners and create ligatures where possible.
     ///     This affects the text data itself, but should not have any visible
