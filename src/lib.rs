@@ -6,7 +6,7 @@ pub use characters::{Glyph, int_10, int_12, ligature_valid, punctuation};
 pub use mode::{Beleriand, Gondor, Quenya};
 use std::{
     borrow::Cow,
-    fmt::{Display, Formatter, Write},
+    fmt::{self, Display, Formatter, Write},
     iter::{FromIterator, Peekable},
 };
 
@@ -112,10 +112,10 @@ impl Token {
         }
     }
 
-    pub fn write(&self, f: &mut Formatter<'_>, ligate: bool) -> std::fmt::Result {
+    pub fn write(&self, f: &mut Formatter<'_>, ligate: bool) -> fmt::Result {
         match self {
-            Self::Char(chr) => f.write_char(*chr),
-            Self::String(s) => f.write_str(&s),
+            &Self::Char(ch) => f.write_char(ch),
+            Self::String(s) => f.write_str(s),
             Self::Tengwa(t) => t.write(f, ligate),
             Self::TengwaLigated(t) => t.write(f, true),
         }
@@ -124,10 +124,10 @@ impl Token {
 
 
 impl Display for Token {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Char(chr) => f.write_char(*chr),
-            Self::String(s) => f.write_str(&s),
+            &Self::Char(ch) => f.write_char(ch),
+            Self::String(s) => f.write_str(s),
             Self::Tengwa(t) => t.write(f, false),
             Self::TengwaLigated(t) => t.write(f, true),
         }
@@ -136,11 +136,7 @@ impl Display for Token {
 
 
 impl FromIterator<Token> for String {
-    fn from_iter<T>(iter: T) -> Self
-        where
-            T: IntoIterator<Item=Token>,
-            T::IntoIter: Iterator<Item=Token>,
-    {
+    fn from_iter<T: IntoIterator<Item=Token>>(iter: T) -> Self {
         let mut iter = iter.into_iter().peekable();
         let mut buf = String::new();
 

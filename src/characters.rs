@@ -2,7 +2,7 @@
 //!     effectively with the Tengwar.
 //  TODO: Document EVERY ITEM in this file.
 
-use std::fmt::{Formatter, self, Write};
+use std::fmt::{self, Display, Formatter, Write};
 
 
 /// Ára, a carrier marking for a "long" vowel.
@@ -750,7 +750,7 @@ impl Glyph {
 }
 
 
-impl fmt::Display for Glyph {
+impl Display for Glyph {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         self.write(f, false)
     }
