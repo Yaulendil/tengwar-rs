@@ -89,6 +89,7 @@ impl<T: AsRef<str>> ToTengwarLigated for T {
 
 /// A small container for either plain text or a glyph specification. Serves as
 ///     the top level of throughput for the transliteration process.
+#[derive(Clone, Debug)]
 pub enum Token {
     /// A single Unicode codepoint.
     Char(char),
@@ -101,7 +102,6 @@ pub enum Token {
     //  TODO: Find a way to do this that sucks less.
     TengwaLigated(Glyph),
 }
-
 
 impl Token {
     /// Mark this Token as one that should, if possible, be ligated.
@@ -122,7 +122,6 @@ impl Token {
     }
 }
 
-
 impl Display for Token {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
@@ -133,7 +132,6 @@ impl Display for Token {
         }
     }
 }
-
 
 impl FromIterator<Token> for String {
     fn from_iter<T: IntoIterator<Item=Token>>(iter: T) -> Self {
@@ -161,20 +159,17 @@ struct TokenIter<I: Iterator<Item=Token>> {
     inner: Peekable<I>,
 }
 
-
 impl<I: Iterator<Item=Token>> TokenIter<I> {
     fn ligated(self) -> impl Iterator<Item=Token> {
         self.map(Token::ligated)
     }
 }
 
-
 impl<T: IntoIterator<Item=Token>> From<T> for TokenIter<T::IntoIter> {
     fn from(iter: T) -> Self {
         Self { inner: iter.into_iter().peekable() }
     }
 }
-
 
 impl<I: Iterator<Item=Token>> Iterator for TokenIter<I> {
     type Item = Token;

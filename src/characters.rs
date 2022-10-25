@@ -382,7 +382,7 @@ pub fn int_12(n: isize) -> String {
 
 
 /// A diacritical vowel marker that may be rendered in an alternate "long" form.
-#[derive(Clone)]
+#[derive(Clone, Copy, Debug)]
 pub enum Tehta {
     /// There is only one form that this diacritic can take. The long form must
     ///     be rendered with an extended carrier mark.
@@ -438,7 +438,7 @@ impl Tehta {
 ///     named after its base tengwa.
 ///
 /// Only the first six Tyeller are used in Quenya.
-#[derive(Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct Tema {
     /// A hanging Telco, and one Lúva.
     ///     Typically represents a voiceless plosive.
@@ -544,7 +544,7 @@ pub const fn mod_rince(base: char, is_final: bool) -> char {
 /// A single base tengwa, and all of its modifications. This includes the vowel
 ///     marking, flags for additional diacritics, flags for consonant and vowel
 ///     length, and an indicator of finality.
-#[derive(Clone, Default)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Glyph {
     /// A consonant character.
     pub cons: Option<char>,
@@ -569,7 +569,6 @@ pub struct Glyph {
     /// This glyph is the final one in a word, and may use a more ornate rincë.
     pub is_final: bool,
 }
-
 
 impl Glyph {
     /// Define a new empty glyph.
@@ -642,7 +641,6 @@ impl Glyph {
         self
     }
 }
-
 
 impl Glyph {
     /// Determine the base character to be used for this glyph. If one is not
@@ -748,7 +746,6 @@ impl Glyph {
         Ok(())
     }
 }
-
 
 impl Display for Glyph {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
