@@ -478,7 +478,6 @@ pub enum Tehta {
     Altern(char, char),
 }
 
-
 impl Tehta {
     /// Write this Tehta into a Formatter. The provided boolean argument will
     ///     determine whether the basic short form or the variable long form is
@@ -698,6 +697,14 @@ impl Glyph {
         }
     }
 
+    pub const fn is_short_carrier(&self) -> bool {
+        match self {
+            Self { cons: None, vowel: None, .. } => true,
+            Self { cons: None, long_vowel: false, .. } => true,
+            Self { .. } => false,
+        }
+    }
+
     /// Mark this glyph as being labialized. It will be rendered with a wavy
     ///     overbar.
     pub const fn with_labial(mut self) -> Self {
@@ -759,8 +766,9 @@ impl Glyph {
                     if !ligatures && tehta.uses_ara() {
                         tehta.write(f, true)?;
                         None
-                    } else if cfg!(not(feature = "nuquernar"))
-                        && !ligatures && can_be_nuquerna(base)
+                    } else if !cfg!(feature = "nuquernar")
+                        && !ligatures
+                        && can_be_nuquerna(base)
                     {
                         //  NOTE: This may not be necessary if ZWJ ligatures are
                         //      enabled, because the long carrier following the
