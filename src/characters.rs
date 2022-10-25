@@ -417,9 +417,9 @@ impl Tehta {
             }
             &Self::Altern(mark, alt) => {
                 if long {
-                    f.write_char(mark)
-                } else {
                     f.write_char(alt)
+                } else {
+                    f.write_char(mark)
                 }
             }
         }
