@@ -9,17 +9,14 @@ use std::fmt::{self, Display, Formatter, Write};
 pub const CARRIER_LONG: char = '';
 /// Telco, a carrier marking for a "short" vowel.
 pub const CARRIER_SHORT: char = '';
+/// A ligating variant of [Telco](CARRIER_SHORT).
+pub const CARRIER_SHORT_LIG: char = '';
 
 
 /// One acute accent above a tengwa.
 pub const DC_OVER_ACUTE_1: char = '';
 /// Two acute accents above a tengwa.
 pub const DC_OVER_ACUTE_2: char = '';
-/// One grave accent above a tengwa.
-pub const DC_OVER_GRAVE: char = '';
-
-/// A diacritic similar to a circumflex.
-pub const DC_OVER_CIRCUMFLEX: char = '';
 
 /// One dot above a tengwa.
 pub const DC_OVER_DOT_1: char = '';
@@ -40,10 +37,17 @@ pub const DC_OVER_HOOK_R_1: char = '';
 /// Two right-curling lines above a tengwa.
 pub const DC_OVER_HOOK_R_2: char = '';
 
-/// A horizontal overline.
+/// A straight horizontal overline.
 pub const DC_OVER_LINE: char = '';
-/// A wavy horizontal overline.
+/// A wavy horizontal overline, similar to a tilde.
 pub const DC_OVER_WAVE: char = '';
+
+/// A diacritic similar to a breve.
+pub const DC_OVER_BREVE: char = '';
+/// One grave accent above a tengwa.
+pub const DC_OVER_GRAVE: char = '';
+/// A diacritic similar to a circumflex.
+pub const DC_OVER_CIRCUMFLEX: char = '';
 
 
 /// One inverted acute accent below a tengwa.
@@ -84,16 +88,33 @@ pub const MOD_LONG_VOWEL: char = DC_UNDER_LINE_V;
 pub const MOD_NASAL: char = DC_OVER_LINE;
 /// Marking to denote a sound that leads into a "y" sound.
 pub const MOD_PALATAL: char = DC_UNDER_DOT_2;
-/// An ornate flourish added to a tengwa to indicate a following sibilant.
-pub const MOD_SARINCE_L: char = '';
 /// A small hook added to a tengwa to indicate a following sibilant.
-pub const MOD_SARINCE_R: char = '';
+pub const MOD_SA_RINCE: char = '';
+/// An ornate flourish added to a tengwa to indicate a following sibilant.
+pub const MOD_SA_RINCE_FINAL: char = '';
 
-/// Index in this array corresponds to the numerical value of the character.
-pub const NUMERAL: [char; 12] = [
-    '', '', '', '', '',
-    '', '', '', '', '',
-    '', '',
+pub mod numeral {
+    pub const NUM_0: char = '';
+    pub const NUM_1: char = '';
+    pub const NUM_2: char = '';
+    pub const NUM_3: char = '';
+    pub const NUM_4: char = '';
+    pub const NUM_5: char = '';
+    pub const NUM_6: char = '';
+    pub const NUM_7: char = '';
+    pub const NUM_8: char = '';
+    pub const NUM_9: char = '';
+    pub const NUM_A: char = '';
+    pub const NUM_B: char = '';
+    pub const NUM_C: char = '';
+}
+
+/// Index in this array corresponds to the numerical value of the digit.
+pub const NUMERAL: [char; 13] = [
+    numeral::NUM_0,
+    numeral::NUM_1, numeral::NUM_2, numeral::NUM_3, numeral::NUM_4,
+    numeral::NUM_5, numeral::NUM_6, numeral::NUM_7, numeral::NUM_8,
+    numeral::NUM_9, numeral::NUM_A, numeral::NUM_B, numeral::NUM_C,
 ];
 
 
@@ -287,6 +308,40 @@ pub const TEMA_QESSE: Tema = Tema {
     double_ex: '',
 };
 
+
+//  TODO: Is there any actual benefit to explicitly naming ALL of these?
+pub mod temar {
+    use super::{TEMA_TINCO, TEMA_PARMA, TEMA_CALMA, TEMA_QESSE};
+
+    pub const TINCO: char = TEMA_TINCO.single_dn;
+    pub const ANDO: char = TEMA_TINCO.double_dn;
+    pub const THULE: char = TEMA_TINCO.single_up;
+    pub const ANTO: char = TEMA_TINCO.double_up;
+    pub const NUMEN: char = TEMA_TINCO.double_sh;
+    pub const ORE: char = TEMA_TINCO.single_sh;
+
+    pub const PARMA: char = TEMA_PARMA.single_dn;
+    pub const UMBAR: char = TEMA_PARMA.double_dn;
+    pub const FORMEN: char = TEMA_PARMA.single_up;
+    pub const AMPA: char = TEMA_PARMA.double_up;
+    pub const MALTA: char = TEMA_PARMA.double_sh;
+    pub const VALA: char = TEMA_PARMA.single_sh;
+
+    pub const CALMA: char = TEMA_CALMA.single_dn;
+    pub const ANGA: char = TEMA_CALMA.double_dn;
+    pub const AHA: char = TEMA_CALMA.single_up;
+    pub const ANCA: char = TEMA_CALMA.double_up;
+    pub const NOLDO: char = TEMA_CALMA.double_sh;
+    pub const ANNA: char = TEMA_CALMA.single_sh;
+
+    pub const QESSE: char = TEMA_QESSE.single_dn;
+    pub const UNGWE: char = TEMA_QESSE.double_dn;
+    pub const HWESTA: char = TEMA_QESSE.single_up;
+    pub const UNQUE: char = TEMA_QESSE.double_up;
+    pub const NWALME: char = TEMA_QESSE.double_sh;
+    pub const WILYA: char = TEMA_QESSE.single_sh;
+}
+
 /// A variant of Vala with an extra hook.
 pub const TENGWA_CURL_SINGLE: char = '';
 /// A variant of Malta with an extra hook.
@@ -313,6 +368,14 @@ pub const TENGWA_URE: char = '';
 pub const TENGWA_HALLA: char = '';
 pub const TENGWA_WAIA: char = '';
 pub const TENGWA_OSSE: char = '';
+pub const TENGWA_OSSE_REV: char = '';
+
+pub const TENGWA_ANNA_OPEN: char = '';
+pub const TENGWA_BOMBADIL_HW: char = '';
+pub const TENGWA_BOMBADIL_W: char = '';
+pub const TENGWA_LOWDHAM_HW: char = '';
+
+pub const TENGWA_CHRISTOPHER_QU: char = '';
 
 /// "Zero-Width Joiner", used for forming ligatures.
 pub const ZWJ: char = '‍';
@@ -378,6 +441,27 @@ pub fn int_12(n: isize) -> String {
     }
 
     out
+}
+
+
+pub const fn width(c: char) -> Option<usize> {
+    match c {
+        DC_OVER_DOT_3..=DC_UNDER_LINE_V
+        | MOD_SA_RINCE..=PUNCT_DOT_0
+        | DC_UNDER_RING
+        | ZWJ
+        => Some(0),
+
+        temar::TINCO..=CARRIER_SHORT
+        | TENGWA_OSSE_REV..=TENGWA_OSSE
+        | CARRIER_SHORT_LIG..=TENGWA_WAIA
+        | MOD_SA_RINCE_FINAL
+        | PUNCT_DOT_1..=PUNCT_THORIN
+        | numeral::NUM_0..=numeral::NUM_C
+        => Some(1),
+
+        _ => None,
+    }
 }
 
 
@@ -523,7 +607,7 @@ pub const fn rince_valid(base: char) -> bool {
 /// Choose the appropriate form of sa-rincë for a base tengwa.
 #[cfg(not(feature = "alt-rince"))]
 pub const fn mod_rince(_base: char, _is_final: bool) -> char {
-    MOD_SARINCE_R
+    MOD_SA_RINCE
 }
 
 
@@ -532,11 +616,11 @@ pub const fn mod_rince(_base: char, _is_final: bool) -> char {
 pub const fn mod_rince(base: char, is_final: bool) -> char {
     if is_final {
         match base {
-            ''..='' | '' | '' | '' => MOD_SARINCE_L,
-            _ => MOD_SARINCE_R,
+            ''..='' | '' | '' | '' => MOD_SA_RINCE_FINAL,
+            _ => MOD_SA_RINCE,
         }
     } else {
-        MOD_SARINCE_R
+        MOD_SA_RINCE
     }
 }
 
