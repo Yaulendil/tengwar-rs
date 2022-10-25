@@ -4,6 +4,9 @@ use std::borrow::Cow;
 
 const MAX_CHUNK: usize = 3;
 
+const CARRIER_DIPH_I: char = TENGWA_YANTA;
+const CARRIER_DIPH_U: char = TENGWA_URE;
+
 
 pub const fn consonant_char(slice: &[char]) -> Option<char> {
     Some(match slice {
@@ -76,13 +79,13 @@ const fn get_consonant(slice: &[char]) -> Option<Glyph> {
 
 pub const fn get_diphthong(slice: &[char]) -> Option<Glyph> {
     match slice {
-        ['a', 'i'] => Some(Glyph::new_both(TENGWA_YANTA, TEHTA_A)),
-        ['o', 'i'] => Some(Glyph::new_both(TENGWA_YANTA, TEHTA_O)),
-        ['u', 'i'] => Some(Glyph::new_both(TENGWA_YANTA, TEHTA_U)),
+        ['a', 'i'] => Some(Glyph::new_both(CARRIER_DIPH_I, TEHTA_A)),
+        ['o', 'i'] => Some(Glyph::new_both(CARRIER_DIPH_I, TEHTA_O)),
+        ['u', 'i'] => Some(Glyph::new_both(CARRIER_DIPH_I, TEHTA_U)),
 
-        ['a', 'u'] => Some(Glyph::new_both(TENGWA_URE, TEHTA_A)),
-        ['e', 'u'] => Some(Glyph::new_both(TENGWA_URE, TEHTA_E)),
-        ['i', 'u'] => Some(Glyph::new_both(TENGWA_URE, TEHTA_I)),
+        ['a', 'u'] => Some(Glyph::new_both(CARRIER_DIPH_U, TEHTA_A)),
+        ['e', 'u'] => Some(Glyph::new_both(CARRIER_DIPH_U, TEHTA_E)),
+        ['i', 'u'] => Some(Glyph::new_both(CARRIER_DIPH_U, TEHTA_I)),
 
         _ => None,
     }

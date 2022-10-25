@@ -4,6 +4,15 @@ use std::borrow::Cow;
 
 const MAX_CHUNK: usize = 3;
 
+const TEHTA_LONG: Tehta = TEHTA_E;
+
+const VOWEL_A: char = TENGWA_OSSE;
+const VOWEL_E: char = TENGWA_YANTA;
+const VOWEL_I: char = CARRIER_SHORT;
+const VOWEL_O: char = TEMA_CALMA.single_sh;
+const VOWEL_U: char = TENGWA_URE;
+const VOWEL_Y: char = TENGWA_SILME_NUQ;
+
 
 pub const fn consonant_char(slice: &[char]) -> Option<char> {
     Some(match slice {
@@ -63,15 +72,15 @@ const fn get_consonant(slice: &[char]) -> Option<Glyph> {
 
 pub const fn get_diphthong(slice: &[char]) -> Option<Glyph> {
     match slice {
-        // ['a', 'e'] => Some(Glyph::new_both(TENGWA_OSSE, TEHTA_CIRCUMFLEX)),
-        ['o', 'e'] => Some(Glyph::new_both(TEMA_CALMA.single_sh, TEHTA_CIRCUMFLEX)),
+        // ['a', 'e'] => Some(Glyph::new_both(VOWEL_A, TEHTA_CIRCUMFLEX)),
+        // ['o', 'e'] => Some(Glyph::new_both(VOWEL_O, TEHTA_CIRCUMFLEX)),
 
-        ['a', 'i'] => Some(Glyph::new_both(TENGWA_OSSE, TEHTA_Y)),
-        ['e', 'i'] => Some(Glyph::new_both(TENGWA_YANTA, TEHTA_Y)),
-        ['u', 'i'] => Some(Glyph::new_both(TENGWA_URE, TEHTA_Y)),
+        ['a', 'i'] => Some(Glyph::new_both(VOWEL_A, TEHTA_Y)),
+        ['e', 'i'] => Some(Glyph::new_both(VOWEL_E, TEHTA_Y)),
+        ['u', 'i'] => Some(Glyph::new_both(VOWEL_U, TEHTA_Y)),
 
         ['a', 'u']
-        | ['a', 'w'] => Some(Glyph::new_cons(TENGWA_OSSE, false).with_labial()),
+        | ['a', 'w'] => Some(Glyph::new_cons(VOWEL_A, false).with_labial()),
 
         _ => None,
     }
@@ -80,19 +89,19 @@ pub const fn get_diphthong(slice: &[char]) -> Option<Glyph> {
 
 pub const fn get_vowel(slice: &[char]) -> Option<Glyph> {
     Some(match slice {
-        ['a'] | ['ä'] => Glyph::new_cons(TENGWA_OSSE, false),
-        ['e'] | ['ë'] => Glyph::new_cons(TENGWA_YANTA, false),
-        ['i'] | ['ï'] => Glyph::new_cons(CARRIER_SHORT, false),
-        ['o'] | ['ö'] => Glyph::new_cons(TEMA_CALMA.single_sh, false),
-        ['u'] | ['ü'] => Glyph::new_cons(TENGWA_URE, false),
-        ['y'] | ['ÿ'] => Glyph::new_cons(TENGWA_SILME_NUQ, false),
+        ['a'] | ['ä'] => Glyph::new_cons(VOWEL_A, false),
+        ['e'] | ['ë'] => Glyph::new_cons(VOWEL_E, false),
+        ['i'] | ['ï'] => Glyph::new_cons(VOWEL_I, false),
+        ['o'] | ['ö'] => Glyph::new_cons(VOWEL_O, false),
+        ['u'] | ['ü'] => Glyph::new_cons(VOWEL_U, false),
+        ['y'] | ['ÿ'] => Glyph::new_cons(VOWEL_Y, false),
 
-        ['á'] | ['â'] | ['a', 'a'] => Glyph::new_both(TENGWA_OSSE, TEHTA_E),
-        ['é'] | ['ê'] | ['e', 'e'] => Glyph::new_both(TENGWA_YANTA, TEHTA_E),
-        ['í'] | ['î'] | ['i', 'i'] => Glyph::new_both(CARRIER_SHORT, TEHTA_E),
-        ['ó'] | ['ô'] | ['o', 'o'] => Glyph::new_both(TEMA_CALMA.single_sh, TEHTA_E),
-        ['ú'] | ['û'] | ['u', 'u'] => Glyph::new_both(TENGWA_URE, TEHTA_E),
-        ['ý'] | ['ŷ'] | ['y', 'y'] => Glyph::new_both(TENGWA_SILME_NUQ, TEHTA_E),
+        ['á'] | ['â'] | ['a', 'a'] => Glyph::new_both(VOWEL_A, TEHTA_LONG),
+        ['é'] | ['ê'] | ['e', 'e'] => Glyph::new_both(VOWEL_E, TEHTA_LONG),
+        ['í'] | ['î'] | ['i', 'i'] => Glyph::new_both(VOWEL_I, TEHTA_LONG),
+        ['ó'] | ['ô'] | ['o', 'o'] => Glyph::new_both(VOWEL_O, TEHTA_LONG),
+        ['ú'] | ['û'] | ['u', 'u'] => Glyph::new_both(VOWEL_U, TEHTA_LONG),
+        ['ý'] | ['ŷ'] | ['y', 'y'] => Glyph::new_both(VOWEL_Y, TEHTA_LONG),
 
         _ => { return None; }
     })
