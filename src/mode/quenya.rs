@@ -134,9 +134,7 @@ impl Rules for Quenya {
         }
 
         /// Pass the first `char` in the slice through to the output unchanged.
-        macro_rules! pass {
-            () => { out.push(Token::Char(line[0])); };
-        }
+        macro_rules! pass {() => {out.push(Token::Char(line[0]))}}
 
         /// Check whether the most recently committed `Token` is a tengwa that
         ///     matches a given pattern.

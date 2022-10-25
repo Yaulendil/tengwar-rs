@@ -81,7 +81,7 @@ Exit Status:
 */ //  NOTE: Block comment is necessary here to properly lay out help text.
 #[derive(FromArgs)]
 struct Command {
-    /// transliterate in the Classical (Quenya) mode (default)
+    /// transliterate in the Classical Mode (default)
     #[argh(switch, short = 'q')]
     quenya: bool,
 

@@ -1,12 +1,12 @@
 pub mod characters;
-pub(crate) mod etc;
+mod etc;
 pub mod mode;
 
 pub use characters::{Glyph, int_10, int_12, ligature_valid, punctuation};
 pub use mode::{Beleriand, Gondor, Quenya};
 use std::{
     borrow::Cow,
-    fmt::{self, Write},
+    fmt::{Display, Formatter, Write},
     iter::{FromIterator, Peekable},
 };
 
@@ -111,11 +111,20 @@ impl Token {
             other => other,
         }
     }
+
+    pub fn write(&self, f: &mut Formatter<'_>, ligate: bool) -> std::fmt::Result {
+        match self {
+            Self::Char(chr) => f.write_char(*chr),
+            Self::String(s) => f.write_str(&s),
+            Self::Tengwa(t) => t.write(f, ligate),
+            Self::TengwaLigated(t) => t.write(f, true),
+        }
+    }
 }
 
 
-impl fmt::Display for Token {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl Display for Token {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Char(chr) => f.write_char(*chr),
             Self::String(s) => f.write_str(&s),

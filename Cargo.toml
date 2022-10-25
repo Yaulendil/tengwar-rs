@@ -11,7 +11,7 @@ exclude = ["/.idea", "*.txt"]
 categories = ["command-line-utilities", "text-processing"]
 keywords = ["text", "unicode", "tengwar", "quenya", "sindarin"]
 
-edition = "2018"
+edition = "2021"
 license = "Apache-2.0"
 
 

@@ -46,9 +46,9 @@ pub const DC_OVER_LINE: char = '';
 pub const DC_OVER_WAVE: char = '';
 
 
-/// One acute accent below a tengwa.
-pub const DC_UNDER_ACUTE_1: char = '';
 /// One inverted acute accent below a tengwa.
+pub const DC_UNDER_ACUTE_1: char = '';
+/// Two inverted acute accents below a tengwa.
 pub const DC_UNDER_ACUTE_2: char = '';
 
 /// One dot below a tengwa.
