@@ -1,14 +1,84 @@
+//! Library for conversion of Latin UTF-8 text into Tengwar, using the unicode
+//!     codepoints of the [Free Tengwar Font Project]. Specifically, but not
+//!     exclusively, designed with [Tengwar Telcontar] in mind, for the purpose
+//!     of use within LaTeX macros.
+//!
+//! [Free Tengwar Font Project]: http://freetengwar.sourceforge.net/mapping.html
+//! [Tengwar Telcontar]: http://freetengwar.sourceforge.net/tengtelc.html
+//!
+//! # Modes
+//!
+//! Three modes are currently provided: [`Quenya`] ("Classical"), [`Beleriand`],
+//!     and [`Gondor`]. Each mode is a zero-size singleton that implements the
+//!     [`Rules`] trait.
+//!
+//! # Examples
+//!
+//! [`AsRef<str>`]: AsRef
+//! [`transcribe`]: Rules::transcribe
+//! [`to_tengwar`]: ToTengwar::to_tengwar
+//!
+//! The most basic way to convert text is the [`transcribe`] associated function
+//!     on the [`Rules`] trait. This function accepts any input type that
+//!     implements [`AsRef<str>`].
+//! ```
+//! use tengwar::{Quenya, Rules};
+//!
+//! let text: String = Quenya::transcribe("namárië:-");
+//!
+//! if cfg!(feature = "circumflex") {
+//!     assert_eq!(text, "");
+//! } else {
+//!     assert_eq!(text, "");
+//! }
+//! ```
+//!
+//! With the use of the [`ToTengwar`] helper trait, a method is provided on the
+//!     input type directly. This trait is automatically implemented for types
+//!     that implement [`AsRef<str>`], where it is a simple passthrough to the
+//!     [`Rules::transcribe`] function.
+//! ```
+//! use tengwar::{Quenya, ToTengwar};
+//!
+//! let text: String = "namárië:-".to_tengwar::<Quenya>();
+//!
+//! if cfg!(feature = "circumflex") {
+//!     assert_eq!(text, "");
+//! } else {
+//!     assert_eq!(text, "");
+//! }
+//! ```
+//!
+//! Also available, and likely the easiest to discover via code completion, is
+//!     the [`transliterate`] function, which takes an implementor of [`Rules`]
+//!     as a generic parameter. This function accepts any input type that
+//!     implements [`ToTengwar`], and is a passthrough to the [`to_tengwar`]
+//!     method.
+//! ```
+//! use tengwar::{Quenya, transliterate};
+//!
+//! let text: String = transliterate::<Quenya>("namárië:-");
+//!
+//! if cfg!(feature = "circumflex") {
+//!     assert_eq!(text, "");
+//! } else {
+//!     assert_eq!(text, "");
+//! }
+//! ```
+
 pub mod characters;
 mod etc;
 pub mod mode;
 
-pub use characters::{Glyph, int_10, int_12, ligature_valid, punctuation};
+pub use characters::{Glyph, int_10, int_12};
 pub use mode::{Beleriand, Gondor, Quenya};
+
 use std::{
     borrow::Cow,
     fmt::{self, Display, Formatter, Write},
     iter::{FromIterator, Peekable},
 };
+use characters::ligature_valid;
 
 
 /// Convert a compatible object (typically text) into the Tengwar.
@@ -23,7 +93,7 @@ pub fn transliterate<R: Rules>(text: impl ToTengwar) -> String {
 /// Convert a compatible object into the Tengwar, using Zero-Width Joiners to
 ///     form ligatures.
 ///
-/// The ligated counterpart of `transliterate()`.
+/// The ligated counterpart of [`transliterate`].
 pub fn transliterate_ligated<R: Rules>(text: impl ToTengwarLigated) -> String {
     text.to_tengwar_ligated::<R>()
 }
@@ -31,21 +101,22 @@ pub fn transliterate_ligated<R: Rules>(text: impl ToTengwarLigated) -> String {
 
 /// A trait implementing the rules for converting text into the Tengwar.
 ///
-/// The only required method is the one to produce a sequence of Tokens; This
-///     can be collected into a `String` easily enough.
+/// The only required method is the one to produce a sequence of [`Token`]s;
+///     This can be collected into a [`String`] easily enough.
 pub trait Rules {
-    /// Produce a sequence of Tokens representing the Tengwar form of some text.
+    /// Produce a sequence of [`Token`]s representing the Tengwar form of some
+    ///     text.
     fn tokens(input: impl AsRef<str>) -> Vec<Token>;
 
-    /// Produce a sequence of Tokens, and then immediately post-process and
+    /// Produce a sequence of [`Token`]s, and then immediately post-process and
     ///     collect them into a `String`.
     fn transcribe(input: impl AsRef<str>) -> String {
         TokenIter::from(Self::tokens(input)).collect::<String>()
     }
 
-    /// Produce a sequence of Tokens, and then immediately post-process and
-    ///     collect them into a `String`. Zero-Width Joiners will be included in
-    ///     the output data to form ligatures where appropriate.
+    /// Produce a sequence of [`Token`]s, and then immediately post-process and
+    ///     collect them into a [`String`]. Zero-Width Joiners will be included
+    ///     in the output data to form ligatures where appropriate.
     fn transcribe_with_ligatures(input: impl AsRef<str>) -> String {
         TokenIter::from(Self::tokens(input)).ligated().collect::<String>()
     }
@@ -87,8 +158,8 @@ impl<T: AsRef<str>> ToTengwarLigated for T {
 }
 
 
-/// A small container for either plain text or a glyph specification. Serves as
-///     the top level of throughput for the transliteration process.
+/// A small container for either plain text or a [`Glyph`] specification. Serves
+///     as the top level of throughput for the transliteration process.
 #[derive(Clone, Debug)]
 pub enum Token {
     /// A single Unicode codepoint.

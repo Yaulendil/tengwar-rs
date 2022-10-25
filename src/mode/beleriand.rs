@@ -99,6 +99,7 @@ pub const fn get_vowel(slice: &[char]) -> Option<Glyph> {
 }
 
 
+/// The Mode of Beleriand, developed in the First Age for writing Sindarin.
 pub struct Beleriand;
 
 

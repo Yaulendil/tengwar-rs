@@ -105,6 +105,7 @@ pub const fn get_vowel(slice: &[char]) -> Option<(Tehta, bool)> {
 }
 
 
+/// The Mode of Gondor, used in the Third Age for writing Sindarin.
 pub struct Gondor;
 
 

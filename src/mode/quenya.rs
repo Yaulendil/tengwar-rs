@@ -108,6 +108,8 @@ pub const fn get_vowel(slice: &[char]) -> Option<(Tehta, bool)> {
 }
 
 
+/// The Classical Mode, developed by Fëanáro Finwion in Valinor, during the
+///     Years of the Trees, for writing Quenya.
 pub struct Quenya;
 
 
