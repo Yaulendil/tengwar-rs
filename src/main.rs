@@ -1,4 +1,6 @@
-use argh::{from_env, FromArgs};
+#[macro_use]
+extern crate clap;
+
 use std::{
     io::{BufRead, stdin, stdout, Write},
     process::exit,
@@ -66,61 +68,68 @@ impl Mode {
 }
 
 
-/**
-Transliterate text into the Tengwar of Fëanáro.
-
-Since the Tengwar are simply a writing system, and not a full language, there
-are various orthographical modes that can be used for transliteration. The
-default is the Classical Mode, mainly used for Quenya, but others are available
-for selection by command line switches.
-
-Exit Status:
-  0  -- Success.
-  1  -- Error while writing output.
-  2+ -- Too many mode switches. Status is set to number of switches.
-*/ //  NOTE: Block comment is necessary here to properly lay out help text.
-#[derive(FromArgs)]
-struct Command {
-    /// transliterate in the Classical Mode (default)
-    #[argh(switch, short = 'q')]
+#[derive(Args, Debug)]
+#[command(next_help_heading = "Mode Options")]
+struct ModeArg {
+    /// Transliterate in the Classical Mode (default).
+    #[arg(long, short)]
+    #[arg(group = "mode")]
     quenya: bool,
 
-    /// transliterate in the Mode of Gondor (experimental)
-    #[argh(switch, short = 'g')]
+    /// Transliterate in the Mode of Gondor (experimental).
+    #[arg(long, short)]
+    #[arg(group = "mode")]
     gondor: bool,
 
-    /// transliterate in the Mode of Beleriand (experimental)
-    #[argh(switch, short = 'b')]
+    /// Transliterate in the Mode of Beleriand (experimental).
+    #[arg(long, short)]
+    #[arg(group = "mode")]
     beleriand: bool,
 
-    /*/// transliterate in the English mode
-    #[argh(switch, short = 'e')]
+    /*/// Transliterate in an Orthographic English mode.
+    #[arg(long, short)]
+    #[arg(group = "mode")]
     english: bool,*/
+}
 
-    /// use zero-width joiners to ligate output
-    #[argh(switch, short = 'l')]
+
+/// Transliterate text into the Tengwar of Fëanáro Finwion.
+///
+/// Since the Tengwar are simply a writing system, and not a full language,
+/// there are various "modes" that can be used for transliteration. The default
+/// is the Classical Mode, mainly used for Quenya, but others are available for
+/// selection by command line switches.
+#[derive(Debug, Parser)]
+#[command(version, max_term_width(100))]
+struct Command {
+    /// Use zero-width joiners to ligate output.
+    #[arg(long, short)]
     ligatures: bool,
 
-    /// text to be transliterated
-    #[argh(positional)]
+    /// Text to be transliterated.
+    ///
+    /// If this is not provided, Standard Input will be used instead.
     text: Vec<String>,
+
+    #[command(flatten)]
+    mode: ModeArg,
 }
 
 
 impl Command {
     const fn mode(&self) -> Result<Mode, u32> {
         Mode::new(
-            self.quenya,
-            self.gondor,
-            self.beleriand,
-            /*self.english,*/
+            self.mode.quenya,
+            self.mode.gondor,
+            self.mode.beleriand,
+            /*self.mode.english,*/
         )
     }
 }
 
 
 fn main() {
-    let cmd: Command = from_env();
+    let cmd: Command = clap::Parser::parse();
 
     match cmd.mode() {
         Ok(mode) => {
@@ -143,4 +152,10 @@ fn main() {
             exit(n as i32);
         }
     }
+}
+
+
+#[test]
+fn verify_cli() {
+    <Command as clap::CommandFactory>::command().debug_assert();
 }

@@ -23,12 +23,18 @@ panic = "abort"
 
 
 [dependencies]
-argh = "0.1.4"
 itertools = "0.10.0"
+
+[dependencies.clap]
+version = "4.0.18"
+features = ["cargo", "derive"]
 
 
 [features]
 default = ["long-vowel-double", "nuquernar"]
+
+# Enable features that require an unstable toolchain.
+nightly = ["clap/wrap_help"]
 
 # Use alternate Sa-rincë for tengwar that support it.
 alt-rince = []
