@@ -20,34 +20,6 @@ enum Mode {
 impl Mode {
     const DEFAULT: Mode = Mode::Quenya;
 
-    const fn new(
-        quenya: bool,
-        gondor: bool,
-        beleriand: bool,
-        /*english: bool,*/
-    ) -> Result<Mode, u32> {
-        let n = quenya as u32
-            + gondor as u32
-            + beleriand as u32
-            /*+ english as u32*/;
-
-        if n == 0 {
-            Ok(Mode::DEFAULT)
-        } else if n > 1 {
-            Err(n)
-        } else if quenya {
-            Ok(Mode::Quenya)
-        } else if gondor {
-            Ok(Mode::Gondor)
-        } else if beleriand {
-            Ok(Mode::Beleriand)
-        /*} else if english {
-            Ok(Mode::English)*/
-        } else {
-            Err(0)
-        }
-    }
-
     fn rules<T: AsRef<str>>(&self, ligatures: bool) -> fn(T) -> String {
         if ligatures {
             match self {
@@ -117,40 +89,37 @@ struct Command {
 
 
 impl Command {
-    const fn mode(&self) -> Result<Mode, u32> {
-        Mode::new(
-            self.mode.quenya,
-            self.mode.gondor,
-            self.mode.beleriand,
-            /*self.mode.english,*/
-        )
+    const fn mode(&self) -> Mode {
+        if self.mode.quenya {
+            Mode::Quenya
+        } else if self.mode.gondor {
+            Mode::Gondor
+        } else if self.mode.beleriand {
+            Mode::Beleriand
+        /*} else if self.mode.english {
+            Mode::English*/
+        } else {
+            Mode::DEFAULT
+        }
     }
 }
 
 
 fn main() {
-    let cmd: Command = clap::Parser::parse();
+    let command: Command = clap::Parser::parse();
+    let convert: fn(String) -> String = command.mode().rules(command.ligatures);
 
-    match cmd.mode() {
-        Ok(mode) => {
-            let xliterate: fn(String) -> String = mode.rules(cmd.ligatures);
-
-            if cmd.text.is_empty() {
-                for line in stdin().lock().lines()
-                    .filter_map(|x| x.ok())
-                    .map(xliterate)
-                {
-                    println!("{}", line);
-                }
-            } else {
-                print!("{}", xliterate(cmd.text.join(" ")));
-                exit(stdout().write(b"\n").is_err() as i32);
+    if command.text.is_empty() {
+        for line in stdin().lock().lines() {
+            if let Ok(text) = line {
+                println!("{}", convert(text));
             }
         }
-        Err(n) => {
-            eprintln!("Multiple modes selected.");
-            exit(n as i32);
-        }
+    } else {
+        let text: String = command.text.join(" ");
+
+        print!("{}", convert(text));
+        exit(stdout().write(b"\n").is_err() as i32);
     }
 }
 
