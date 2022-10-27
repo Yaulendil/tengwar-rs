@@ -42,18 +42,38 @@ impl Mode {
 
 #[derive(Args, Debug)]
 #[command(next_help_heading = "Mode Options")]
-struct ModeArg {
+struct ModeFlags {
     /// Transliterate in the Classical Mode (default).
+    ///
+    /// Independent Tengwar represent consonant sounds, with vowels being
+    ///     represented by a Tehta placed above either the preceding consonant
+    ///     or a "carrier" mark.
+    ///
+    /// This mode is typically used for Quenya.
     #[arg(long, short)]
     #[arg(group = "mode")]
     quenya: bool,
 
     /// Transliterate in the Mode of Gondor (experimental).
+    ///
+    /// Independent Tengwar represent consonant sounds, with vowels being
+    ///     represented by a Tehta placed above either the following consonant
+    ///     or a "carrier" mark.
+    ///
+    /// This mode was used for Sindarin during the third age, throughout many of
+    ///     the western regions of Middle-earth.
     #[arg(long, short)]
     #[arg(group = "mode")]
     gondor: bool,
 
     /// Transliterate in the Mode of Beleriand (experimental).
+    ///
+    /// Independent Tengwar are used for both consonants and vowels. Tehtar are
+    ///     used only to mark diphthongs and long vowels. This is also referred
+    ///     to as the "full" writing mode.
+    ///
+    /// This mode was used for Sindarin in Beleriand during the first age, as
+    ///     well as in Eregion during the second age.
     #[arg(long, short)]
     #[arg(group = "mode")]
     beleriand: bool,
@@ -70,11 +90,19 @@ struct ModeArg {
 /// Since the Tengwar are simply a writing system, and not a full language,
 /// there are various "modes" that can be used for transliteration. The default
 /// is the Classical Mode, mainly used for Quenya, but others are available for
-/// selection by command line switches.
+/// selection by command line options.
 #[derive(Debug, Parser)]
 #[command(version, max_term_width(100))]
 struct Command {
     /// Use zero-width joiners to ligate output.
+    ///
+    /// In certain typefaces, a zero-width joiner character may be used to form
+    ///     ligatures of Tengwar. This option will add joiners into the output
+    ///     text between certain characters.
+    ///
+    /// For typefaces that do not support these ligatures, the presence of the
+    ///     joiners should not affect rendering; However, it does increase the
+    ///     number of bytes in the output by approximately 15%.
     #[arg(long, short)]
     ligatures: bool,
 
@@ -84,19 +112,18 @@ struct Command {
     text: Vec<String>,
 
     #[command(flatten)]
-    mode: ModeArg,
+    mode_flags: ModeFlags,
 }
-
 
 impl Command {
     const fn mode(&self) -> Mode {
-        if self.mode.quenya {
+        if self.mode_flags.quenya {
             Mode::Quenya
-        } else if self.mode.gondor {
+        } else if self.mode_flags.gondor {
             Mode::Gondor
-        } else if self.mode.beleriand {
+        } else if self.mode_flags.beleriand {
             Mode::Beleriand
-        /*} else if self.mode.english {
+        /*} else if self.mode_flags.english {
             Mode::English*/
         } else {
             Mode::DEFAULT
