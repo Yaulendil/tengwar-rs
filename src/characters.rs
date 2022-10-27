@@ -649,6 +649,18 @@ pub struct Glyph {
     /// Indicates whether a long vowel using the extended "Ára" Telco should be
     ///     placed before this glyph.
     pub long_first: bool,
+
+    /// Indicates that this glyph should use the [ligating short carrier], if it
+    ///     is applicable.
+    ///
+    /// [ligating short carrier]: CARRIER_SHORT_LIG
+    pub ligate_short: bool,
+
+    /// Indicates whether this glyph should try to use [`ZWJ`] ligation if it
+    ///     needs to output a separate carrier. This does NOT cause the glyph to
+    ///     try to ligate with the NEXT glyph.
+    pub ligate_zwj: bool,
+
     /// This glyph is the final one in a word, and may use a more ornate rincë.
     pub is_final: bool,
 }
@@ -666,6 +678,8 @@ impl Glyph {
             long_cons: false,
             long_vowel: false,
             long_first: false,
+            ligate_short: false,
+            ligate_zwj: false,
             is_final: false,
         }
     }
@@ -744,46 +758,68 @@ impl Glyph {
             } => nuquerna(con),
 
             &Glyph { cons: Some(con), .. } => con,
-            &Glyph { long_vowel, .. } => carrier(long_vowel),
+            /*// &Glyph { long_vowel: true, .. } => carrier(true),
+            // &Glyph { ligate_short: true, .. } => CARRIER_SHORT_LIG,
+            &Glyph { long_vowel, .. } => carrier(long_vowel),*/
+
+            &Glyph { long_vowel, ligate_short, .. } => {
+                if long_vowel {
+                    CARRIER_LONG
+                } else if ligate_short {
+                    CARRIER_SHORT_LIG
+                } else {
+                    CARRIER_SHORT
+                }
+            }
         }
     }
 
-    pub fn write(&self, f: &mut Formatter<'_>, ligatures: bool) -> fmt::Result {
+    pub const fn ligates_with(&self, other: &Self) -> bool {
+        ligature_valid(self, other)
+    }
+}
+
+impl Display for Glyph {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         let base: char = self.base();
         let Glyph {
             cons, vowel, silme,
             nasal, labial, palatal,
             long_cons, long_vowel, long_first,
-            is_final,
+            ligate_zwj, is_final,
+            ..
         } = self;
 
         #[cfg_attr(feature = "nuquernar", allow(unused_mut))]
         let mut long: bool = *long_vowel && cons.is_some();
+        let nuquerna_ignored: bool = !cfg!(feature = "nuquernar")
+            && can_be_nuquerna(base);
 
         let vowel_post: Option<&Tehta> = match vowel {
-            Some(tehta) => {
-                if long && *long_first {
-                    if !ligatures && tehta.uses_ara() {
-                        tehta.write(f, true)?;
-                        None
-                    } else if !cfg!(feature = "nuquernar")
-                        && !ligatures
-                        && can_be_nuquerna(base)
-                    {
-                        //  NOTE: This may not be necessary if ZWJ ligatures are
-                        //      enabled, because the long carrier following the
-                        //      tengwa will be integrated.
-                        f.write_char(carrier(true))?;
-                        tehta.write(f, false)?;
-                        None
-                    } else {
-                        Some(tehta)
-                    }
+            Some(tehta) if long && *long_first => {
+                //  This tehta is a long vowel, and represents the preceding
+                //      vowel.
+                if tehta.uses_ara() {
+                    //  This tehta will go on a long carrier. It therefore needs
+                    //      to be written before the base.
+                    tehta.write(f, true)?;
+                    None
+                } else if nuquerna_ignored {
+                    //  This tengwa will not be be Nuquerna, but it could have
+                    //      been. This means that it cannot host a lengthened
+                    //      tehta, and so the vowel should be pushed onto a
+                    //      preceding long carrier.
+                    f.write_char(carrier(true))?;
+                    tehta.write(f, false)?;
+                    None
                 } else {
+                    //  This tehta will be displayed on the tengwa, and so must
+                    //      still be written after the base character.
                     Some(tehta)
                 }
             }
-            _ => None,
+            Some(tehta) => Some(tehta),
+            None => None,
         };
 
         f.write_char(base)?;
@@ -807,24 +843,24 @@ impl Glyph {
         if let Some(vowel) = vowel_post {
             if long {
                 if vowel.uses_ara() {
-                    if ligatures && ligates_with_ara(base) {
+                    //  The vowel tehta will be placed on a following Ára
+                    //      carrier. If the base should ligate with Ára, write
+                    //      the joiner now.
+                    if *ligate_zwj && ligates_with_ara(base) {
                         f.write_char(ZWJ)?;
                     }
-                } else {
-                    #[cfg(not(feature = "nuquernar"))]
-                    //  This tengwa has a Nuquerna variant, but it will not
-                    //      be used. However, it has a long vowel attached,
-                    //      which, without intervention, will use a variant.
-                    //      The long vowel should be put on an Ára carrier
-                    //      instead to decrease visual chaos.
-                    if can_be_nuquerna(base) {
-                        if ligatures && ligates_with_ara(base) {
-                            f.write_char(ZWJ)?;
-                        }
-
-                        f.write_char(carrier(true))?;
-                        long = false;
+                } else if nuquerna_ignored {
+                    //  This tengwa has a Nuquerna variant, but it will not be
+                    //      used. However, it also has a long vowel attached,
+                    //      which, without intervention, will use a more complex
+                    //      diacritic. The long vowel should be put on an Ára
+                    //      carrier instead to decrease visual chaos.
+                    if *ligate_zwj && ligates_with_ara(base) {
+                        f.write_char(ZWJ)?;
                     }
+
+                    f.write_char(carrier(true))?;
+                    long = false;
                 }
             }
 
@@ -836,11 +872,5 @@ impl Glyph {
         }
 
         Ok(())
-    }
-}
-
-impl Display for Glyph {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        self.write(f, false)
     }
 }

@@ -4,8 +4,9 @@ extern crate clap;
 use std::{
     io::{BufRead, stdin, stdout, Write},
     process::exit,
+    vec::IntoIter,
 };
-use tengwar::{Beleriand, Gondor, Quenya, Rules};
+use tengwar::{Beleriand, Gondor, Quenya, Rules, Token, TokenIter};
 
 
 #[derive(Debug)]
@@ -20,20 +21,22 @@ enum Mode {
 impl Mode {
     const DEFAULT: Mode = Mode::Quenya;
 
-    fn rules<T: AsRef<str>>(&self, ligatures: bool) -> fn(T) -> String {
+    const fn rules<T: AsRef<str>>(&self, ligatures: bool)
+        -> impl Fn(T) -> TokenIter<IntoIter<Token>>
+    {
         if ligatures {
             match self {
-                Mode::Quenya => Quenya::transcribe_with_ligatures,
-                Mode::Gondor => Gondor::transcribe_with_ligatures,
-                Mode::Beleriand => Beleriand::transcribe_with_ligatures,
-                /*Mode::English => English::transcribe_with_ligatures,*/
+                Mode::Quenya => Quenya::token_iter,
+                Mode::Gondor => Gondor::token_iter,
+                Mode::Beleriand => Beleriand::token_iter,
+                /*Mode::English => English::token_iter,*/
             }
         } else {
             match self {
-                Mode::Quenya => Quenya::transcribe,
-                Mode::Gondor => Gondor::transcribe,
-                Mode::Beleriand => Beleriand::transcribe,
-                /*Mode::English => English::transcribe,*/
+                Mode::Quenya => Quenya::token_iter,
+                Mode::Gondor => Gondor::token_iter,
+                Mode::Beleriand => Beleriand::token_iter,
+                /*Mode::English => English::token_iter,*/
             }
         }
     }
@@ -106,6 +109,10 @@ struct Command {
     #[arg(long, short)]
     ligatures: bool,
 
+    /// Use the "ligated short carrier" when applicable.
+    #[arg(long, short = 's')]
+    lig_short: bool,
+
     /// Text to be transliterated.
     ///
     /// If this is not provided, Standard Input will be used instead.
@@ -134,18 +141,26 @@ impl Command {
 
 fn main() {
     let command: Command = clap::Parser::parse();
-    let convert: fn(String) -> String = command.mode().rules(command.ligatures);
+    let convert = command.mode().rules(command.ligatures);
 
     if command.text.is_empty() {
         for line in stdin().lock().lines() {
             if let Ok(text) = line {
-                println!("{}", convert(text));
+                let mut tokens = convert(text);
+                tokens.ligate_short = command.lig_short;
+                tokens.ligate_zwj = command.ligatures;
+
+                println!("{}", tokens.collect::<String>());
             }
         }
     } else {
         let text: String = command.text.join(" ");
 
-        print!("{}", convert(text));
+        let mut tokens = convert(text);
+        tokens.ligate_short = command.lig_short;
+        tokens.ligate_zwj = command.ligatures;
+
+        print!("{}", tokens.collect::<String>());
         exit(stdout().write(b"\n").is_err() as i32);
     }
 }

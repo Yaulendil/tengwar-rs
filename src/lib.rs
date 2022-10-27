@@ -77,8 +77,8 @@ use std::{
     borrow::Cow,
     fmt::{self, Display, Formatter, Write},
     iter::{FromIterator, Peekable},
+    vec::IntoIter,
 };
-use characters::ligature_valid;
 
 
 /// Convert a compatible object (typically text) into the Tengwar.
@@ -108,17 +108,23 @@ pub trait Rules {
     ///     text.
     fn tokens(input: impl AsRef<str>) -> Vec<Token>;
 
+    /// Produce an iterator of [`Token`]s representing the Tengwar form of some
+    ///     text.
+    fn token_iter(input: impl AsRef<str>) -> TokenIter<IntoIter<Token>> {
+        TokenIter::from(Self::tokens(input))
+    }
+
     /// Produce a sequence of [`Token`]s, and then immediately post-process and
     ///     collect them into a `String`.
     fn transcribe(input: impl AsRef<str>) -> String {
-        TokenIter::from(Self::tokens(input)).collect::<String>()
+        Self::token_iter(input).collect::<String>()
     }
 
     /// Produce a sequence of [`Token`]s, and then immediately post-process and
     ///     collect them into a [`String`]. Zero-Width Joiners will be included
     ///     in the output data to form ligatures where appropriate.
     fn transcribe_with_ligatures(input: impl AsRef<str>) -> String {
-        TokenIter::from(Self::tokens(input)).ligated().collect::<String>()
+        Self::token_iter(input).ligated().collect::<String>()
     }
 }
 
@@ -168,29 +174,6 @@ pub enum Token {
     String(Cow<'static, str>),
     /// A specified base character and any extra tags it requires.
     Tengwa(Glyph),
-    /// A glyph specification, but specifically one that should be ligated, if
-    ///     it is appropriate.
-    //  TODO: Find a way to do this that sucks less.
-    TengwaLigated(Glyph),
-}
-
-impl Token {
-    /// Mark this Token as one that should, if possible, be ligated.
-    pub fn ligated(self) -> Self {
-        match self {
-            Self::Tengwa(t) => Self::TengwaLigated(t),
-            other => other,
-        }
-    }
-
-    pub fn write(&self, f: &mut Formatter<'_>, ligate: bool) -> fmt::Result {
-        match self {
-            &Self::Char(ch) => f.write_char(ch),
-            Self::String(s) => f.write_str(s),
-            Self::Tengwa(t) => t.write(f, ligate),
-            Self::TengwaLigated(t) => t.write(f, true),
-        }
-    }
 }
 
 impl Display for Token {
@@ -198,8 +181,7 @@ impl Display for Token {
         match self {
             &Self::Char(ch) => f.write_char(ch),
             Self::String(s) => f.write_str(s),
-            Self::Tengwa(t) => t.write(f, false),
-            Self::TengwaLigated(t) => t.write(f, true),
+            Self::Tengwa(t) => t.fmt(f),
         }
     }
 }
@@ -210,11 +192,11 @@ impl FromIterator<Token> for String {
         let mut buf = String::new();
 
         while let Some(token) = iter.next() {
-            write!(buf, "{}", token).expect("Error writing String");
+            write!(buf, "{token}").expect("Error writing String");
 
-            if let Token::TengwaLigated(prev) = token {
-                if let Some(Token::TengwaLigated(next)) = iter.peek() {
-                    if ligature_valid(&prev, &next) {
+            if let Token::Tengwa(current) = token {
+                if let Some(Token::Tengwa(next)) = iter.peek() {
+                    if current.ligate_zwj && current.ligates_with(next) {
                         buf.push(characters::ZWJ);
                     }
                 }
@@ -226,19 +208,27 @@ impl FromIterator<Token> for String {
 }
 
 
-struct TokenIter<I: Iterator<Item=Token>> {
+pub struct TokenIter<I: Iterator<Item=Token>> {
     inner: Peekable<I>,
+    pub ligate_short: bool,
+    pub ligate_zwj: bool,
 }
 
 impl<I: Iterator<Item=Token>> TokenIter<I> {
-    fn ligated(self) -> impl Iterator<Item=Token> {
-        self.map(Token::ligated)
+    fn ligated(mut self) -> Self {
+        self.ligate_short = true;
+        self.ligate_zwj = true;
+        self
     }
 }
 
 impl<T: IntoIterator<Item=Token>> From<T> for TokenIter<T::IntoIter> {
     fn from(iter: T) -> Self {
-        Self { inner: iter.into_iter().peekable() }
+        Self {
+            inner: iter.into_iter().peekable(),
+            ligate_short: false,
+            ligate_zwj: false,
+        }
     }
 }
 
@@ -246,12 +236,24 @@ impl<I: Iterator<Item=Token>> Iterator for TokenIter<I> {
     type Item = Token;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let mut next: Option<Token> = self.inner.next();
+        let mut token: Token = self.inner.next()?;
 
-        if let Some(Token::Tengwa(Glyph { is_final, .. })) = &mut next {
-            *is_final = !matches!(self.inner.peek(), Some(Token::Tengwa(..)));
+        if let Token::Tengwa(glyph) = &mut token {
+            glyph.ligate_zwj = self.ligate_zwj;
+
+            match self.inner.peek() {
+                Some(Token::Tengwa(_)) => {
+                    glyph.is_final = false;
+                    glyph.ligate_short = self.ligate_short
+                        && glyph.is_short_carrier();
+                }
+                _ => {
+                    glyph.is_final = true;
+                    glyph.ligate_short = false;
+                }
+            }
         }
 
-        next
+        Some(token)
     }
 }
