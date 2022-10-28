@@ -444,6 +444,37 @@ pub fn int_12(n: isize) -> String {
 }
 
 
+//  TODO: Either figure out what to do about floats or drop the generic.
+#[derive(Clone, Copy, Debug)]
+pub struct Numeral<N> {
+    pub decimal: bool,
+    pub ordinal: bool,
+    pub value: N,
+}
+
+impl Numeral<isize> {
+    pub fn render(&self) -> String {
+        let mut text = if self.decimal {
+            int_10(self.value)
+        } else {
+            int_12(self.value)
+        };
+
+        if self.ordinal {
+            text.push(TEMA_TINCO.single_ex);
+        }
+
+        text
+    }
+}
+
+impl<N> From<N> for Numeral<N> {
+    fn from(value: N) -> Self {
+        Self { decimal: false, ordinal: false, value }
+    }
+}
+
+
 pub const fn width(c: char) -> Option<usize> {
     match c {
         DC_OVER_DOT_3..=DC_UNDER_LINE_V

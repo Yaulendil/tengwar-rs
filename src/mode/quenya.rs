@@ -1,5 +1,4 @@
 use crate::{characters::*, etc::find_integer, Rules, Token};
-use std::borrow::Cow;
 
 
 const MAX_CHUNK: usize = 3;
@@ -160,9 +159,9 @@ impl Rules for Quenya {
 
             //  Check first whether a number can be found at the beginning of
             //      the current line.
-            if let Some((number, size)) = find_integer::<isize>(line) {
+            if let Some((number, size)) = find_integer(line) {
                 commit!();
-                out.push(Token::String(Cow::Owned(int_12(number))));
+                out.push(Token::Number(number));
 
                 advance!(size);
                 continue 'next_slice;

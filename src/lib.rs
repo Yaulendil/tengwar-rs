@@ -70,7 +70,7 @@ pub mod characters;
 mod etc;
 pub mod mode;
 
-pub use characters::{Glyph, int_10, int_12};
+pub use characters::{Glyph, int_10, int_12, Numeral};
 pub use mode::{Beleriand, Gondor, Quenya};
 
 use std::{
@@ -170,6 +170,8 @@ impl<T: AsRef<str>> ToTengwarLigated for T {
 pub enum Token {
     /// A single Unicode codepoint.
     Char(char),
+    /// A numeric value.
+    Number(Numeral<isize>),
     /// UTF-8 text data.
     String(Cow<'static, str>),
     /// A specified base character and any extra tags it requires.
@@ -180,6 +182,7 @@ impl Display for Token {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
             &Self::Char(ch) => f.write_char(ch),
+            Self::Number(n) => f.write_str(&n.render()),
             Self::String(s) => f.write_str(s),
             Self::Tengwa(t) => t.fmt(f),
         }
