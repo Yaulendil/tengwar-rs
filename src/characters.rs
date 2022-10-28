@@ -604,22 +604,12 @@ pub const fn rince_valid(base: char) -> bool {
 
 
 /// Choose the appropriate form of sa-rincë for a base tengwa.
-#[cfg(not(feature = "alt-rince"))]
-pub const fn mod_rince(_base: char, _is_final: bool) -> char {
-    MOD_SA_RINCE
-}
-
-
-/// Choose the appropriate form of sa-rincë for a base tengwa.
-#[cfg(feature = "alt-rince")]
+#[cfg_attr(not(feature = "alt-rince"), allow(unused_variables))]
 pub const fn mod_rince(base: char, is_final: bool) -> char {
-    if is_final {
-        match base {
-            ''..='' | '' | '' | '' => MOD_SA_RINCE_FINAL,
-            _ => MOD_SA_RINCE,
-        }
-    } else {
-        MOD_SA_RINCE
+    match base {
+        #[cfg(feature = "alt-rince")]
+        ''..='' | '' | '' | '' if is_final => MOD_SA_RINCE_FINAL,
+        _ => MOD_SA_RINCE,
     }
 }
 
