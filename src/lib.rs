@@ -218,7 +218,7 @@ pub struct TokenIter<I: Iterator<Item=Token>> {
 }
 
 impl<I: Iterator<Item=Token>> TokenIter<I> {
-    fn ligated(mut self) -> Self {
+    pub const fn ligated(mut self) -> Self {
         self.ligate_short = true;
         self.ligate_zwj = true;
         self
