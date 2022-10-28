@@ -407,14 +407,26 @@ fn int(mut n: isize, base: isize) -> (bool, Vec<usize>) {
 /// Render an integer into text form as tengwar.
 pub fn int_10(n: isize) -> String {
     let (neg, digits): (bool, Vec<usize>) = int(n, 10);
-    let mut out = String::with_capacity(neg as usize + digits.len() * 6);
-    let iter = digits.iter();
+    let mut out = String::with_capacity(neg as usize + digits.len() * 6 + 3);
 
     if neg { out.push('-'); }
 
-    for &digit in iter {
-        out.push(NUMERAL[digit]);
-        out.push(DC_OVER_DOT_1);
+    match digits.as_slice() {
+        [] => {}
+        [digit] => {
+            out.push(NUMERAL[*digit]);
+            out.push(DC_OVER_DOT_1);
+        }
+        [first, others @ ..] => {
+            out.push(NUMERAL[*first]);
+            out.push(DC_UNDER_RING);
+            out.push(DC_OVER_DOT_1);
+
+            for digit in others {
+                out.push(NUMERAL[*digit]);
+                out.push(DC_OVER_DOT_1);
+            }
+        }
     }
 
     out
@@ -425,19 +437,28 @@ pub fn int_10(n: isize) -> String {
 pub fn int_12(n: isize) -> String {
     let (neg, digits): (bool, Vec<usize>) = int(n, 12);
     let mut out = String::with_capacity(neg as usize + digits.len() * 6);
-    let mut iter = digits.iter();
 
     if neg { out.push('-'); }
 
-    //  Mark the least significant digit uniquely.
-    if let Some(&first) = iter.next() {
-        out.push(NUMERAL[first]);
-        out.push(DC_UNDER_RING);
-    }
+    match digits.as_slice() {
+        [] => {}
+        /*[0, 1] => { // TODO
+            out.push(NUMERAL[12]);
+            out.push(DC_UNDER_DOT_1);
+        }*/
+        [digit] => {
+            out.push(NUMERAL[*digit]);
+            out.push(DC_UNDER_DOT_1);
+        }
+        [first, others @ ..] => {
+            out.push(NUMERAL[*first]);
+            out.push(DC_UNDER_RING);
 
-    for &digit in iter {
-        out.push(NUMERAL[digit]);
-        out.push(DC_UNDER_DOT_1);
+            for digit in others {
+                out.push(NUMERAL[*digit]);
+                out.push(DC_UNDER_DOT_1);
+            }
+        }
     }
 
     out
