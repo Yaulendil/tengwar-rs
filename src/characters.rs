@@ -621,11 +621,19 @@ pub const fn nuquerna(c: char) -> char {
 
 /// Check whether a base tengwa is suitable for ligation with the extended
 ///     carrier mark. This is to some degree based on opinion.
-const fn ligates_with_ara(base: char) -> bool {
+pub const fn ligates_with_ara(base: char) -> bool {
     (TEMA_TINCO.single_dn <= base && base <= TENGWA_HWESTA_SINDARINWA)
         && base != TENGWA_SILME_NUQ
         && base != TENGWA_ESSE_NUQ
         && base != TENGWA_ESSE
+}
+
+
+/// Check whether a base tengwa is suitable for ligation with the short carrier
+///     mark. This is to some degree based on opinion.
+pub const fn telco_ligates_with(_base: char) -> bool {
+    //  TODO
+    true
 }
 
 
@@ -818,6 +826,10 @@ impl Glyph {
 
     pub const fn ligates_with(&self, other: &Self) -> bool {
         ligature_valid(self, other)
+    }
+
+    pub const fn telco_ligates(&self) -> bool {
+        telco_ligates_with(self.base())
     }
 }
 

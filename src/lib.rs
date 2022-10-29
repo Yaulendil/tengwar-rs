@@ -245,10 +245,11 @@ impl<I: Iterator<Item=Token>> Iterator for TokenIter<I> {
             glyph.ligate_zwj = self.ligate_zwj;
 
             match self.inner.peek() {
-                Some(Token::Tengwa(_)) => {
+                Some(Token::Tengwa(next)) => {
                     glyph.is_final = false;
                     glyph.ligate_short = self.ligate_short
-                        && glyph.is_short_carrier();
+                        && glyph.is_short_carrier()
+                        && next.telco_ligates();
                 }
                 _ => {
                     glyph.is_final = true;
