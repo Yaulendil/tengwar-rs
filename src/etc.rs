@@ -84,7 +84,7 @@ pub fn find_integer(mut slice: &[char]) -> Option<(Numeral<isize>, usize)> {
         let ordinal: bool = slice[end..].starts_with(&ord_suf);*/
 
         Some((
-            Numeral { decimal, ordinal: false, value },
+            Numeral::new(value, decimal)/*.with_ordinal(ordinal)*/,
             end + decimal as usize/*
                 + ordinal as usize * 2*/,
         ))

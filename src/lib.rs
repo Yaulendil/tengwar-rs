@@ -70,7 +70,7 @@ pub mod characters;
 mod etc;
 pub mod mode;
 
-pub use characters::{Glyph, int_10, int_12, Numeral};
+pub use characters::{Glyph, Numeral};
 pub use mode::{Beleriand, Gondor, Quenya};
 
 use std::{

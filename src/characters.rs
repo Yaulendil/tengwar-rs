@@ -396,7 +396,7 @@ fn int(mut n: isize, base: isize) -> (bool, Vec<usize>) {
     let neg = n.is_negative();
 
     while n != 0 {
-        digits.push((n % base).abs() as usize);
+        digits.push((n % base).unsigned_abs());
         n /= base;
     }
 
@@ -404,82 +404,126 @@ fn int(mut n: isize, base: isize) -> (bool, Vec<usize>) {
 }
 
 
-/// Render an integer into text form as tengwar.
-pub fn int_10(n: isize) -> String {
-    let (neg, digits): (bool, Vec<usize>) = int(n, 10);
-    let mut out = String::with_capacity(neg as usize + digits.len() * 6 + 3);
-
-    if neg { out.push('-'); }
-
-    match digits.as_slice() {
-        [] => {}
-        [digit] => {
-            out.push(NUMERAL[*digit]);
-            out.push(DC_OVER_DOT_1);
-        }
-        [first, others @ ..] => {
-            out.push(NUMERAL[*first]);
-            out.push(DC_UNDER_RING);
-            out.push(DC_OVER_DOT_1);
-
-            for digit in others {
-                out.push(NUMERAL[*digit]);
-                out.push(DC_OVER_DOT_1);
-            }
-        }
-    }
-
-    out
-}
-
-
-/// Render an integer into text form as tengwar, in duodecimal (base-12).
-pub fn int_12(n: isize) -> String {
-    let (neg, digits): (bool, Vec<usize>) = int(n, 12);
-    let mut out = String::with_capacity(neg as usize + digits.len() * 6);
-
-    if neg { out.push('-'); }
-
-    match digits.as_slice() {
-        [] => {}
-        /*[0, 1] => { // TODO
-            out.push(NUMERAL[12]);
-            out.push(DC_UNDER_DOT_1);
-        }*/
-        [digit] => {
-            out.push(NUMERAL[*digit]);
-            out.push(DC_UNDER_DOT_1);
-        }
-        [first, others @ ..] => {
-            out.push(NUMERAL[*first]);
-            out.push(DC_UNDER_RING);
-
-            for digit in others {
-                out.push(NUMERAL[*digit]);
-                out.push(DC_UNDER_DOT_1);
-            }
-        }
-    }
-
-    out
-}
-
-
 //  TODO: Either figure out what to do about floats or drop the generic.
 #[derive(Clone, Copy, Debug)]
 pub struct Numeral<N> {
-    pub decimal: bool,
-    pub ordinal: bool,
+    /// Numeric value.
     pub value: N,
+
+    /// Whether the number will be displayed in Decimal, base 10, rather than in
+    ///     Duodecimal, base 12.
+    pub decimal: bool,
+    /// Whether the number is ordinal ("first"), rather than cardinal ("one").
+    pub ordinal: bool,
+
+    /// Whether the base of the number will be denoted with lines, rather than
+    ///     with dots.
+    pub lines: bool,
+}
+
+impl<N> Numeral<N> {
+    pub const PREFIX_NEGATIVE: char = '-';
+
+    pub const fn new(value: N, decimal: bool) -> Self {
+        Self {
+            value,
+            decimal,
+            ordinal: false,
+            lines: false,
+        }
+    }
+
+    pub const fn decimal(value: N) -> Self {
+        Self::new(value, true)
+    }
+
+    pub const fn duodecimal(value: N) -> Self {
+        Self::new(value, false)
+    }
+
+    pub const fn with_decimal(mut self, decimal: bool) -> Self {
+        self.decimal = decimal;
+        self
+    }
+
+    pub const fn with_lines(mut self, lines: bool) -> Self {
+        self.lines = lines;
+        self
+    }
+
+    pub const fn with_ordinal(mut self, ordinal: bool) -> Self {
+        self.ordinal = ordinal;
+        self
+    }
 }
 
 impl Numeral<isize> {
+    //noinspection RsBorrowChecker
     pub fn render(&self) -> String {
-        let mut text = if self.decimal {
-            int_10(self.value)
+        let negative: bool;
+        let digits: Vec<usize>;
+        let size: usize;
+
+        let base_marker: char;
+        let mark_ones: bool;
+
+        if self.decimal {
+            //  Base-10 number.
+            (negative, digits) = int(self.value, 10);
+            size = negative as usize + digits.len() * 6 + 3;
+
+            if self.lines {
+                base_marker = DC_OVER_LINE;
+                mark_ones = true;
+            } else {
+                base_marker = DC_OVER_DOT_1;
+                mark_ones = true;
+            }
         } else {
-            int_12(self.value)
-        };
+            //  Base-12 number.
+            (negative, digits) = int(self.value, 12);
+            size = negative as usize + digits.len() * 6;
+
+            if self.lines {
+                base_marker = DC_UNDER_LINE_H;
+                mark_ones = true;
+            } else {
+                base_marker = DC_UNDER_DOT_1;
+                mark_ones = false;
+            }
+        }
+
+        let mut text = String::with_capacity(size);
+
+        if negative {
+            text.push(Self::PREFIX_NEGATIVE);
+        }
+
+        match digits.as_slice() {
+            [] => {}
+            /*[0, 1] if !self.decimal => {
+                //  TODO
+                text.push(NUMERAL[12]);
+                text.push(base_marker);
+            }*/
+            [digit] => {
+                text.push(NUMERAL[*digit]);
+                text.push(base_marker);
+            }
+            [first, digits @ ..] => {
+                text.push(NUMERAL[*first]);
+                text.push(DC_UNDER_RING);
+
+                if mark_ones {
+                    text.push(base_marker);
+                }
+
+                for digit in digits {
+                    text.push(NUMERAL[*digit]);
+                    text.push(base_marker);
+                }
+            }
+        }
 
         if self.ordinal {
             text.push(TEMA_TINCO.single_ex);
@@ -491,7 +535,7 @@ impl Numeral<isize> {
 
 impl<N> From<N> for Numeral<N> {
     fn from(value: N) -> Self {
-        Self { decimal: false, ordinal: false, value }
+        Self::new(value, false)
     }
 }
 
