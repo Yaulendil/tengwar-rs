@@ -69,6 +69,7 @@
 pub mod characters;
 mod etc;
 pub mod mode;
+mod policy;
 
 pub use characters::{Glyph, Numeral};
 pub use mode::{Beleriand, Gondor, Quenya};
