@@ -88,10 +88,6 @@ pub const MOD_LONG_VOWEL: char = DC_UNDER_LINE_V;
 pub const MOD_NASAL: char = DC_OVER_LINE;
 /// Marking to denote a sound that leads into a "y" sound.
 pub const MOD_PALATAL: char = DC_UNDER_DOT_2;
-/// A small hook added to a tengwa to indicate a following sibilant.
-pub const MOD_SA_RINCE: char = '';
-/// An ornate flourish added to a tengwa to indicate a following sibilant.
-pub const MOD_SA_RINCE_FINAL: char = '';
 
 pub mod numeral {
     pub const NUM_0: char = '';
@@ -187,6 +183,12 @@ pub const fn punctuation(chr: char) -> Option<char> {
         _ => { return None; }
     })
 }
+
+
+/// A small hook added to a tengwa to indicate a following sibilant.
+pub const SA_RINCE: char = '';
+/// An ornate flourish added to a tengwa to indicate a following sibilant.
+pub const SA_RINCE_FINAL: char = '';
 
 
 /// A diacritical marking resembling a circumflex.
@@ -543,7 +545,7 @@ impl<N> From<N> for Numeral<N> {
 pub const fn width(c: char) -> Option<usize> {
     match c {
         DC_OVER_DOT_3..=DC_UNDER_LINE_V
-        | MOD_SA_RINCE..=PUNCT_DOT_0
+        | SA_RINCE..=PUNCT_DOT_0
         | DC_UNDER_RING
         | ZWJ
         => Some(0),
@@ -551,7 +553,7 @@ pub const fn width(c: char) -> Option<usize> {
         temar::TINCO..=CARRIER_SHORT
         | TENGWA_OSSE_REV..=TENGWA_OSSE
         | CARRIER_SHORT_LIG..=TENGWA_WAIA
-        | MOD_SA_RINCE_FINAL
+        | SA_RINCE_FINAL
         | PUNCT_DOT_1..=PUNCT_THORIN
         | numeral::NUM_0..=numeral::NUM_C
         => Some(1),
@@ -666,7 +668,7 @@ pub const fn nuquerna(c: char) -> char {
 /// Check whether a base tengwa is suitable for ligation with the extended
 ///     carrier mark. This is to some degree based on opinion.
 pub const fn ligates_with_ara(base: char) -> bool {
-    (TEMA_TINCO.single_dn <= base && base <= TENGWA_HWESTA_SINDARINWA)
+    TEMA_TINCO.single_dn <= base && base <= TENGWA_HWESTA_SINDARINWA
         && base != TENGWA_SILME_NUQ
         && base != TENGWA_ESSE_NUQ
         && base != TENGWA_ESSE
@@ -712,8 +714,8 @@ pub const fn rince_valid(base: char) -> bool {
 pub const fn mod_rince(base: char, is_final: bool) -> char {
     match base {
         #[cfg(feature = "alt-rince")]
-        ''..='' | '' | '' | '' if is_final => MOD_SA_RINCE_FINAL,
-        _ => MOD_SA_RINCE,
+        ''..='' | '' | '' | '' if is_final => SA_RINCE_FINAL,
+        _ => SA_RINCE,
     }
 }
 
