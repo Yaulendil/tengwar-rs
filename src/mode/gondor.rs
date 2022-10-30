@@ -1,4 +1,4 @@
-use crate::{characters::*, etc::find_integer, Rules, Token};
+use crate::{characters::*, Rules, Token};
 
 
 const MAX_CHUNK: usize = 3;
@@ -159,7 +159,7 @@ impl Rules for Gondor {
 
             //  Check first whether a number can be found at the beginning of
             //      the current line.
-            if let Some((number, size)) = find_integer(line) {
+            if let Some((number, size)) = Numeral::parse(line) {
                 commit!();
                 out.push(Token::Number(number));
 

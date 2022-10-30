@@ -72,6 +72,55 @@ impl<N> Numeral<N> {
 }
 
 impl Numeral<isize> {
+    pub fn parse(mut slice: &[char]) -> Option<(Self, usize)> {
+        //  Idea for this notation borrowed from Tecendil. There is most likely
+        //      a better way to do it, given the vastly different style of
+        //      interface.
+        let decimal: bool = match slice {
+            ['#', after @ ..] => {
+                slice = after;
+                true
+            }
+            _ => false,
+        };
+
+        let negative: bool = matches!(slice, ['-', ..]);
+        let end: usize = negative as usize
+            + slice[negative as usize..].iter()
+            .take_while(|&&n| '0' <= n && n <= '9')
+            .count();
+
+        if end > negative as usize {
+            let value: isize = slice[..end].iter()
+                .collect::<String>()
+                .parse()
+                .ok()?;
+
+            //  TODO: Decide on a language-agnostic ordinal suffix. Also, decide
+            //      whether this is even the right place to check for it. Would
+            //      it be better to look for it as a completely separate Tengwa?
+            //      That would make it easier to add modifiers to it.
+            /*let ord_suf = match value.abs() % 100 {
+                10..=19 => ['t', 'h'],
+                n => match n % 10 {
+                    1 => ['s', 't'],
+                    2 => ['n', 'd'],
+                    3 => ['r', 'd'],
+                    _ => ['t', 'h'],
+                }
+            };
+            let ordinal: bool = slice[end..].starts_with(&ord_suf);*/
+
+            Some((
+                Self::new(value, decimal)/*.with_ordinal(ordinal)*/,
+                end + decimal as usize/*
+                    + ordinal as usize * 2*/,
+            ))
+        } else {
+            None
+        }
+    }
+
     //noinspection RsBorrowChecker
     pub fn render(&self) -> String {
         let negative: bool;

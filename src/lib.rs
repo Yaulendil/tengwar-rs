@@ -67,7 +67,6 @@
 //! ```
 
 pub mod characters;
-mod etc;
 pub mod mode;
 mod policy;
 
