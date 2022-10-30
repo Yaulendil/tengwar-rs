@@ -20,7 +20,7 @@ fn int(mut n: isize, base: isize) -> (bool, Vec<usize>) {
 
 //  TODO: Either figure out what to do about floats or drop the generic.
 #[derive(Clone, Copy, Debug)]
-pub struct Numeral<N> {
+pub struct Numeral<N = isize> {
     /// Numeric value.
     pub value: N,
 

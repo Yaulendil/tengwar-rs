@@ -401,17 +401,17 @@ impl Quenya2 {
     //     self.current.insert(new)
     // }
 
-    // fn finish_current(&mut self) -> Option<Glyph> {
-    //     self.previous = self.current.take();
-    //     self.previous
-    // }
-
     // const fn prev_valid(&self) -> bool {
     //     self.previous.is_some()
     // }
 }
 
 impl TengwarMode for Quenya2 {
+    fn finish_current(&mut self) -> Option<Token> {
+        self.previous = self.current.take();
+        self.previous.map(Token::Tengwa)
+    }
+
     fn process(&mut self, chunk: &[char]) -> ParseAction {
         if let Some(_current) = &mut self.current {
             //  A tengwa is currently being constructed. Try to continue it.

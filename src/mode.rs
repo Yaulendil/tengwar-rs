@@ -48,12 +48,15 @@ pub trait TengwarMode: Default + Sized {
         Self::token_iter(input).collect()
     }
 
+    fn finish_current(&mut self) -> Option<Token>;
+
     fn process(&mut self, chunk: &[char]) -> ParseAction;
 }
 
 
 #[test]
 fn test_iter() {
-    let mut iter = quenya::Quenya2::token_iter("yéni");
-    dbg!(iter.next());
+    let iter = quenya::Quenya2::token_iter("yéni 144");
+    let text = iter.collect::<String>();
+    eprintln!("{}", text);
 }
