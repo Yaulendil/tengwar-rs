@@ -1,4 +1,5 @@
 use crate::{characters::*, Rules, Token};
+use super::{ParseAction, TengwarMode};
 
 
 const MAX_CHUNK: usize = 3;
@@ -384,5 +385,70 @@ impl Rules for Quenya {
 
         commit!();
         out
+    }
+}
+
+
+#[derive(Clone, Copy, Debug, Default)]
+pub(super) struct Quenya2 {
+    current: Option<Glyph>,
+    previous: Option<Glyph>,
+}
+
+impl Quenya2 {
+    // fn begin_new(&mut self, new: Glyph) -> &mut Glyph {
+    //     self.commit();
+    //     self.current.insert(new)
+    // }
+
+    // fn finish_current(&mut self) -> Option<Glyph> {
+    //     self.previous = self.current.take();
+    //     self.previous
+    // }
+
+    // const fn prev_valid(&self) -> bool {
+    //     self.previous.is_some()
+    // }
+}
+
+impl TengwarMode for Quenya2 {
+    fn process(&mut self, chunk: &[char]) -> ParseAction {
+        if let Some(_current) = &mut self.current {
+            //  A tengwa is currently being constructed. Try to continue it.
+
+            todo!()
+        } else {
+            //  Try to find a new tengwa.
+
+            if let Some(new) = get_consonant(chunk) {
+                let len = chunk.len();
+
+                self.previous = self.current.take();
+                let new = self.current.insert(new);
+
+                if chunk == ['y'] {
+                    new.palatal = true;
+                }
+
+                if self.previous.is_some() {
+                    //  This letter is Medial or Final.
+                    if new.cons == Some(TENGWA_HYARMEN) {
+                        new.cons = Some(TEMA_CALMA.single_up);
+                    }
+
+                    //  This letter is Initial.
+                    else {
+                        //  Initial NGW is represented by Ñwalmë, not Ungwë.
+                        if new.cons == Some(TEMA_QESSE.double_dn) {
+                            new.cons = Some(TEMA_QESSE.double_sh);
+                        }
+                    }
+                }
+
+                ParseAction::MatchedPart(len)
+            } else {
+                ParseAction::MatchedNone
+            }
+        }
     }
 }
