@@ -413,40 +413,124 @@ impl TengwarMode for Quenya2 {
     }
 
     fn process(&mut self, chunk: &[char]) -> ParseAction {
-        if let Some(_current) = &mut self.current {
+        macro_rules! advance {
+            () => { return ParseAction::MatchedPart(chunk.len()); };
+            ($n:expr) => { return ParseAction::MatchedPart($n); };
+        }
+
+        macro_rules! finish {
+            () => {{
+                if let Some(token) = self.finish_current() {
+                    return ParseAction::MatchedToken { token, len: 0 };
+                }
+            }};
+            ($glyph:expr) => {{
+                let glyph = $glyph;
+
+                self.current = None;
+                self.previous = Some(glyph);
+
+                return ParseAction::MatchedToken {
+                    token: Token::Tengwa(glyph),
+                    len: 0,
+                };
+            }};
+        }
+
+        /*macro_rules! skip {
+            // () => { return ParseAction::Skip(1); };
+            ($n:expr) => { return ParseAction::Skip($n); };
+        }*/
+
+        if let Some(current) = &mut self.current {
             //  A tengwa is currently being constructed. Try to continue it.
 
-            todo!()
+            if current.vowel.is_none() {
+                match chunk {
+                    ['y'] => {
+                        current.palatal = true;
+                        advance!();
+                    }
+                    ['s'] => {
+                        current.silme = true;
+                        advance!();
+                    }
+                    ['s', 's'] => {
+                        finish!(*current);
+                    }
+                    ['l' | 'r'] if current.cons == Some(TENGWA_HYARMEN) => {
+                        current.cons = Some(TENGWA_HALLA);
+                        finish!(*current);
+                    }
+                    _ => {}
+                }
+            }
+
+            if get_diphthong(chunk).is_some() {
+                finish!(*current);
+            } else if let Some((vowel, long)) = get_vowel(chunk) {
+                if current.vowel.is_none() {
+                    if current.cons == Some(TEMA_TINCO.single_sh) {
+                        current.cons = Some(TENGWA_ROMEN);
+                    }
+
+                    current.vowel = Some(vowel);
+                    current.long_vowel = long;
+                    advance!();
+                }
+            }
+
+            ParseAction::MatchedNone
         } else {
             //  Try to find a new tengwa.
 
-            if let Some(new) = get_consonant(chunk) {
-                let len = chunk.len();
+            //  Check for special cases.
+            if chunk == &['x'] {
+                let glyph = Glyph::new_cons(temar::CALMA, false);
 
+                self.current = Some(glyph.with_silme());
+                ParseAction::MatchedPart(1)
+            } else if let ['y', ..] = chunk {
+                let glyph = Glyph::new_cons(TEMA_CALMA.single_sh, false);
+
+                self.current = Some(glyph.with_palatal());
+                ParseAction::MatchedPart(1)
+            }
+
+            //  Check for a consonant.
+            else if let Some(new) = get_consonant(chunk) {
                 self.previous = self.current.take();
                 let new = self.current.insert(new);
 
-                if chunk == ['y'] {
-                    new.palatal = true;
-                }
-
                 if self.previous.is_some() {
-                    //  This letter is Medial or Final.
+                    //  Medial H is represented by Aha, not Hyarmen.
                     if new.cons == Some(TENGWA_HYARMEN) {
                         new.cons = Some(TEMA_CALMA.single_up);
                     }
-
-                    //  This letter is Initial.
-                    else {
-                        //  Initial NGW is represented by Ñwalmë, not Ungwë.
-                        if new.cons == Some(TEMA_QESSE.double_dn) {
-                            new.cons = Some(TEMA_QESSE.double_sh);
-                        }
+                } else {
+                    //  Initial NGW is represented by Ñwalmë, not Ungwë.
+                    if new.cons == Some(TEMA_QESSE.double_dn) {
+                        new.cons = Some(TEMA_QESSE.double_sh);
                     }
                 }
 
-                ParseAction::MatchedPart(len)
-            } else {
+                ParseAction::MatchedPart(chunk.len())
+            }
+
+            //  Check for a diphthong.
+            else if let Some(new) = get_diphthong(chunk) {
+                self.current = Some(new);
+                ParseAction::MatchedPart(chunk.len())
+            }
+
+            //  Check for a single vowel.
+            else if let Some((vowel, long)) = get_vowel(chunk) {
+                self.current = Some(Glyph::new_vowel(vowel, long));
+                ParseAction::MatchedPart(chunk.len())
+            }
+
+            //  Give up.
+            else {
                 ParseAction::MatchedNone
             }
         }

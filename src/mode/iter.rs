@@ -1,4 +1,4 @@
-use crate::{Numeral, Token};
+use crate::{characters::{Numeral, punctuation}, Token};
 use super::{ParseAction, TengwarMode};
 
 
@@ -51,8 +51,13 @@ impl<M: TengwarMode> ModeIter<M> {
         if self.head < len {
             //  Obey the "skip" counter above all else.
             if 0 < self.skip {
-                self.skip -= 1;
-                IterTick::Success(Token::Char(self.skip_one()))
+                if let Some(token) = self.mode.finish_current() {
+                    self.advance_head(0);
+                    IterTick::Success(token)
+                } else {
+                    self.skip -= 1;
+                    IterTick::Success(Token::Char(self.skip_one()))
+                }
             }
 
             //  Delegate matching to the Mode implementation.
@@ -68,7 +73,7 @@ impl<M: TengwarMode> ModeIter<M> {
                         IterTick::Retry
                     }
                     ParseAction::MatchedPart(n) => {
-                        self.head += n;
+                        self.advance_head(n);
                         IterTick::Retry
                     }
                     ParseAction::MatchedToken { token, len } => {
@@ -97,6 +102,11 @@ impl<M: TengwarMode> ModeIter<M> {
             else if let Some((num, len)) = self.parse_numeral() {
                 self.advance_head(len);
                 IterTick::Success(Token::Number(num))
+            }
+
+            else if let Some(punct) = punctuation(self.data[self.head]) {
+                self.advance_head(1);
+                IterTick::Success(Token::Char(punct))
             }
 
             //  Give up and pass the current char through unchanged.
