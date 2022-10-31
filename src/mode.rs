@@ -98,7 +98,7 @@ pub trait TengwarMode: Default + Sized {
 #[test]
 fn test_iter() {
     fn convert(text: impl AsRef<str>) -> String {
-        quenya::Quenya2::transcribe(text)
+        quenya::Quenya::transcribe(text)
     }
 
     eprintln!("{}", convert("yéni 144"));

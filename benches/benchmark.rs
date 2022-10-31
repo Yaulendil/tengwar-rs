@@ -114,7 +114,7 @@ fn bench_quenya_2(b: &mut test::Bencher) {
         out.clear();
 
         for text in TEXTS_Q {
-            out.push(<Quenya2 as TengwarMode>::transcribe(text));
+            out.push(<Quenya as TengwarMode>::transcribe(text));
         }
     });
 

@@ -1,12 +1,8 @@
 #[macro_use]
 extern crate clap;
 
-use std::{
-    io::{BufRead, stdin, stdout, Write},
-    process::exit,
-    vec::IntoIter,
-};
-use tengwar::{Beleriand, Gondor, Quenya, Rules, Token, TokenIter};
+use std::{io::{BufRead, stdin, stdout, Write}, process::exit};
+use tengwar::{mode::*, Rules};
 
 
 #[derive(Debug)]
@@ -17,27 +13,36 @@ enum Mode {
     /*English,*/
 }
 
-
 impl Mode {
     const DEFAULT: Mode = Mode::Quenya;
 
-    const fn rules<T: AsRef<str>>(&self, ligatures: bool)
-        -> impl Fn(T) -> TokenIter<IntoIter<Token>>
-    {
-        if ligatures {
-            match self {
-                Mode::Quenya => Quenya::token_iter,
-                Mode::Gondor => Gondor::token_iter,
-                Mode::Beleriand => Beleriand::token_iter,
-                /*Mode::English => English::token_iter,*/
+    fn convert(&self, input: impl AsRef<str>, short: bool, zwj: bool) -> String {
+        match self {
+            Self::Quenya => {
+                let chars = input.as_ref().chars().collect();
+                let mut iter = Quenya::mode_iter(chars).into_token_iter();
+                iter.ligate_short = short;
+                iter.ligate_zwj = zwj;
+                iter.collect()
             }
-        } else {
-            match self {
-                Mode::Quenya => Quenya::token_iter,
-                Mode::Gondor => Gondor::token_iter,
-                Mode::Beleriand => Beleriand::token_iter,
-                /*Mode::English => English::token_iter,*/
+            Self::Gondor => {
+                let mut iter = Gondor::token_iter(input);
+                iter.ligate_short = short;
+                iter.ligate_zwj = zwj;
+                iter.collect()
             }
+            Self::Beleriand => {
+                let mut iter = Beleriand::token_iter(input);
+                iter.ligate_short = short;
+                iter.ligate_zwj = zwj;
+                iter.collect()
+            }
+            /*Self::English => {
+                let mut iter = English::token_iter(input);
+                iter.ligate_short = short;
+                iter.ligate_zwj = lig;
+                iter.collect()
+            }*/
         }
     }
 }
@@ -141,26 +146,29 @@ impl Command {
 
 fn main() {
     let command: Command = clap::Parser::parse();
-    let convert = command.mode().rules(command.ligatures);
+    let mode: Mode = command.mode();
 
     if command.text.is_empty() {
         for line in stdin().lock().lines() {
             if let Ok(text) = line {
-                let mut tokens = convert(text);
-                tokens.ligate_short = command.lig_short;
-                tokens.ligate_zwj = command.ligatures;
+                let conv: String = mode.convert(
+                    text,
+                    command.lig_short,
+                    command.ligatures,
+                );
 
-                println!("{}", tokens.collect::<String>());
+                println!("{}", conv);
             }
         }
     } else {
         let text: String = command.text.join(" ");
+        let conv: String = mode.convert(
+            text,
+            command.lig_short,
+            command.ligatures,
+        );
 
-        let mut tokens = convert(text);
-        tokens.ligate_short = command.lig_short;
-        tokens.ligate_zwj = command.ligatures;
-
-        print!("{}", tokens.collect::<String>());
+        print!("{}", conv);
         exit(stdout().write(b"\n").is_err() as i32);
     }
 }
