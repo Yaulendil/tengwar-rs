@@ -71,7 +71,7 @@ pub mod mode;
 mod policy;
 
 pub use characters::{Glyph, Numeral};
-pub use mode::{Beleriand, Gondor, Quenya};
+pub use mode::{Beleriand, Gondor, Quenya, TengwarMode};
 
 use std::{
     borrow::Cow,
@@ -125,6 +125,13 @@ pub trait Rules {
     ///     in the output data to form ligatures where appropriate.
     fn transcribe_with_ligatures(input: impl AsRef<str>) -> String {
         Self::token_iter(input).ligated().collect::<String>()
+    }
+}
+
+
+impl<M: TengwarMode> Rules for M {
+    fn tokens(input: impl AsRef<str>) -> Vec<Token> {
+        <Self as TengwarMode>::transcribe(input)
     }
 }
 

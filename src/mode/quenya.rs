@@ -390,7 +390,7 @@ impl Rules for Quenya {
 
 
 #[derive(Clone, Copy, Debug, Default)]
-pub(super) struct Quenya2 {
+pub struct Quenya2 {
     current: Option<Glyph>,
     previous: Option<Glyph>,
 }
@@ -403,7 +403,8 @@ impl TengwarMode for Quenya2 {
 
     fn process(&mut self, chunk: &[char]) -> ParseAction {
         macro_rules! finish {
-            ($glyph:expr) => {{
+            ($glyph:expr) => {finish!($glyph, 0)};
+            ($glyph:expr, $len:expr) => {{
                 let glyph = $glyph;
 
                 self.current = None;
@@ -411,7 +412,7 @@ impl TengwarMode for Quenya2 {
 
                 ParseAction::MatchedToken {
                     token: Token::Tengwa(glyph),
-                    len: 0,
+                    len: $len,
                 }
             }};
         }
@@ -422,44 +423,42 @@ impl TengwarMode for Quenya2 {
             //  A tengwa is currently being constructed. Try to continue it.
 
             match &current.vowel {
-                Some(_) => {}
+                Some(_) => ParseAction::MatchedNone,
                 None => match chunk {
                     ['y'] => {
                         current.palatal = true;
-                        return ParseAction::MatchedPart(1);
+                        ParseAction::MatchedPart(1)
                     }
                     ['s'] => {
                         current.silme = true;
-                        return ParseAction::MatchedPart(1);
+                        ParseAction::MatchedPart(1)
                     }
                     ['s', 's'] => {
-                        return finish!(*current);
+                        finish!(*current)
                     }
-                    ['l' | 'r'] if current.cons == Some(TENGWA_HYARMEN) => {
-                        current.cons = Some(TENGWA_HALLA);
-                        return finish!(*current);
-                    }
-                    _ => {}
-                }
-            }
-
-            if let Some(_) = get_diphthong(chunk) {
-                finish!(*current)
-            } else if let Some((vowel, long)) = get_vowel(chunk) {
-                match &current.vowel {
-                    Some(_) => ParseAction::MatchedNone,
-                    None => {
-                        if current.cons == Some(TEMA_TINCO.single_sh) {
-                            current.cons = Some(TENGWA_ROMEN);
+                    ['l' | 'r'] => {
+                        if current.cons == Some(TENGWA_HYARMEN) {
+                            current.cons = Some(TENGWA_HALLA);
                         }
 
-                        current.vowel = Some(vowel);
-                        current.long_vowel = long;
-                        ParseAction::MatchedPart(chunk.len())
+                        finish!(*current)
+                    }
+                    _ => {
+                        if let Some(_) = get_diphthong(chunk) {
+                            finish!(*current)
+                        } else if let Some((vowel, long)) = get_vowel(chunk) {
+                            if current.cons == Some(TEMA_TINCO.single_sh) {
+                                current.cons = Some(TENGWA_ROMEN);
+                            }
+
+                            current.vowel = Some(vowel);
+                            current.long_vowel = long;
+                            finish!(*current, chunk.len())
+                        } else {
+                            ParseAction::MatchedNone
+                        }
                     }
                 }
-            } else {
-                ParseAction::MatchedNone
             }
         } else {
             //  Try to find a new tengwa.
