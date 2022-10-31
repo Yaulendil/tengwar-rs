@@ -395,17 +395,6 @@ pub(super) struct Quenya2 {
     previous: Option<Glyph>,
 }
 
-impl Quenya2 {
-    // fn begin_new(&mut self, new: Glyph) -> &mut Glyph {
-    //     self.commit();
-    //     self.current.insert(new)
-    // }
-
-    // const fn prev_valid(&self) -> bool {
-    //     self.previous.is_some()
-    // }
-}
-
 impl TengwarMode for Quenya2 {
     fn finish_current(&mut self) -> Option<Token> {
         self.previous = self.current.take();
@@ -413,81 +402,70 @@ impl TengwarMode for Quenya2 {
     }
 
     fn process(&mut self, chunk: &[char]) -> ParseAction {
-        macro_rules! advance {
-            () => { return ParseAction::MatchedPart(chunk.len()); };
-            ($n:expr) => { return ParseAction::MatchedPart($n); };
-        }
-
         macro_rules! finish {
-            () => {{
-                if let Some(token) = self.finish_current() {
-                    return ParseAction::MatchedToken { token, len: 0 };
-                }
-            }};
             ($glyph:expr) => {{
                 let glyph = $glyph;
 
                 self.current = None;
                 self.previous = Some(glyph);
 
-                return ParseAction::MatchedToken {
+                ParseAction::MatchedToken {
                     token: Token::Tengwa(glyph),
                     len: 0,
-                };
+                }
             }};
         }
-
-        /*macro_rules! skip {
-            // () => { return ParseAction::Skip(1); };
-            ($n:expr) => { return ParseAction::Skip($n); };
-        }*/
 
         if let ['\\', _, ..] = chunk {
             ParseAction::Escape
         } else if let Some(current) = &mut self.current {
             //  A tengwa is currently being constructed. Try to continue it.
 
-            if current.vowel.is_none() {
-                match chunk {
+            match &current.vowel {
+                Some(_) => {}
+                None => match chunk {
                     ['y'] => {
                         current.palatal = true;
-                        advance!();
+                        return ParseAction::MatchedPart(1);
                     }
                     ['s'] => {
                         current.silme = true;
-                        advance!();
+                        return ParseAction::MatchedPart(1);
                     }
                     ['s', 's'] => {
-                        finish!(*current);
+                        return finish!(*current);
                     }
                     ['l' | 'r'] if current.cons == Some(TENGWA_HYARMEN) => {
                         current.cons = Some(TENGWA_HALLA);
-                        finish!(*current);
+                        return finish!(*current);
                     }
                     _ => {}
                 }
             }
 
-            if get_diphthong(chunk).is_some() {
-                finish!(*current);
+            if let Some(_) = get_diphthong(chunk) {
+                finish!(*current)
             } else if let Some((vowel, long)) = get_vowel(chunk) {
-                if current.vowel.is_none() {
-                    if current.cons == Some(TEMA_TINCO.single_sh) {
-                        current.cons = Some(TENGWA_ROMEN);
+                match &current.vowel {
+                    Some(_) => ParseAction::MatchedNone,
+                    None => {
+                        if current.cons == Some(TEMA_TINCO.single_sh) {
+                            current.cons = Some(TENGWA_ROMEN);
+                        }
+
+                        current.vowel = Some(vowel);
+                        current.long_vowel = long;
+                        ParseAction::MatchedPart(chunk.len())
                     }
-
-                    current.vowel = Some(vowel);
-                    current.long_vowel = long;
-                    advance!();
                 }
+            } else {
+                ParseAction::MatchedNone
             }
-
-            ParseAction::MatchedNone
         } else {
             //  Try to find a new tengwa.
 
             //  Check for special cases.
-            if chunk == &['x'] {
+            if let ['x'] = chunk {
                 let glyph = Glyph::new_cons(temar::CALMA, false);
 
                 self.current = Some(glyph.with_silme());
@@ -500,9 +478,8 @@ impl TengwarMode for Quenya2 {
             }
 
             //  Check for a consonant.
-            else if let Some(new) = get_consonant(chunk) {
-                self.previous = self.current.take();
-                let new = self.current.insert(new);
+            else if let Some(glyph) = get_consonant(chunk) {
+                let new = self.current.insert(glyph);
 
                 if self.previous.is_some() {
                     //  Medial H is represented by Aha, not Hyarmen.
