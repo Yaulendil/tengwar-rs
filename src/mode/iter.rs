@@ -2,14 +2,14 @@ use crate::{characters::{Numeral, punctuation}, Token};
 use super::{ParseAction, TengwarMode};
 
 
-/// The result of a single "tick" of a [`ModeIter`]. Multiple ticks can be
+/// The result of a single "step" of a [`ModeIter`]. Multiple steps can be
 ///     performed for each iteration.
 #[derive(Clone, Debug)]
-enum IterTick {
+enum IterStep {
+    /// The iteration is not complete. Another step should be run immediately.
+    Again,
     /// The [`ModeIter`] is exhausted. The iteration can safely return [`None`].
     Empty,
-    /// The iteration is not complete. Another tick should be run immediately.
-    Retry,
     /// The iteration is complete. The [`Token`] should now be returned.
     Success(Token),
 }
@@ -45,7 +45,7 @@ impl<M: TengwarMode> ModeIter<M> {
         here
     }
 
-    fn tick(&mut self) -> IterTick {
+    fn step(&mut self) -> IterStep {
         let len: usize = self.data.len();
 
         if self.head < len {
@@ -53,10 +53,10 @@ impl<M: TengwarMode> ModeIter<M> {
             if 0 < self.skip {
                 if let Some(token) = self.mode.finish_current() {
                     self.advance_head(0);
-                    IterTick::Success(token)
+                    IterStep::Success(token)
                 } else {
                     self.skip -= 1;
-                    IterTick::Success(Token::Char(self.skip_one()))
+                    IterStep::Success(Token::Char(self.skip_one()))
                 }
             }
 
@@ -70,28 +70,28 @@ impl<M: TengwarMode> ModeIter<M> {
                 match mode.process(chunk) {
                     ParseAction::MatchedNone => {
                         self.size -= 1;
-                        IterTick::Retry
+                        IterStep::Again
                     }
                     ParseAction::MatchedPart(n) => {
                         self.advance_head(n);
-                        IterTick::Retry
+                        IterStep::Again
                     }
                     ParseAction::MatchedToken { token, len } => {
                         self.advance_head(len);
-                        IterTick::Success(token)
+                        IterStep::Success(token)
                     }
                     ParseAction::Skip(n) => {
                         self.skip += n;
 
                         match self.mode.finish_current() {
-                            Some(token) => IterTick::Success(token),
-                            None => IterTick::Retry,
+                            Some(token) => IterStep::Success(token),
+                            None => IterStep::Again,
                         }
                     }
                     ParseAction::Escape => {
                         self.advance_head(1);
                         self.skip += 1;
-                        IterTick::Retry
+                        IterStep::Again
                     }
                 }
             }
@@ -100,28 +100,28 @@ impl<M: TengwarMode> ModeIter<M> {
             //      constructed, finalize and return it.
             else if let Some(token) = self.mode.finish_current() {
                 self.advance_head(0);
-                IterTick::Success(token)
+                IterStep::Success(token)
             }
 
             //  Look for a numeric value.
             else if let Some((num, len)) = self.parse_numeral() {
                 self.advance_head(len);
-                IterTick::Success(Token::Number(num))
+                IterStep::Success(Token::Number(num))
             }
 
             else if let Some(punct) = punctuation(self.data[self.head]) {
                 self.advance_head(1);
-                IterTick::Success(Token::Char(punct))
+                IterStep::Success(Token::Char(punct))
             }
 
             //  Give up and pass the current char through unchanged.
             else {
-                IterTick::Success(Token::Char(self.skip_one()))
+                IterStep::Success(Token::Char(self.skip_one()))
             }
         } else { // len <= head
             match self.mode.finish_current() {
-                Some(token) => IterTick::Success(token),
-                None => IterTick::Empty,
+                Some(token) => IterStep::Success(token),
+                None => IterStep::Empty,
             }
         }
     }
@@ -132,10 +132,10 @@ impl<M: TengwarMode> Iterator for ModeIter<M> {
 
     fn next(&mut self) -> Option<Self::Item> {
         loop {
-            match self.tick() {
-                IterTick::Empty => break None,
-                IterTick::Retry => continue,
-                IterTick::Success(token) => break Some(token),
+            match self.step() {
+                IterStep::Again => continue,
+                IterStep::Empty => break None,
+                IterStep::Success(token) => break Some(token),
             }
         }
     }
