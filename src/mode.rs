@@ -29,6 +29,7 @@ pub enum ParseAction {
     /// A portion of the input has been determined to be irrelevant to the
     ///     processing. A number of `char`s should be passed through unchanged.
     Skip(usize),
+    Escape,
 }
 
 

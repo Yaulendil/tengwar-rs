@@ -88,6 +88,11 @@ impl<M: TengwarMode> ModeIter<M> {
                             None => IterTick::Retry,
                         }
                     }
+                    ParseAction::Escape => {
+                        self.advance_head(1);
+                        self.skip += 1;
+                        IterTick::Retry
+                    }
                 }
             }
 

@@ -442,7 +442,9 @@ impl TengwarMode for Quenya2 {
             ($n:expr) => { return ParseAction::Skip($n); };
         }*/
 
-        if let Some(current) = &mut self.current {
+        if let ['\\', _, ..] = chunk {
+            ParseAction::Escape
+        } else if let Some(current) = &mut self.current {
             //  A tengwa is currently being constructed. Try to continue it.
 
             if current.vowel.is_none() {
