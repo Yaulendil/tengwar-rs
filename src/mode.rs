@@ -12,7 +12,7 @@ pub use beleriand::Beleriand;
 pub use gondor::Gondor;
 pub use quenya::Quenya;
 
-use crate::{Token, TokenIter};
+use crate::{Numeral, Token, TokenIter};
 
 
 #[derive(Clone, Debug)]
@@ -47,6 +47,10 @@ pub trait TengwarMode: Default + Sized {
 
     fn tokens(input: impl AsRef<str>) -> Vec<Token> {
         Self::token_iter(input).collect()
+    }
+
+    fn find_numeral(&mut self, slice: &[char]) -> Option<(Numeral, usize)> {
+        Numeral::parse(slice)
     }
 
     fn finish_current(&mut self) -> Option<Token>;

@@ -1,4 +1,4 @@
-use crate::{characters::{Numeral, punctuation}, Token};
+use crate::{characters::punctuation, Token};
 use super::{ParseAction, TengwarMode};
 
 
@@ -76,10 +76,6 @@ impl<M: TengwarMode> ModeIter<M> {
         self.size = self.chars.len().min(M::MAX_CHUNK);
     }
 
-    fn parse_numeral(&self) -> Option<(Numeral, usize)> {
-        Numeral::parse(&self.lower[self.head..])
-    }
-
     fn skip_one(&mut self) -> char {
         let here: char = *self.current();
         self.advance_head(1);
@@ -149,7 +145,7 @@ impl<M: TengwarMode> ModeIter<M> {
             }
 
             //  Look for a numeric value.
-            else if let Some((num, len)) = self.parse_numeral() {
+            else if let Some((num, len)) = mode.find_numeral(&data[head..]) {
                 self.advance_head(len);
                 IterStep::Success(Token::Number(num))
             }
