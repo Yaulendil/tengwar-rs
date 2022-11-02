@@ -152,7 +152,7 @@ fn bench_mode_gondor(b: &mut test::Bencher) {
         out.clear();
 
         for text in TEXTS_S {
-            out.push(Gondor::tokens(text));
+            out.push(mode::gondor::Gondor2::tokens(text));
             // out.push(<Gondor as TengwarMode>::transcribe(text));
         }
     });

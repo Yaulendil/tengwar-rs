@@ -32,6 +32,7 @@ pub struct ModeIter<M: TengwarMode> {
 
     /// The operating Mode, which determines the actual transcription rules.
     pub mode: M,
+    next: Option<Token>,
 }
 
 /// Public functionality.
@@ -51,6 +52,7 @@ impl<M: TengwarMode> ModeIter<M> {
             size,
             skip: 0,
             mode: M::default(),
+            next: None,
         }
     }
 
@@ -96,6 +98,7 @@ impl<M: TengwarMode> ModeIter<M> {
             lower: ref data,
             head, size, skip,
             ref mut mode,
+            next: _
         } = self;
         let len: usize = data.len();
 
@@ -177,12 +180,10 @@ impl<M: TengwarMode> ModeIter<M> {
             }
         }
     }
-}
 
-impl<M: TengwarMode> Iterator for ModeIter<M> {
-    type Item = Token;
-
-    fn next(&mut self) -> Option<Self::Item> {
+    /// Repeatedly step the iterator until either a new [`Token`] is ready or
+    ///     the iterator is exhausted.
+    fn step_to_next(&mut self) -> Option<Token> {
         loop {
             match self.step() {
                 IterStep::Again => continue,
@@ -190,5 +191,20 @@ impl<M: TengwarMode> Iterator for ModeIter<M> {
                 IterStep::Success(token) => break Some(token),
             }
         }
+    }
+}
+
+impl<M: TengwarMode> Iterator for ModeIter<M> {
+    type Item = Token;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let mut token: Token = match self.next.take() {
+            Some(stored) => stored,
+            None => self.step_to_next()?,
+        };
+
+        self.next = self.step_to_next();
+        self.mode.finalize(&mut token, self.next.as_ref());
+        Some(token)
     }
 }

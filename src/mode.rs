@@ -42,6 +42,7 @@ pub enum ParseAction {
 /// This trait defines a "mode" of transcription of text into the Tengwar. It
 ///     implements methods that receive slices of [`char`]s and progressively
 ///     construct [`Token`]s held in internal state.
+#[allow(unused_variables)]
 pub trait TengwarMode: Default + Sized {
     /// This is the maximum size for a "chunk" of [`char`]s passed to
     ///     [`Self::process`]. It is also the maximum number of passes that will
@@ -60,6 +61,11 @@ pub trait TengwarMode: Default + Sized {
     fn transcribe<T: FromIterator<Token>>(input: impl AsRef<str>) -> T {
         ModeIter::<Self>::from_str(input).into_token_iter().collect()
     }
+
+    /// Perform any last-minute modifications to a [`Token`] that may be needed
+    ///     upon finding out what the next `Token` will be. By default, this
+    ///     method is a no-op.
+    fn finalize(&self, token: &mut Token, next: Option<&Token>) {}
 
     /// Try to parse a slice of characters into a [`Numeral`]. If successful,
     ///     returns the `Numeral` alongside the number of [`char`]s that were

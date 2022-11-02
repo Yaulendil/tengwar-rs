@@ -1,4 +1,5 @@
 use crate::{characters::*, Rules, Token};
+use crate::mode::{ParseAction, TengwarMode};
 
 
 const MAX_CHUNK: usize = 3;
@@ -365,5 +366,187 @@ impl Rules for Gondor {
         }
 
         out
+    }
+}
+
+
+#[derive(Clone, Copy, Debug, Default)]
+pub struct Gondor2 {
+    current: Option<Glyph>,
+    previous: Option<Glyph>,
+}
+
+impl TengwarMode for Gondor2 {
+    fn finalize(&self, token: &mut Token, next: Option<&Token>) {
+        if let Token::Tengwa(glyph) = token {
+            glyph.long_first = true;
+
+            if glyph.cons == Some(TENGWA_ROMEN) {
+                match next {
+                    Some(Token::Tengwa(_)) => {}
+                    _ => glyph.cons = Some(temar::ORE),
+                }
+            }
+        }
+    }
+
+    fn finish_current(&mut self) -> Option<Token> {
+        self.previous = self.current.take();
+        self.previous.map(Token::Tengwa)
+    }
+
+    fn process(&mut self, chunk: &[char]) -> ParseAction {
+        macro_rules! finish {
+            ($glyph:expr) => {finish!($glyph, 0)};
+            ($glyph:expr, $len:expr) => {{
+                let glyph = $glyph;
+
+                self.current = None;
+                self.previous = Some(glyph);
+
+                ParseAction::MatchedToken {
+                    token: Token::Tengwa(glyph),
+                    len: $len,
+                }
+            }};
+        }
+
+        if let ['\\', _, ..] = chunk {
+            ParseAction::Escape
+        } else if let Some(current) = &mut self.current {
+            //  A tengwa is currently being constructed. Try to continue it.
+
+            if let Some(cons) = current.cons {
+                match chunk {
+                    ['w'] if !current.labial
+                        && (cons == TEMA_TINCO.double_dn
+                        || cons == TEMA_QESSE.double_dn)
+                    => {
+                        //  TODO: Rediscover why this is done. Tecendil displays
+                        //      the same behavior, but this is not listed in the
+                        //      handbook or any offline notes. Why does it only
+                        //      apply to these two tengwar?
+                        current.labial = true;
+                        ParseAction::MatchedPart(1)
+                    }
+                    ['s'] if !current.silme && rince_valid(cons) => {
+                        current.silme = true;
+                        ParseAction::MatchedPart(1)
+                    }
+                    ['s', 's'] => finish!(*current),
+                    _ => ParseAction::MatchedNone,
+                }
+            } else {
+                //  Check for special case.
+                if let ['x'] = chunk {
+                    let mut glyph = *current;
+
+                    glyph.cons = Some(temar::CALMA);
+                    self.current = Some(Glyph::new_cons(TENGWA_SILME, false));
+                    self.previous = Some(glyph);
+
+                    ParseAction::MatchedToken {
+                        token: Token::Tengwa(glyph),
+                        len: 1,
+                    }
+                }
+
+                //  Check for voiceless initials.
+                else if ['l', 'h'] == chunk && !self.previous.is_some() {
+                    current.cons = Some(TENGWA_ALDA);
+                    ParseAction::MatchedPart(2)
+                } else if ['r', 'h'] == chunk && !self.previous.is_some() {
+                    current.cons = Some(TENGWA_ARDA);
+                    ParseAction::MatchedPart(2)
+                }
+
+                //  Check for a nasalized consonant.
+                else {
+                    if let ['m' | 'n', rest @ ..] = chunk {
+                        if let Some(new) = get_consonant(rest) {
+                            current.cons = new.cons;
+                            current.nasal = true;
+                            current.labial = new.labial;
+                            current.palatal = new.palatal;
+                            current.long_cons = new.long_cons;
+
+                            return ParseAction::MatchedPart(chunk.len());
+                        }
+                    }
+
+                    //  Check for a regular consonant.
+                    if let Some(new) = get_consonant(chunk) {
+                        current.cons = new.cons;
+                        current.nasal = new.nasal;
+                        current.labial = new.labial;
+                        current.palatal = new.palatal;
+                        current.long_cons = new.long_cons;
+
+                        ParseAction::MatchedPart(chunk.len())
+                    } else {
+                        ParseAction::MatchedNone
+                    }
+                }
+            }
+        } else {
+            //  Try to find a new tengwa.
+
+            //  Check for special case.
+            if let ['x'] = chunk {
+                self.current = Some(Glyph::new_cons(TENGWA_SILME, false));
+                self.previous = None;
+
+                return ParseAction::MatchedToken {
+                    token: Token::Tengwa(Glyph::new_cons(temar::CALMA, false)),
+                    len: 1,
+                };
+            }
+
+            //  Check for voiceless initials.
+            else if ['l', 'h'] == chunk && !self.previous.is_some() {
+                self.current = Some(Glyph::new_cons(TENGWA_ALDA, false));
+                return ParseAction::MatchedPart(2);
+                // return finish!(Glyph::new_cons(TENGWA_ALDA, false), 2);
+            } else if ['r', 'h'] == chunk && !self.previous.is_some() {
+                self.current = Some(Glyph::new_cons(TENGWA_ARDA, false));
+                return ParseAction::MatchedPart(2);
+                // return finish!(Glyph::new_cons(TENGWA_ARDA, false), 2);
+            }
+
+            //  Check for a nasalized consonant.
+            else if let ['m' | 'n', rest @ ..] = chunk {
+                if let Some(new) = get_consonant(rest) {
+                    self.current = Some(new.with_nasal());
+                    return ParseAction::MatchedPart(chunk.len());
+                    // return finish!(new.with_nasal(), chunk.len());
+                }
+            }
+
+            //  Check for any consonant.
+            if let Some(glyph) = get_consonant(chunk) {
+                self.current = Some(glyph);
+                ParseAction::MatchedPart(chunk.len())
+                // finish!(new, chunk.len())
+            }
+
+            //  Check for a diphthong.
+            else if let Some(new) = get_diphthong(chunk) {
+                self.current = Some(new);
+                ParseAction::MatchedPart(chunk.len())
+                // finish!(new, chunk.len())
+            }
+
+            //  Check for a single vowel.
+            else if let Some((vowel, long)) = get_vowel(chunk) {
+                self.current = Some(Glyph::new_vowel(vowel, long));
+                ParseAction::MatchedPart(chunk.len())
+                // finish!(Glyph::new_vowel(vowel, long), chunk.len())
+            }
+
+            //  Give up.
+            else {
+                ParseAction::MatchedNone
+            }
+        }
     }
 }
