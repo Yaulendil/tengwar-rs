@@ -2,12 +2,12 @@ use tengwar::*;
 
 
 fn quenya(line: impl AsRef<str>) {
-    println!("{}", line.to_tengwar::<Quenya>());
+    println!("{}", line.to_tengwar::<Quenya, String>());
 }
 
 
 fn gondor(line: impl AsRef<str>) {
-    println!("{}", line.to_tengwar::<Gondor>());
+    println!("{}", line.to_tengwar::<Gondor, String>());
 }
 
 

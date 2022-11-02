@@ -10,19 +10,19 @@
 //!
 //! Three modes are currently provided: [`Quenya`] ("Classical"), [`Beleriand`],
 //!     and [`Gondor`]. Each mode is a zero-size singleton that implements the
-//!     [`Rules`] trait.
+//!     [`TengwarMode`] trait.
 //!
 //! # Examples
 //!
 //! [`AsRef<str>`]: AsRef
-//! [`transcribe`]: Rules::transcribe
+//! [`transcribe`]: TengwarMode::transcribe
 //! [`to_tengwar`]: ToTengwar::to_tengwar
 //!
 //! The most basic way to convert text is the [`transcribe`] associated function
-//!     on the [`Rules`] trait. This function accepts any input type that
+//!     on the [`TengwarMode`] trait. This function accepts any input type that
 //!     implements [`AsRef<str>`].
 //! ```
-//! use tengwar::{Quenya, Rules};
+//! use tengwar::{Quenya, TengwarMode};
 //!
 //! let text: String = Quenya::transcribe("namárië:-");
 //!
@@ -36,11 +36,11 @@
 //! With the use of the [`ToTengwar`] helper trait, a method is provided on the
 //!     input type directly. This trait is automatically implemented for types
 //!     that implement [`AsRef<str>`], where it is a simple passthrough to the
-//!     [`Rules::transcribe`] function.
+//!     [`TengwarMode::transcribe`] function.
 //! ```
 //! use tengwar::{Quenya, ToTengwar};
 //!
-//! let text: String = "namárië:-".to_tengwar::<Quenya>();
+//! let text: String = "namárië:-".to_tengwar::<Quenya, String>();
 //!
 //! if cfg!(feature = "circumflex") {
 //!     assert_eq!(text, "");
@@ -50,14 +50,14 @@
 //! ```
 //!
 //! Also available, and likely the easiest to discover via code completion, is
-//!     the [`transliterate`] function, which takes an implementor of [`Rules`]
-//!     as a generic parameter. This function accepts any input type that
-//!     implements [`ToTengwar`], and is a passthrough to the [`to_tengwar`]
-//!     method.
+//!     the crate-level [`transcribe`] function, which takes an implementor of
+//!     [`TengwarMode`] as a generic parameter. This function accepts any input
+//!     type that implements [`ToTengwar`], and is a passthrough to the
+//!     [`to_tengwar`] method.
 //! ```
-//! use tengwar::{Quenya, transliterate};
+//! use tengwar::{Quenya, transcribe};
 //!
-//! let text: String = transliterate::<Quenya>("namárië:-");
+//! let text: String = transcribe::<Quenya>("namárië:-");
 //!
 //! if cfg!(feature = "circumflex") {
 //!     assert_eq!(text, "");
@@ -77,7 +77,6 @@ use std::{
     borrow::Cow,
     fmt::{self, Display, Formatter, Write},
     iter::{FromIterator, Peekable},
-    vec::IntoIter,
 };
 use crate::mode::ModeIter;
 
@@ -86,106 +85,25 @@ use crate::mode::ModeIter;
 ///
 /// This function merely calls a Trait method, but is likely the most readily
 ///     discoverable part of the library when using code completion tools.
-pub fn transliterate<R: Rules>(text: impl ToTengwar) -> String {
-    text.to_tengwar::<R>()
-}
-
-
-/// Convert a compatible object into the Tengwar, using Zero-Width Joiners to
-///     form ligatures.
-///
-/// The ligated counterpart of [`transliterate`].
-pub fn transliterate_ligated<R: Rules>(text: impl ToTengwarLigated) -> String {
-    text.to_tengwar_ligated::<R>()
-}
-
-
-/// A trait implementing the rules for converting text into the Tengwar.
-///
-/// The only required method is the one to produce a sequence of [`Token`]s;
-///     This can be collected into a [`String`] easily enough.
-pub trait Rules {
-    /// Produce a sequence of [`Token`]s representing the Tengwar form of some
-    ///     text.
-    fn tokens(input: impl AsRef<str>) -> Vec<Token>;
-
-    /// Produce an iterator of [`Token`]s representing the Tengwar form of some
-    ///     text.
-    fn token_iter(input: impl AsRef<str>) -> TokenIter<IntoIter<Token>> {
-        TokenIter::from(Self::tokens(input))
-    }
-
-    /// Produce a sequence of [`Token`]s, and then immediately post-process and
-    ///     collect them into a `String`.
-    fn transcribe(input: impl AsRef<str>) -> String {
-        Self::token_iter(input).collect::<String>()
-    }
-
-    /// Produce a sequence of [`Token`]s, and then immediately post-process and
-    ///     collect them into a [`String`]. Zero-Width Joiners will be included
-    ///     in the output data to form ligatures where appropriate.
-    fn transcribe_with_ligatures(input: impl AsRef<str>) -> String {
-        Self::token_iter(input).ligated().collect::<String>()
-    }
-}
-
-
-impl<M: TengwarMode> Rules for M {
-    fn tokens(input: impl AsRef<str>) -> Vec<Token> {
-        <Self as TengwarMode>::transcribe(input)
-    }
-}
-
-
-/// A very small trait serving to implement ergonomic transliteration methods
-///     directly onto text objects.
-pub trait ToTengwar {
-    /// Transliterate this object into the Tengwar.
-    fn to_tengwar<R: Rules>(&self) -> String;
-}
-
-
-impl<T: AsRef<str>> ToTengwar for T {
-    /// Transliterate this text into the Tengwar.
-    fn to_tengwar<R: Rules>(&self) -> String {
-        R::transcribe(self)
-    }
-}
-
-
-/// A very small trait serving to implement ergonomic transliteration methods
-///     with ligation directly onto text objects.
-pub trait ToTengwarLigated {
-    /// Transliterate this object into the Tengwar, with ligature processing.
-    fn to_tengwar_ligated<R: Rules>(&self) -> String;
-}
-
-
-impl<T: AsRef<str>> ToTengwarLigated for T {
-    /// Transliterate this text into the Tengwar. A post-processor will run over
-    ///     it to insert zero-width joiners and create ligatures where possible.
-    ///     This affects the text data itself, but should not have any visible
-    ///     effect with a font that does not support the ligatures.
-    fn to_tengwar_ligated<R: Rules>(&self) -> String {
-        R::transcribe_with_ligatures(self)
-    }
+pub fn transcribe<M: TengwarMode>(text: impl ToTengwar) -> String {
+    text.to_tengwar::<M, String>()
 }
 
 
 /// A very small trait serving to implement ergonomic transcription methods
 ///     directly onto text objects.
-pub trait ToTengwar2 {
+pub trait ToTengwar {
     /// Create a [`TokenIter`] to progressively transcribe this text into the
     ///     Tengwar. The returned iterator will yield [`Token`]s.
     fn tengwar_iter<M: TengwarMode>(&self) -> TokenIter<ModeIter<M>>;
 
     /// Transcribe this object into the Tengwar.
-    fn to_tengwar2<M: TengwarMode, T: FromIterator<Token>>(&self) -> T {
+    fn to_tengwar<M: TengwarMode, T: FromIterator<Token>>(&self) -> T {
         self.tengwar_iter::<M>().collect()
     }
 }
 
-impl<S: AsRef<str>> ToTengwar2 for S {
+impl<S: AsRef<str>> ToTengwar for S {
     fn tengwar_iter<M: TengwarMode>(&self) -> TokenIter<ModeIter<M>> {
         ModeIter::from_str(self).into_token_iter()
     }

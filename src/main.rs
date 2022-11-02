@@ -2,7 +2,7 @@
 extern crate clap;
 
 use std::{io::{BufRead, stdin, stdout, Write}, process::exit};
-use tengwar::{mode::*, Rules};
+use tengwar::*;
 
 
 #[derive(Debug)]
@@ -19,26 +19,25 @@ impl Mode {
     fn convert(&self, input: impl AsRef<str>, short: bool, zwj: bool) -> String {
         match self {
             Self::Quenya => {
-                let chars = input.as_ref().chars().collect();
-                let mut iter = Quenya::mode_iter(chars).into_token_iter();
+                let mut iter = input.tengwar_iter::<Quenya>();
                 iter.ligate_short = short;
                 iter.ligate_zwj = zwj;
                 iter.collect()
             }
             Self::Gondor => {
-                let mut iter = Gondor::token_iter(input);
+                let mut iter = input.tengwar_iter::<Gondor>();
                 iter.ligate_short = short;
                 iter.ligate_zwj = zwj;
                 iter.collect()
             }
             Self::Beleriand => {
-                let mut iter = Beleriand::token_iter(input);
+                let mut iter = input.tengwar_iter::<Beleriand>();
                 iter.ligate_short = short;
                 iter.ligate_zwj = zwj;
                 iter.collect()
             }
             /*Self::English => {
-                let mut iter = English::token_iter(input);
+                let mut iter = input.tengwar_iter::<English>();
                 iter.ligate_short = short;
                 iter.ligate_zwj = lig;
                 iter.collect()

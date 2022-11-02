@@ -49,11 +49,6 @@ pub trait TengwarMode: Default + Sized {
     ///     be attempted before skipping a `char` and moving on.
     const MAX_CHUNK: usize = 3;
 
-    /// Construct a [`ModeIter`] of this mode to transliterate the input data.
-    fn mode_iter(chars: Vec<char>) -> ModeIter<Self> {
-        ModeIter::new(chars)
-    }
-
     /// Set up a [`TokenIter`] over the characters of an input string, and
     ///     immediately collect it into the target type.
     ///
@@ -63,8 +58,8 @@ pub trait TengwarMode: Default + Sized {
     }
 
     /// Perform any last-minute modifications to a [`Token`] that may be needed
-    ///     upon finding out what the next `Token` will be. By default, this
-    ///     method is a no-op.
+    ///     upon finding out what the following `Token` will be. By default,
+    ///     this method is a no-op.
     fn finalize(&self, token: &mut Token, next: Option<&Token>) {}
 
     /// Try to parse a slice of characters into a [`Numeral`]. If successful,
@@ -103,7 +98,7 @@ pub trait TengwarMode: Default + Sized {
 #[test]
 fn test_iter() {
     fn convert(text: impl AsRef<str>) -> String {
-        quenya::Quenya::transcribe(text)
+        Quenya::transcribe(text)
     }
 
     eprintln!("{}", convert("yéni 144"));

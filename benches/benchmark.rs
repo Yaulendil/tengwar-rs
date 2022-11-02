@@ -118,13 +118,9 @@ fn bench_mode_quenya(b: &mut test::Bencher) {
         out.clear();
 
         for text in TEXTS_Q {
-            // out.push(Quenya::tokens(text));
-            out.push(<Quenya as TengwarMode>::transcribe(text));
-            // out.push(text.to_tengwar2::<Quenya, Vec<_>>());
+            out.push(text.to_tengwar::<Quenya, _>());
         }
     });
-
-    // check::<Quenya>(TEXTS_Q, &out);
 }
 
 
@@ -136,11 +132,9 @@ fn bench_mode_beleriand(b: &mut test::Bencher) {
         out.clear();
 
         for text in TEXTS_S {
-            out.push(mode::beleriand::Beleriand2::tokens(text));
+            out.push(text.to_tengwar::<Beleriand, _>());
         }
     });
-
-    // check::<Beleriand>(TEXTS_S, &out);
 }
 
 
@@ -152,28 +146,7 @@ fn bench_mode_gondor(b: &mut test::Bencher) {
         out.clear();
 
         for text in TEXTS_S {
-            out.push(mode::gondor::Gondor2::tokens(text));
-            // out.push(<Gondor as TengwarMode>::transcribe(text));
+            out.push(text.to_tengwar::<Gondor, _>());
         }
     });
-
-    check::<Gondor>(TEXTS_S, &out);
-}
-
-
-fn check<M: Rules>(sample: &[&str], converted: &[Vec<Token>]) {
-    assert_eq!(sample.len(), converted.len());
-
-    for (src, new) in sample.iter().zip(converted) {
-        let str_old: String = M::transcribe(src);
-        let str_new: String = new.iter().cloned().collect();
-
-        assert_eq!(
-            str_old, str_new,
-            "New transcription does not match old.\
-            \nOld: {}\
-            \nNew: {}",
-            str_old, str_new,
-        );
-    }
 }
