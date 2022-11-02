@@ -78,9 +78,19 @@ const TEXTS_Q: &[&str] = &[
 ];
 const TEXTS_S: &[&str] = &[
     "mae govannen",
-    "a elbereth gilthoniel",
     "ennyn durin aran moria , pedo mellon a minno",
     "im narvi hain echant , celebrimbor o eregion teithant i thiw hin",
+	"a Elbereth Gilthoniel",
+	"silivren penna míriel",
+	"o menel aglar elenath",
+	"na-chaered palan-díriel",
+	"o galadhremmin ennorath",
+	"Fanuilos , le linnathon",
+	"nef aear , sí nef aearon",
+	"a Elbereth Gilthoniel",
+	"o menel palan-diriel",
+	"le nallon sí di'nguruthos",
+	"a tiro nin , Fanuilos :-",
 ];
 
 
@@ -126,12 +136,11 @@ fn bench_mode_beleriand(b: &mut test::Bencher) {
         out.clear();
 
         for text in TEXTS_S {
-            out.push(Beleriand::tokens(text));
-            // out.push(<Beleriand as TengwarMode>::transcribe(text));
+            out.push(mode::beleriand::Beleriand2::tokens(text));
         }
     });
 
-    check::<Beleriand>(TEXTS_S, &out);
+    // check::<Beleriand>(TEXTS_S, &out);
 }
 
 

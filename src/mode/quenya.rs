@@ -147,11 +147,11 @@ impl TengwarMode for Quenya {
             match &current.vowel {
                 Some(_) => ParseAction::MatchedNone,
                 None => match chunk {
-                    ['y'] => {
+                    ['y'] if !current.palatal => {
                         current.palatal = true;
                         ParseAction::MatchedPart(1)
                     }
-                    ['s'] => {
+                    ['s'] if !current.silme => {
                         current.silme = true;
                         ParseAction::MatchedPart(1)
                     }
