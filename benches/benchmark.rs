@@ -2,7 +2,7 @@
 
 extern crate test;
 
-use tengwar::{mode::quenya::*, Rules, TengwarMode};
+use tengwar::*;
 
 
 const SAMPLES: &[&[char]] = {
@@ -76,6 +76,12 @@ const TEXTS_Q: &[&str] = &[
 	"namárië! nai hiruvalyë Valimar",
 	"nai elyë hiruva : namárië! :-",
 ];
+const TEXTS_S: &[&str] = &[
+    "mae govannen",
+    "a elbereth gilthoniel",
+    "ennyn durin aran moria , pedo mellon a minno",
+    "im narvi hain echant , celebrimbor o eregion teithant i thiw hin",
+];
 
 
 #[bench]
@@ -83,8 +89,10 @@ fn bench_consonants(b: &mut test::Bencher) {
     let mut out: Vec<Option<char>> = Vec::with_capacity(SAMPLES.len());
 
     b.iter(|| {
+        out.clear();
+
         for slice in SAMPLES {
-            out.push(consonant_char(slice));
+            out.push(mode::quenya::consonant_char(slice));
         }
     });
 
@@ -93,41 +101,70 @@ fn bench_consonants(b: &mut test::Bencher) {
 
 
 #[bench]
-fn bench_quenya_1(b: &mut test::Bencher) {
+fn bench_mode_quenya(b: &mut test::Bencher) {
     let mut out: Vec<Vec<_>> = Vec::with_capacity(TEXTS_Q.len());
 
     b.iter(|| {
         out.clear();
 
         for text in TEXTS_Q {
-            out.push(Quenya::tokens(text));
+            // out.push(Quenya::tokens(text));
+            out.push(<Quenya as TengwarMode>::transcribe(text));
+            // out.push(text.to_tengwar2::<Quenya, Vec<_>>());
         }
     });
+
+    // check::<Quenya>(TEXTS_Q, &out);
 }
 
 
 #[bench]
-fn bench_quenya_2(b: &mut test::Bencher) {
-    let mut out: Vec<Vec<_>> = Vec::with_capacity(TEXTS_Q.len());
+fn bench_mode_beleriand(b: &mut test::Bencher) {
+    let mut out: Vec<Vec<_>> = Vec::with_capacity(TEXTS_S.len());
 
     b.iter(|| {
         out.clear();
 
-        for text in TEXTS_Q {
-            out.push(<Quenya as TengwarMode>::transcribe(text));
+        for text in TEXTS_S {
+            out.push(Beleriand::tokens(text));
+            // out.push(<Beleriand as TengwarMode>::transcribe(text));
         }
     });
 
-    let mut out_orig: Vec<Vec<_>> = Vec::with_capacity(TEXTS_Q.len());
+    check::<Beleriand>(TEXTS_S, &out);
+}
 
-    for text in TEXTS_Q {
-        out_orig.push(Quenya::tokens(text));
-    }
 
-    for i in 0..out.len() {
+#[bench]
+fn bench_mode_gondor(b: &mut test::Bencher) {
+    let mut out: Vec<Vec<_>> = Vec::with_capacity(TEXTS_S.len());
+
+    b.iter(|| {
+        out.clear();
+
+        for text in TEXTS_S {
+            out.push(Gondor::tokens(text));
+            // out.push(<Gondor as TengwarMode>::transcribe(text));
+        }
+    });
+
+    check::<Gondor>(TEXTS_S, &out);
+}
+
+
+fn check<M: Rules>(sample: &[&str], converted: &[Vec<Token>]) {
+    assert_eq!(sample.len(), converted.len());
+
+    for (src, new) in sample.iter().zip(converted) {
+        let str_old: String = M::transcribe(src);
+        let str_new: String = new.iter().cloned().collect();
+
         assert_eq!(
-            out[i].iter().cloned().collect::<String>(),
-            out_orig[i].iter().cloned().collect::<String>(),
+            str_old, str_new,
+            "New transcription does not match old.\
+            \nOld: {}\
+            \nNew: {}",
+            str_old, str_new,
         );
     }
 }

@@ -79,6 +79,7 @@ use std::{
     iter::{FromIterator, Peekable},
     vec::IntoIter,
 };
+use crate::mode::ModeIter;
 
 
 /// Convert a compatible object (typically text) into the Tengwar.
@@ -167,6 +168,26 @@ impl<T: AsRef<str>> ToTengwarLigated for T {
     ///     effect with a font that does not support the ligatures.
     fn to_tengwar_ligated<R: Rules>(&self) -> String {
         R::transcribe_with_ligatures(self)
+    }
+}
+
+
+/// A very small trait serving to implement ergonomic transcription methods
+///     directly onto text objects.
+pub trait ToTengwar2 {
+    /// Create a [`TokenIter`] to progressively transcribe this text into the
+    ///     Tengwar. The returned iterator will yield [`Token`]s.
+    fn tengwar_iter<M: TengwarMode>(&self) -> TokenIter<ModeIter<M>>;
+
+    /// Transcribe this object into the Tengwar.
+    fn to_tengwar2<M: TengwarMode, T: FromIterator<Token>>(&self) -> T {
+        self.tengwar_iter::<M>().collect()
+    }
+}
+
+impl<S: AsRef<str>> ToTengwar2 for S {
+    fn tengwar_iter<M: TengwarMode>(&self) -> TokenIter<ModeIter<M>> {
+        ModeIter::from_str(self).into_token_iter()
     }
 }
 

@@ -54,6 +54,10 @@ impl<M: TengwarMode> ModeIter<M> {
         }
     }
 
+    pub fn from_str(s: impl AsRef<str>) -> Self {
+        Self::new(s.as_ref().chars().collect())
+    }
+
     pub fn current(&self) -> &char {
         &self.chars[self.head]
     }

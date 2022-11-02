@@ -58,8 +58,7 @@ pub trait TengwarMode: Default + Sized {
     ///
     /// [`TokenIter`]: crate::TokenIter
     fn transcribe<T: FromIterator<Token>>(input: impl AsRef<str>) -> T {
-        let chars: Vec<char> = input.as_ref().chars().collect();
-        Self::mode_iter(chars).into_token_iter().collect()
+        ModeIter::<Self>::from_str(input).into_token_iter().collect()
     }
 
     /// Try to parse a slice of characters into a [`Numeral`]. If successful,
