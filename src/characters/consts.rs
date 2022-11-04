@@ -280,9 +280,17 @@ pub const TEMA_QESSE: Tema = Tema {
     double_ex: '',
 };
 
+// impl Tema {
+//     pub const TINCO: Self = TEMA_TINCO;
+//     pub const PARMA: Self = TEMA_PARMA;
+//     pub const CALMA: Self = TEMA_CALMA;
+//     pub const QESSE: Self = TEMA_QESSE;
+// }
+
 
 //  Alternate spellings.
 // pub const TENGWA_SULE: char = TENGWA_THULE; // þ -> s
+// pub const TENGWA_HARMA: char = TENGWA_AHA;
 // pub const TENGWA_QUESSE: char = TENGWA_QESSE;
 // pub const TENGWA_VILYA: char = TENGWA_WILYA; // w -> v
 
@@ -317,6 +325,7 @@ pub const TENGWA_HWESTA: char = TEMA_QESSE.single_up;
 pub const TENGWA_UNQUE: char = TEMA_QESSE.double_up;
 pub const TENGWA_NWALME: char = TEMA_QESSE.double_sh;
 pub const TENGWA_WILYA: char = TEMA_QESSE.single_sh;
+
 
 /// A variant of Vala with an extra hook.
 pub const TENGWA_CURL_SINGLE: char = '';

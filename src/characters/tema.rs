@@ -36,10 +36,17 @@ pub struct Tema {
 }
 
 impl Tema {
-    pub const fn tengwa(&self) -> TengwaRegular {
-        TengwaRegular::new(*self)
+    /// Return the [`TengwaRegular`] in this Téma with the default [`Tyelle`].
+    pub const fn new_tengwa(&self) -> TengwaRegular {
+        TengwaRegular::new(self)
     }
 
+    /// Return the [`TengwaRegular`] in this Téma at a specified [`Tyelle`].
+    pub const fn get_tengwa(&self, tyelle: Tyelle) -> TengwaRegular {
+        TengwaRegular { tema: self, tyelle }
+    }
+
+    /// Return the [`char`] in this Téma at a specified [`Tyelle`].
     pub const fn get_char(&self, tyelle: Tyelle) -> &char {
         const Y: bool = true;
         const N: bool = false;
@@ -64,17 +71,17 @@ impl Index<Tyelle> for Tema {
 
 /// A small type pairing a [`Tema`] with a specific [`Tyelle`].
 #[derive(Clone, Copy, Debug)]
-pub struct TengwaRegular {
-    pub tema: Tema,
+pub struct TengwaRegular<'t> {
+    pub tema: &'t Tema,
     pub tyelle: Tyelle,
 }
 
-impl TengwaRegular {
-    pub const fn new(tema: Tema) -> Self {
+impl<'t> TengwaRegular<'t> {
+    pub const fn new(tema: &'t Tema) -> Self {
         Self { tema, tyelle: Tyelle::new() }
     }
 
-    pub const fn to_char(&self) -> &char {
+    pub const fn as_char(&self) -> &char {
         self.tema.get_char(self.tyelle)
     }
 
@@ -113,6 +120,14 @@ impl TengwaRegular {
     }
 }
 
+impl<'t> AsRef<char> for TengwaRegular<'t> {
+    fn as_ref(&self) -> &char { self.as_char() }
+}
+
+impl<'t> From<TengwaRegular<'t>> for char {
+    fn from(tengwa: TengwaRegular<'t>) -> Self { *tengwa.as_char() }
+}
+
 
 /// A small type to represent the specific shape of a regular Tengwa.
 #[derive(Clone, Copy, Debug)]
@@ -129,6 +144,10 @@ impl Tyelle {
             stem_up: false,
             doubled: false,
         }
+    }
+
+    pub const fn on_tema<'t>(&self, tema: &'t Tema) -> TengwaRegular<'t> {
+        TengwaRegular { tema, tyelle: *self }
     }
 
     //  TODO: Would this be of any actual use? Being a bitfield would lead to a
