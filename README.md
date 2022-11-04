@@ -1,20 +1,14 @@
 # Tengwar
 
-[
-![Crates.io](https://img.shields.io/crates/v/tengwar?logo=rust&style=for-the-badge&label=crate)
-![Downloads](https://img.shields.io/crates/d/tengwar?style=flat-square)
-](https://crates.io/crates/tengwar)
-
-[
-![docs.rs](https://docs.rs/tengwar/badge.svg?style=for-the-badge)
-](https://docs.rs/tengwar)
+[crates.io]: https://img.shields.io/crates/v/tengwar?logo=rust&label=crates.io
+[docs.rs]: https://docs.rs/tengwar/badge.svg
+[![crates.io]](https://crates.io/crates/tengwar)
+[![docs.rs]](https://docs.rs/tengwar)
 
 Automated conversion of Latin text into Tengwar codepoints in the Unicode Private Use Area.
 Primarily targets the Classical Quenya mode, with tenuous support for the Sindarin modes of Beleriand and Gondor.
 
-The codepoints used are the ones defined by the [Free Tengwar Font Project](http://freetengwar.sourceforge.net/mapping.html),
-    based on the mapping in [the ConScript Unicode Registry](https://en.wikipedia.org/wiki/Tengwar#ConScript_Unicode_Registry),
-    and will only correctly render if a font is installed that includes them.
+The codepoints used are the ones defined by the [Free Tengwar Font Project](https://freetengwar.sourceforge.net/mapping.html), based on the mapping in the [ConScript Unicode Registry](https://en.wikipedia.org/wiki/Tengwar#ConScript_Unicode_Registry), and will only correctly render if a font is installed that includes them.
 
 ## Installation
 
@@ -51,7 +45,7 @@ The full list of available modes can be viewed with `tengwar --help`.
 
 In certain typefaces, the [Zero-Width Joiner](https://en.wikipedia.org/wiki/Zero-width_joiner) may be used to form ligatures of Tengwar.
 When invoked with the `--ligatures` switch on the command line, this program will insert joiners into the output text between certain characters, based on various overly convoluted rules.
-These rules are based on the ligature behavior of [Tengwar Telcontar](http://freetengwar.sourceforge.net/tengtelc.html), as well as some degree of personal taste.
+These rules are based on the ligature behavior of [Tengwar Telcontar](https://freetengwar.sourceforge.net/tengtelc.html), as well as some degree of personal taste.
 
 For typefaces that do not support these ligatures, the presence of the joining characters ***should*** not affect the rendering;
 However, it does increase the number of bytes in the output string by approximately 15%.
@@ -64,22 +58,22 @@ It is therefore probably best to not even try, and instead to punctuate the inpu
 This program does convert punctuation marks into Unicode codepoints, but whitespace is passed through verbatim, neither added nor subtracted¹.
 As of this writing at version `0.7.0`, punctuation is processed as can be seen above and in the following table:
 
-| Input             | Output |
-|-------------------|:------:|
-|`'`, `.`, `,`, `·` | `` |
-|`:`, `;`           | `` |
-|`⁝`, `︙`           | `` |
-|`⁘`, `⁛`, `…`      | `` |
-|`⸭`                | `` |
-|`-`                | `` |
-|`=`                | `` |
-|`?`                | `` |
-|`!`                | `` |
-|`‖`*               | `` |
-|`(`, `[`, `“`      | `` |
-|`)`, `]`, `”`, `„` | `` |
+| Input              | Output |
+|--------------------|:------:|
+| `'`, `.`, `,`, `·` |  ``   |
+| `:`, `;`           |  ``   |
+| `⁝`, `︙`           |  ``   |
+| `⁘`, `⁛`, `…`      |  ``   |
+| `⸭`                |  ``   |
+| `-`                |  ``   |
+| `=`                |  ``   |
+| `?`                |  ``   |
+| `!`                |  ``   |
+| `‖`*               |  ``   |
+| `(`, `[`, `“`      |  ``   |
+| `)`, `]`, `”`, `„` |  ``   |
 
-The Pipe character (`|`) is also converted to ``, but it cannot be included in this table due to a technical limitation of Markdown.
+The Pipe character (`|`) is also converted to ``, but it cannot be included in this table due to a technical limitation of the Markdown format.
 
 ---
 
