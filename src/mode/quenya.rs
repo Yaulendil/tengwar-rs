@@ -156,18 +156,22 @@ impl TengwarMode for Quenya {
                         ParseAction::MatchedPart(1)
                     }
                     ['s', 's'] => {
-                        finish!(*current)
+                        finish!(*current, 0)
                     }
                     ['l' | 'r'] => {
                         if current.cons == Some(TENGWA_HYARMEN) {
                             current.cons = Some(TENGWA_HALLA);
                         }
 
-                        finish!(*current)
+                        finish!(*current, 0)
                     }
                     _ => {
                         if let Some(_) = get_diphthong(chunk) {
-                            finish!(*current)
+                            if current.cons == Some(TENGWA_ORE) {
+                                current.cons = Some(TENGWA_ROMEN);
+                            }
+
+                            finish!(*current, 0)
                         } else if let Some((vowel, long)) = get_vowel(chunk) {
                             if current.cons == Some(TENGWA_ORE) {
                                 current.cons = Some(TENGWA_ROMEN);
@@ -409,5 +413,37 @@ mod tests {
             nuq!(TENGWA_ESSE), TEHTA_E.short(), // ssë
         ]);
         test_tengwar!(Quenya, "eze" == esse);
+
+        //  Test all diphthongs.
+        test_tengwar!(Quenya, "aiwë" => [
+            CARRIER_DIPH_I, TEHTA_A.short(), // ai
+            TENGWA_WILYA, TEHTA_E.short(), // wë
+        ]);
+        test_tengwar!(Quenya, "oialë" => [
+            CARRIER_DIPH_I, TEHTA_O.short(), // oi
+            CARRIER_SHORT, TEHTA_A.short(), // a
+            TENGWA_LAMBE, TEHTA_E.short(), // lë
+        ]);
+        test_tengwar!(Quenya, "ruina" => [
+            TENGWA_ROMEN, // r
+            CARRIER_DIPH_I, TEHTA_U.short(), // ui
+            TENGWA_NUMEN, TEHTA_A.short(), // na
+        ]);
+
+        test_tengwar!(Quenya, "rauca" => [
+            TENGWA_ROMEN, // r
+            CARRIER_DIPH_U, TEHTA_A.short(), // au
+            TENGWA_CALMA, TEHTA_A.short(), // ca
+        ]);
+        test_tengwar!(Quenya, "ceurë" => [
+            TENGWA_CALMA, // c
+            CARRIER_DIPH_U, TEHTA_E.short(), // eu
+            TENGWA_ROMEN, TEHTA_E.short(), // rë
+        ]);
+        test_tengwar!(Quenya, "miuë" => [
+            TENGWA_MALTA, // m
+            CARRIER_DIPH_U, TEHTA_I.short(), // iu
+            CARRIER_SHORT, TEHTA_E.short(), // ë
+        ]);
     }
 }
