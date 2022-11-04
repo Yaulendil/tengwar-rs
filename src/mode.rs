@@ -49,10 +49,10 @@ pub trait TengwarMode: Default + Sized {
     ///     be attempted before skipping a `char` and moving on.
     const MAX_CHUNK: usize = 3;
 
-    /// Set up a [`TokenIter`] over the characters of an input string, and
+    /// Set up a [`Transcriber`] over the characters of an input string, and
     ///     immediately collect it into the target type.
     ///
-    /// [`TokenIter`]: crate::TokenIter
+    /// [`Transcriber`]: crate::Transcriber
     fn transcribe<T: FromIterator<Token>>(input: impl AsRef<str>) -> T {
         ModeIter::<Self>::from_str(input).into_token_iter().collect()
     }

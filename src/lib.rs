@@ -93,9 +93,9 @@ pub fn transcribe<M: TengwarMode>(text: impl ToTengwar) -> String {
 /// A very small trait serving to implement ergonomic transcription methods
 ///     directly onto text objects.
 pub trait ToTengwar {
-    /// Create a [`TokenIter`] to progressively transcribe this text into the
+    /// Create a [`Transcriber`] to iteratively transcribe this text into the
     ///     Tengwar. The returned iterator will yield [`Token`]s.
-    fn tengwar_iter<M: TengwarMode>(&self) -> TokenIter<ModeIter<M>>;
+    fn tengwar_iter<M: TengwarMode>(&self) -> Transcriber<ModeIter<M>>;
 
     /// Transcribe this object into the Tengwar.
     fn to_tengwar<M: TengwarMode, T: FromIterator<Token>>(&self) -> T {
@@ -104,7 +104,7 @@ pub trait ToTengwar {
 }
 
 impl<S: AsRef<str>> ToTengwar for S {
-    fn tengwar_iter<M: TengwarMode>(&self) -> TokenIter<ModeIter<M>> {
+    fn tengwar_iter<M: TengwarMode>(&self) -> Transcriber<ModeIter<M>> {
         ModeIter::from_str(self).into_token_iter()
     }
 }
@@ -157,13 +157,13 @@ impl FromIterator<Token> for String {
 }
 
 
-pub struct TokenIter<I: Iterator<Item=Token>> {
+pub struct Transcriber<I: Iterator<Item=Token>> {
     inner: Peekable<I>,
     pub ligate_short: bool,
     pub ligate_zwj: bool,
 }
 
-impl<I: Iterator<Item=Token>> TokenIter<I> {
+impl<I: Iterator<Item=Token>> Transcriber<I> {
     pub const fn ligated(mut self) -> Self {
         self.ligate_short = true;
         self.ligate_zwj = true;
@@ -171,7 +171,7 @@ impl<I: Iterator<Item=Token>> TokenIter<I> {
     }
 }
 
-impl<T: IntoIterator<Item=Token>> From<T> for TokenIter<T::IntoIter> {
+impl<T: IntoIterator<Item=Token>> From<T> for Transcriber<T::IntoIter> {
     fn from(iter: T) -> Self {
         Self {
             inner: iter.into_iter().peekable(),
@@ -181,7 +181,7 @@ impl<T: IntoIterator<Item=Token>> From<T> for TokenIter<T::IntoIter> {
     }
 }
 
-impl<I: Iterator<Item=Token>> Iterator for TokenIter<I> {
+impl<I: Iterator<Item=Token>> Iterator for Transcriber<I> {
     type Item = Token;
 
     fn next(&mut self) -> Option<Self::Item> {

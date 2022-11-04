@@ -1,4 +1,4 @@
-use crate::{characters::punctuation, Token, TokenIter};
+use crate::{characters::punctuation, Token, Transcriber};
 use super::{ParseAction, TengwarMode};
 
 
@@ -64,7 +64,7 @@ impl<M: TengwarMode> ModeIter<M> {
         &self.chars[self.head]
     }
 
-    pub fn into_token_iter(self) -> TokenIter<Self> {
+    pub fn into_token_iter(self) -> Transcriber<Self> {
         self.into()
     }
 
