@@ -259,7 +259,6 @@ mod tests {
 
     #[test]
     fn test_quenya() {
-        //  TODO: Take Cargo Features into account.
         let eleni_silar = test_tengwar!(Quenya, "eleni sílar" => [
             CARRIER_SHORT, TEHTA_E.short(), // e
             TENGWA_LAMBE, TEHTA_E.short(), // le
@@ -284,7 +283,7 @@ mod tests {
             CARRIER_LONG, TEHTA_I.long(), // í
             TENGWA_LAMBE, TEHTA_A.short(), // la
             ' ',
-            TENGWA_LAMBE, TEHTA_U.short(), TEHTA_U.short(), // lú
+            TENGWA_LAMBE, pre_long!(TEHTA_U), TEHTA_U.long(), // lú
             TENGWA_MALTA, TEHTA_E.short(), // me
             TENGWA_NUMEN, DC_UNDER_LINE_H, // nn
             PUNCT_DOT_1, // '
@@ -303,7 +302,7 @@ mod tests {
             TENGWA_LAMBE, // l
             TENGWA_CALMA, TEHTA_A.short(), // ca
             TENGWA_ROMEN, TEHTA_A.short(), // ra
-            TENGWA_CALMA, TEHTA_E.short(), SA_RINCE, // xë
+            TENGWA_CALMA, TEHTA_E.short(), rince!(), // xë
         ]);
         test_tengwar!(Quenya, "helkarakse" == helcaraxe);
 
@@ -343,7 +342,7 @@ mod tests {
 
         //  Archaic TH (> S).
         let thuule = test_tengwar!(Quenya, "þúlë" => [
-            TENGWA_THULE, TEHTA_U.long(), TEHTA_U.long(), // þú
+            TENGWA_THULE, pre_long!(TEHTA_U), TEHTA_U.long(), // þú
             TENGWA_LAMBE, TEHTA_E.short(), // lë
         ]);
         test_tengwar!(Quenya, "thuule" == thuule); // ASCII spelling.
@@ -358,7 +357,7 @@ mod tests {
 
         //  Initial and final N.
         let nuumen = test_tengwar!(Quenya, "númen" => [
-            TENGWA_NUMEN, TEHTA_U.long(), TEHTA_U.long(), // nú
+            TENGWA_NUMEN, pre_long!(TEHTA_U), TEHTA_U.long(), // nú
             TENGWA_MALTA, TEHTA_E.short(), // me
             TENGWA_NUMEN, // n
         ]);
@@ -398,5 +397,17 @@ mod tests {
         test_tengwar!(Quenya, "ungwe" == ungwe); // ASCII spelling.
         test_tengwar!(Quenya, "uñwë" != ungwe);
         test_tengwar!(Quenya, "unwë" != ungwe);
+
+        let _silme = test_tengwar!(Quenya, "silmë" => [
+            nuq!(TENGWA_SILME), TEHTA_I.short(), // si
+            TENGWA_LAMBE, // l
+            TENGWA_MALTA, TEHTA_E.short(), // më
+        ]);
+
+        let esse = test_tengwar!(Quenya, "essë" => [
+            CARRIER_SHORT, TEHTA_E.short(), // e,
+            nuq!(TENGWA_ESSE), TEHTA_E.short(), // ssë
+        ]);
+        test_tengwar!(Quenya, "eze" == esse);
     }
 }

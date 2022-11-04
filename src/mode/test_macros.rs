@@ -43,3 +43,35 @@ macro_rules! test_tengwar {
         );
     }};
 }
+
+
+macro_rules! nuq {
+    ($tengwa:expr) => {
+        if cfg!(feature = "nuquernar") {
+            nuquerna($tengwa)
+        } else {
+            $tengwa
+        }
+    };
+}
+
+macro_rules! pre_long {
+    ($tehta:expr) => {
+        #[cfg(not(feature = "long-vowel-unique"))]
+        if cfg!(feature = "long-vowel-double") {
+            $tehta.long()
+        } else {
+            CARRIER_LONG
+        }
+    };
+}
+
+macro_rules! rince {
+    () => {
+        if cfg!(feature = "alt-rince") {
+            SA_RINCE_FINAL
+        } else {
+            SA_RINCE
+        }
+    };
+}
