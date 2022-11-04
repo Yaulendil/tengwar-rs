@@ -281,38 +281,42 @@ pub const TEMA_QESSE: Tema = Tema {
 };
 
 
-//  TODO: Is there any actual benefit to explicitly naming ALL of these?
-pub mod temar {
-    use super::{TEMA_TINCO, TEMA_PARMA, TEMA_CALMA, TEMA_QESSE};
+//  Alternate spellings.
+// pub const TENGWA_SULE: char = TENGWA_THULE; // þ -> s
+// pub const TENGWA_QUESSE: char = TENGWA_QESSE;
+// pub const TENGWA_VILYA: char = TENGWA_WILYA; // w -> v
 
-    pub const TINCO: char = TEMA_TINCO.single_dn;
-    pub const ANDO: char = TEMA_TINCO.double_dn;
-    pub const THULE: char = TEMA_TINCO.single_up;
-    pub const ANTO: char = TEMA_TINCO.double_up;
-    pub const NUMEN: char = TEMA_TINCO.double_sh;
-    pub const ORE: char = TEMA_TINCO.single_sh;
+//  Explicit names for the Tincotéma.
+pub const TENGWA_TINCO: char = TEMA_TINCO.single_dn;
+pub const TENGWA_ANDO: char = TEMA_TINCO.double_dn;
+pub const TENGWA_THULE: char = TEMA_TINCO.single_up;
+pub const TENGWA_ANTO: char = TEMA_TINCO.double_up;
+pub const TENGWA_NUMEN: char = TEMA_TINCO.double_sh;
+pub const TENGWA_ORE: char = TEMA_TINCO.single_sh;
 
-    pub const PARMA: char = TEMA_PARMA.single_dn;
-    pub const UMBAR: char = TEMA_PARMA.double_dn;
-    pub const FORMEN: char = TEMA_PARMA.single_up;
-    pub const AMPA: char = TEMA_PARMA.double_up;
-    pub const MALTA: char = TEMA_PARMA.double_sh;
-    pub const VALA: char = TEMA_PARMA.single_sh;
+//  Explicit names for the Parmatéma.
+pub const TENGWA_PARMA: char = TEMA_PARMA.single_dn;
+pub const TENGWA_UMBAR: char = TEMA_PARMA.double_dn;
+pub const TENGWA_FORMEN: char = TEMA_PARMA.single_up;
+pub const TENGWA_AMPA: char = TEMA_PARMA.double_up;
+pub const TENGWA_MALTA: char = TEMA_PARMA.double_sh;
+pub const TENGWA_VALA: char = TEMA_PARMA.single_sh;
 
-    pub const CALMA: char = TEMA_CALMA.single_dn;
-    pub const ANGA: char = TEMA_CALMA.double_dn;
-    pub const AHA: char = TEMA_CALMA.single_up;
-    pub const ANCA: char = TEMA_CALMA.double_up;
-    pub const NOLDO: char = TEMA_CALMA.double_sh;
-    pub const ANNA: char = TEMA_CALMA.single_sh;
+//  Explicit names for the Calmatéma.
+pub const TENGWA_CALMA: char = TEMA_CALMA.single_dn;
+pub const TENGWA_ANGA: char = TEMA_CALMA.double_dn;
+pub const TENGWA_AHA: char = TEMA_CALMA.single_up;
+pub const TENGWA_ANCA: char = TEMA_CALMA.double_up;
+pub const TENGWA_NOLDO: char = TEMA_CALMA.double_sh;
+pub const TENGWA_ANNA: char = TEMA_CALMA.single_sh;
 
-    pub const QESSE: char = TEMA_QESSE.single_dn;
-    pub const UNGWE: char = TEMA_QESSE.double_dn;
-    pub const HWESTA: char = TEMA_QESSE.single_up;
-    pub const UNQUE: char = TEMA_QESSE.double_up;
-    pub const NWALME: char = TEMA_QESSE.double_sh;
-    pub const WILYA: char = TEMA_QESSE.single_sh;
-}
+//  Explicit names for the Qessetéma.
+pub const TENGWA_QESSE: char = TEMA_QESSE.single_dn;
+pub const TENGWA_UNGWE: char = TEMA_QESSE.double_dn;
+pub const TENGWA_HWESTA: char = TEMA_QESSE.single_up;
+pub const TENGWA_UNQUE: char = TEMA_QESSE.double_up;
+pub const TENGWA_NWALME: char = TEMA_QESSE.double_sh;
+pub const TENGWA_WILYA: char = TEMA_QESSE.single_sh;
 
 /// A variant of Vala with an extra hook.
 pub const TENGWA_CURL_SINGLE: char = '';
@@ -361,7 +365,7 @@ pub const fn width(c: char) -> Option<usize> {
         | ZWJ
         => Some(0),
 
-        temar::TINCO..=CARRIER_SHORT
+        TENGWA_TINCO..=CARRIER_SHORT
         | TENGWA_OSSE_REV..=TENGWA_OSSE
         | CARRIER_SHORT_LIG..=TENGWA_WAIA
         | SA_RINCE_FINAL

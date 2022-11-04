@@ -187,7 +187,7 @@ impl TengwarMode for Quenya {
 
             //  Check for special cases.
             if let ['x'] = chunk {
-                let glyph = Glyph::new_cons(temar::CALMA, false);
+                let glyph = Glyph::new_cons(TENGWA_CALMA, false);
 
                 self.current = Some(glyph.with_silme());
                 ParseAction::MatchedPart(1)
@@ -285,14 +285,14 @@ mod tests {
         ]);
 
         let ngoldo = test_tengwar!(Quenya, "ñoldo" => [
-            temar::NOLDO, TEHTA_O.short(), // ño
+            TENGWA_NOLDO, TEHTA_O.short(), // ño
             TENGWA_ALDA, TEHTA_O.short(), // ldo
         ]);
         // test_tengwar!(Quenya, "ngoldo" == ngoldo); // TODO
         test_tengwar!(Quenya, "noldo" != ngoldo);
 
         let ngwalme = test_tengwar!(Quenya, "ñwalmë" => [
-            temar::NWALME, TEHTA_A.short(), // ñwa
+            TENGWA_NWALME, TEHTA_A.short(), // ñwa
             TENGWA_LAMBE, // l
             TEMA_PARMA.double_sh, TEHTA_E.short(), // më
         ]);
@@ -302,12 +302,12 @@ mod tests {
 
         let _anga = test_tengwar!(Quenya, "anga" => [
             CARRIER_SHORT, TEHTA_A.short(), // a
-            temar::ANGA, TEHTA_A.short(), // nga
+            TENGWA_ANGA, TEHTA_A.short(), // nga
         ]);
 
         let _ungwe = test_tengwar!(Quenya, "ungwë" => [
             CARRIER_SHORT, TEHTA_U.short(), // u
-            temar::UNGWE, TEHTA_E.short(), // ngwë
+            TENGWA_UNGWE, TEHTA_E.short(), // ngwë
         ]);
     }
 }

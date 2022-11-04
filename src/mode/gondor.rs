@@ -122,7 +122,7 @@ impl TengwarMode for Gondor {
             if glyph.cons == Some(TENGWA_ROMEN) {
                 match next {
                     Some(Token::Tengwa(_)) => {}
-                    _ => glyph.cons = Some(temar::ORE),
+                    _ => glyph.cons = Some(TENGWA_ORE),
                 }
             }
         }
@@ -179,7 +179,7 @@ impl TengwarMode for Gondor {
                 if let ['x'] = chunk {
                     let mut glyph = *current;
 
-                    glyph.cons = Some(temar::CALMA);
+                    glyph.cons = Some(TENGWA_CALMA);
                     self.current = Some(Glyph::new_cons(TENGWA_SILME, false));
                     self.previous = Some(glyph);
 
@@ -235,7 +235,7 @@ impl TengwarMode for Gondor {
                 self.previous = None;
 
                 return ParseAction::MatchedToken {
-                    token: Token::Tengwa(Glyph::new_cons(temar::CALMA, false)),
+                    token: Token::Tengwa(Glyph::new_cons(TENGWA_CALMA, false)),
                     len: 1,
                 };
             }

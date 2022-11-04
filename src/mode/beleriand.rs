@@ -152,7 +152,7 @@ impl TengwarMode for Beleriand {
                 self.previous = None;
 
                 ParseAction::MatchedToken {
-                    token: Token::Tengwa(Glyph::new_cons(temar::CALMA, false)),
+                    token: Token::Tengwa(Glyph::new_cons(TENGWA_CALMA, false)),
                     len: 1,
                 }
             }

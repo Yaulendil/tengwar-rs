@@ -48,7 +48,7 @@ impl Policy for Standard {
             TENGWA_ESSE_NUQ => false,
             TENGWA_ESSE => false,
 
-            temar::TINCO..=TENGWA_HWESTA_SINDARINWA => true,
+            TENGWA_TINCO..=TENGWA_HWESTA_SINDARINWA => true,
             _ => false,
         }
     }
@@ -75,7 +75,7 @@ impl Policy for Standard {
             => None,
 
             #[cfg(feature = "alt-rince")]
-            temar::TINCO..=temar::WILYA
+            TENGWA_TINCO..=TENGWA_WILYA
             | TENGWA_LAMBE | TENGWA_ALDA | TENGWA_HYARMEN
             if is_final => Some(SA_RINCE_FINAL),
 
