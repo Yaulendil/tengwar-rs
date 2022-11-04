@@ -95,17 +95,17 @@ pub fn transcribe<M: TengwarMode>(text: impl ToTengwar) -> String {
 pub trait ToTengwar {
     /// Create a [`Transcriber`] to iteratively transcribe this text into the
     ///     Tengwar. The returned iterator will yield [`Token`]s.
-    fn tengwar_iter<M: TengwarMode>(&self) -> Transcriber<ModeIter<M>>;
+    fn transcriber<M: TengwarMode>(&self) -> Transcriber<ModeIter<M>>;
 
     /// Transcribe this object into the Tengwar.
     fn to_tengwar<M: TengwarMode, T: FromIterator<Token>>(&self) -> T {
-        self.tengwar_iter::<M>().collect()
+        self.transcriber::<M>().collect()
     }
 }
 
 impl<S: AsRef<str>> ToTengwar for S {
-    fn tengwar_iter<M: TengwarMode>(&self) -> Transcriber<ModeIter<M>> {
-        ModeIter::from_str(self).into_token_iter()
+    fn transcriber<M: TengwarMode>(&self) -> Transcriber<ModeIter<M>> {
+        ModeIter::from_str(self).into_transcriber()
     }
 }
 

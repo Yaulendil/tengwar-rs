@@ -64,7 +64,7 @@ impl<M: TengwarMode> ModeIter<M> {
         &self.chars[self.head]
     }
 
-    pub fn into_token_iter(self) -> Transcriber<Self> {
+    pub fn into_transcriber(self) -> Transcriber<Self> {
         self.into()
     }
 

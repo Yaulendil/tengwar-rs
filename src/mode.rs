@@ -54,7 +54,7 @@ pub trait TengwarMode: Default + Sized {
     ///
     /// [`Transcriber`]: crate::Transcriber
     fn transcribe<T: FromIterator<Token>>(input: impl AsRef<str>) -> T {
-        ModeIter::<Self>::from_str(input).into_token_iter().collect()
+        ModeIter::<Self>::from_str(input).into_transcriber().collect()
     }
 
     /// Perform any last-minute modifications to a [`Token`] that may be needed

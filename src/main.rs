@@ -19,19 +19,19 @@ impl Mode {
     fn convert(&self, input: impl AsRef<str>, short: bool, zwj: bool) -> String {
         match self {
             Self::Quenya => {
-                let mut iter = input.tengwar_iter::<Quenya>();
+                let mut iter = input.transcriber::<Quenya>();
                 iter.ligate_short = short;
                 iter.ligate_zwj = zwj;
                 iter.collect()
             }
             Self::Gondor => {
-                let mut iter = input.tengwar_iter::<Gondor>();
+                let mut iter = input.transcriber::<Gondor>();
                 iter.ligate_short = short;
                 iter.ligate_zwj = zwj;
                 iter.collect()
             }
             Self::Beleriand => {
-                let mut iter = input.tengwar_iter::<Beleriand>();
+                let mut iter = input.transcriber::<Beleriand>();
                 iter.ligate_short = short;
                 iter.ligate_zwj = zwj;
                 iter.collect()
