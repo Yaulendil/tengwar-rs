@@ -169,7 +169,7 @@ impl TengwarMode for Quenya {
                         if let Some(_) = get_diphthong(chunk) {
                             finish!(*current)
                         } else if let Some((vowel, long)) = get_vowel(chunk) {
-                            if current.cons == Some(TEMA_TINCO.single_sh) {
+                            if current.cons == Some(TENGWA_ORE) {
                                 current.cons = Some(TENGWA_ROMEN);
                             }
 
@@ -192,7 +192,7 @@ impl TengwarMode for Quenya {
                 self.current = Some(glyph.with_silme());
                 ParseAction::MatchedPart(1)
             } else if let ['y', ..] = chunk {
-                let glyph = Glyph::new_cons(TEMA_CALMA.single_sh, false);
+                let glyph = Glyph::new_cons(TENGWA_ANNA, false);
 
                 self.current = Some(glyph.with_palatal());
                 ParseAction::MatchedPart(1)
@@ -205,12 +205,27 @@ impl TengwarMode for Quenya {
                 if self.previous.is_some() {
                     //  Medial H is represented by Aha, not Hyarmen.
                     if new.cons == Some(TENGWA_HYARMEN) {
-                        new.cons = Some(TEMA_CALMA.single_up);
+                        new.cons = Some(TENGWA_AHA);
                     }
                 } else {
+                    //  TODO: These special cases allow for using basic ASCII
+                    //      `ng`, instead of needing to use `ñ`, to specify the
+                    //      archaic initial spellings. However, this approach
+                    //      will also be applied to detached suffixes, such as
+                    //      "-ngwë" (which is technically initial, but does not
+                    //      truly represent the initial variant of the tengwa).
+                    //      Checking one token previous would not fix it either,
+                    //      because that would then misspell hyphenated compound
+                    //      phrases like "etya-ngoldorin".
+
+                    //  Initial NG is represented by Ñoldo, not Anga.
+                    if new.cons == Some(TENGWA_ANGA) {
+                        new.cons = Some(TENGWA_NOLDO);
+                    }
+
                     //  Initial NGW is represented by Ñwalmë, not Ungwë.
-                    if new.cons == Some(TEMA_QESSE.double_dn) {
-                        new.cons = Some(TEMA_QESSE.double_sh);
+                    if new.cons == Some(TENGWA_UNGWE) {
+                        new.cons = Some(TENGWA_NWALME);
                     }
                 }
 
@@ -248,12 +263,12 @@ mod tests {
         let eleni_silar = test_tengwar!(Quenya, "eleni sílar" => [
             CARRIER_SHORT, TEHTA_E.short(), // e
             TENGWA_LAMBE, TEHTA_E.short(), // le
-            TEMA_TINCO.double_sh, TEHTA_I.short(), // ni
+            TENGWA_NUMEN, TEHTA_I.short(), // ni
             ' ',
             TENGWA_SILME, // s
             CARRIER_LONG, TEHTA_I.long(), // í
             TENGWA_LAMBE, TEHTA_A.short(), // la
-            TEMA_TINCO.single_sh, // r
+            TENGWA_ORE, // r
         ]);
         test_tengwar!(Quenya, "Eleni Sílar" == eleni_silar);
         test_tengwar!(Quenya, "Elënï Sílär" == eleni_silar);
@@ -263,51 +278,125 @@ mod tests {
         test_tengwar!(Quenya, "Elen síla lúmenn' omentielvo :" => [
             CARRIER_SHORT, TEHTA_E.short(), // e
             TENGWA_LAMBE, TEHTA_E.short(), // le
-            TEMA_TINCO.double_sh, // n
+            TENGWA_NUMEN, // n
             ' ',
             TENGWA_SILME, // s
             CARRIER_LONG, TEHTA_I.long(), // í
             TENGWA_LAMBE, TEHTA_A.short(), // la
             ' ',
             TENGWA_LAMBE, TEHTA_U.short(), TEHTA_U.short(), // lú
-            TEMA_PARMA.double_sh, TEHTA_E.short(), // me
-            TEMA_TINCO.double_sh, DC_UNDER_LINE_H, // nn
+            TENGWA_MALTA, TEHTA_E.short(), // me
+            TENGWA_NUMEN, DC_UNDER_LINE_H, // nn
             PUNCT_DOT_1, // '
             ' ',
             CARRIER_SHORT, TEHTA_O.short(), // o
-            TEMA_PARMA.double_sh, TEHTA_E.short(), // me
-            TEMA_TINCO.double_up, TEHTA_I.short(), // nti
+            TENGWA_MALTA, TEHTA_E.short(), // me
+            TENGWA_ANTO, TEHTA_I.short(), // nti
             CARRIER_SHORT, TEHTA_E.short(), // e
             TENGWA_LAMBE, // l
-            TEMA_PARMA.single_sh, TEHTA_O.short(), // vo
-            ' ',
-            PUNCT_DOT_2,
+            TENGWA_VALA, TEHTA_O.short(), // vo
+            ' ', PUNCT_DOT_2,
         ]);
 
+        let helcaraxe = test_tengwar!(Quenya, "helcaraxë" => [
+            TENGWA_HYARMEN, TEHTA_E.short(), // he
+            TENGWA_LAMBE, // l
+            TENGWA_CALMA, TEHTA_A.short(), // ca
+            TENGWA_ROMEN, TEHTA_A.short(), // ra
+            TENGWA_CALMA, TEHTA_E.short(), SA_RINCE, // xë
+        ]);
+        test_tengwar!(Quenya, "helkarakse" == helcaraxe);
+
+        let quenya = test_tengwar!(Quenya, "quenya" => [
+            TENGWA_QESSE, TEHTA_E.short(), // que
+            TENGWA_NUMEN, MOD_PALATAL, TEHTA_A.short(), // nya
+        ]);
+        test_tengwar!(Quenya, "qenya" == quenya);
+        test_tengwar!(Quenya, "kwenya" == quenya);
+        test_tengwar!(Quenya, "cwenya" == quenya);
+        test_tengwar!(Quenya, "kuenya" != quenya);
+        test_tengwar!(Quenya, "cuenya" != quenya);
+
+        let _aha = test_tengwar!(Quenya, "aha" => [
+            CARRIER_SHORT, TEHTA_A.short(), // a
+            TENGWA_AHA, TEHTA_A.short(), // ha
+        ]);
+
+        let _hyarmen = test_tengwar!(Quenya, "hyarmen" => [
+            TENGWA_HYARMEN, MOD_PALATAL, TEHTA_A.short(), // hya
+            TENGWA_ORE, // r
+            TENGWA_MALTA, TEHTA_E.short(), // me
+            TENGWA_NUMEN, // n
+        ]);
+
+        let _hwesta = test_tengwar!(Quenya, "hwesta" => [
+            TENGWA_HWESTA, TEHTA_E.short(), // hwe
+            TENGWA_SILME, // s
+            TENGWA_TINCO, TEHTA_A.short(), // ta
+        ]);
+
+        let ara = test_tengwar!(Quenya, "ára" => [
+            CARRIER_LONG, TEHTA_A.long(), // á
+            TENGWA_ROMEN, TEHTA_A.short(), // ra
+        ]);
+        test_tengwar!(Quenya, "aara" == ara); // ASCII spelling.
+
+        //  Archaic TH (> S).
+        let thuule = test_tengwar!(Quenya, "þúlë" => [
+            TENGWA_THULE, TEHTA_U.long(), TEHTA_U.long(), // þú
+            TENGWA_LAMBE, TEHTA_E.short(), // lë
+        ]);
+        test_tengwar!(Quenya, "thuule" == thuule); // ASCII spelling.
+        test_tengwar!(Quenya, "súlë" != thuule);
+
+        let calma = test_tengwar!(Quenya, "calma" => [
+            TENGWA_CALMA, TEHTA_A.short(), // ca
+            TENGWA_LAMBE, // l
+            TENGWA_MALTA, TEHTA_A.short(), // ma
+        ]);
+        test_tengwar!(Quenya, "kalma" == calma);
+
+        //  Initial and final N.
+        let nuumen = test_tengwar!(Quenya, "númen" => [
+            TENGWA_NUMEN, TEHTA_U.long(), TEHTA_U.long(), // nú
+            TENGWA_MALTA, TEHTA_E.short(), // me
+            TENGWA_NUMEN, // n
+        ]);
+        test_tengwar!(Quenya, "nuumen" == nuumen); // ASCII spelling.
+        test_tengwar!(Quenya, "ngúmen" != nuumen);
+
+        //  Initial NG (> N).
         let ngoldo = test_tengwar!(Quenya, "ñoldo" => [
             TENGWA_NOLDO, TEHTA_O.short(), // ño
             TENGWA_ALDA, TEHTA_O.short(), // ldo
         ]);
-        // test_tengwar!(Quenya, "ngoldo" == ngoldo); // TODO
+        test_tengwar!(Quenya, "ngoldo" == ngoldo); // ASCII spelling.
         test_tengwar!(Quenya, "noldo" != ngoldo);
 
+        //  Initial NGW (> NW).
         let ngwalme = test_tengwar!(Quenya, "ñwalmë" => [
             TENGWA_NWALME, TEHTA_A.short(), // ñwa
             TENGWA_LAMBE, // l
-            TEMA_PARMA.double_sh, TEHTA_E.short(), // më
+            TENGWA_MALTA, TEHTA_E.short(), // më
         ]);
-        test_tengwar!(Quenya, "ngwalmë" == ngwalme);
-        test_tengwar!(Quenya, "ngwalme" == ngwalme);
+        test_tengwar!(Quenya, "ngwalme" == ngwalme); // ASCII spelling.
         test_tengwar!(Quenya, "nwalmë" != ngwalme);
 
-        let _anga = test_tengwar!(Quenya, "anga" => [
+        //  Medial NG.
+        let anga = test_tengwar!(Quenya, "anga" => [
             CARRIER_SHORT, TEHTA_A.short(), // a
             TENGWA_ANGA, TEHTA_A.short(), // nga
         ]);
+        test_tengwar!(Quenya, "aña" != anga);
+        test_tengwar!(Quenya, "ana" != anga);
 
-        let _ungwe = test_tengwar!(Quenya, "ungwë" => [
+        //  Medial NGW.
+        let ungwe = test_tengwar!(Quenya, "ungwë" => [
             CARRIER_SHORT, TEHTA_U.short(), // u
             TENGWA_UNGWE, TEHTA_E.short(), // ngwë
         ]);
+        test_tengwar!(Quenya, "ungwe" == ungwe); // ASCII spelling.
+        test_tengwar!(Quenya, "uñwë" != ungwe);
+        test_tengwar!(Quenya, "unwë" != ungwe);
     }
 }
