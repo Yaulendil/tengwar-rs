@@ -16,7 +16,45 @@ pub enum Tehta {
 }
 
 impl Tehta {
-    /// Write this Tehta into a Formatter. The provided boolean argument will
+    pub const fn has_alt(&self) -> bool {
+        matches!(self, Self::Altern(..))
+    }
+
+    pub const fn is_double(&self) -> bool {
+        matches!(self, Self::Double(..))
+    }
+
+    /*pub const fn mark(&self, long: bool) -> char {
+        match self {
+            Self::Single(mark) => *mark,
+            Self::Double(mark) => *mark,
+            Self::Altern(mark, alt) => if long { *alt } else { *mark }
+        }
+    }*/
+
+    pub const fn long(&self) -> char {
+        match self {
+            Self::Single(mark) => *mark,
+            Self::Double(mark) => *mark,
+            Self::Altern(_, mark) => *mark,
+        }
+    }
+
+    pub const fn short(&self) -> char {
+        match self {
+            Self::Single(mark) => *mark,
+            Self::Double(mark) => *mark,
+            Self::Altern(mark, _) => *mark,
+        }
+    }
+
+    /// Returns `true` if the long variant of this tehta would be written with
+    ///     the extended "Ára" carrier.
+    pub const fn uses_ara(&self) -> bool {
+        matches!(self, Self::Single(..))
+    }
+
+    /// Write this tehta into a Formatter. The provided boolean argument will
     ///     determine whether the basic short form or the variable long form is
     ///     written.
     pub fn write(&self, f: &mut Formatter<'_>, long: bool) -> std::fmt::Result {
@@ -43,11 +81,5 @@ impl Tehta {
                 }
             }
         }
-    }
-
-    /// Returns true if the long variant of this Tehta would be written with the
-    ///     extended "Ára" Telco.
-    pub const fn uses_ara(&self) -> bool {
-        matches!(self, Self::Single(..))
     }
 }

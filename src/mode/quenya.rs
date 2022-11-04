@@ -244,10 +244,70 @@ mod tests {
 
     #[test]
     fn test_quenya() {
-        test_tengwar!(Quenya, "eleni" => [
-            CARRIER_SHORT, DC_OVER_ACUTE_1, // e
-            TENGWA_LAMBE, DC_OVER_ACUTE_1, // le
-            TEMA_TINCO.double_sh, DC_OVER_DOT_1, // ni
+        //  TODO: Take Cargo Features into account.
+        let eleni_silar = test_tengwar!(Quenya, "eleni sílar" => [
+            CARRIER_SHORT, TEHTA_E.short(), // e
+            TENGWA_LAMBE, TEHTA_E.short(), // le
+            TEMA_TINCO.double_sh, TEHTA_I.short(), // ni
+            ' ',
+            TENGWA_SILME, // s
+            CARRIER_LONG, TEHTA_I.long(), // í
+            TENGWA_LAMBE, TEHTA_A.short(), // la
+            TEMA_TINCO.single_sh, // r
+        ]);
+        test_tengwar!(Quenya, "Eleni Sílar" == eleni_silar);
+        test_tengwar!(Quenya, "Elënï Sílär" == eleni_silar);
+        test_tengwar!(Quenya, "ELeNi SiiLaR" == eleni_silar);
+        test_tengwar!(Quenya, "ELENI SIILAR" == eleni_silar);
+
+        test_tengwar!(Quenya, "Elen síla lúmenn' omentielvo :" => [
+            CARRIER_SHORT, TEHTA_E.short(), // e
+            TENGWA_LAMBE, TEHTA_E.short(), // le
+            TEMA_TINCO.double_sh, // n
+            ' ',
+            TENGWA_SILME, // s
+            CARRIER_LONG, TEHTA_I.long(), // í
+            TENGWA_LAMBE, TEHTA_A.short(), // la
+            ' ',
+            TENGWA_LAMBE, TEHTA_U.short(), TEHTA_U.short(), // lú
+            TEMA_PARMA.double_sh, TEHTA_E.short(), // me
+            TEMA_TINCO.double_sh, DC_UNDER_LINE_H, // nn
+            PUNCT_DOT_1, // '
+            ' ',
+            CARRIER_SHORT, TEHTA_O.short(), // o
+            TEMA_PARMA.double_sh, TEHTA_E.short(), // me
+            TEMA_TINCO.double_up, TEHTA_I.short(), // nti
+            CARRIER_SHORT, TEHTA_E.short(), // e
+            TENGWA_LAMBE, // l
+            TEMA_PARMA.single_sh, TEHTA_O.short(), // vo
+            ' ',
+            PUNCT_DOT_2,
+        ]);
+
+        let ngoldo = test_tengwar!(Quenya, "ñoldo" => [
+            temar::NOLDO, TEHTA_O.short(), // ño
+            TENGWA_ALDA, TEHTA_O.short(), // ldo
+        ]);
+        // test_tengwar!(Quenya, "ngoldo" == ngoldo); // TODO
+        test_tengwar!(Quenya, "noldo" != ngoldo);
+
+        let ngwalme = test_tengwar!(Quenya, "ñwalmë" => [
+            temar::NWALME, TEHTA_A.short(), // ñwa
+            TENGWA_LAMBE, // l
+            TEMA_PARMA.double_sh, TEHTA_E.short(), // më
+        ]);
+        test_tengwar!(Quenya, "ngwalmë" == ngwalme);
+        test_tengwar!(Quenya, "ngwalme" == ngwalme);
+        test_tengwar!(Quenya, "nwalmë" != ngwalme);
+
+        let _anga = test_tengwar!(Quenya, "anga" => [
+            CARRIER_SHORT, TEHTA_A.short(), // a
+            temar::ANGA, TEHTA_A.short(), // nga
+        ]);
+
+        let _ungwe = test_tengwar!(Quenya, "ungwë" => [
+            CARRIER_SHORT, TEHTA_U.short(), // u
+            temar::UNGWE, TEHTA_E.short(), // ngwë
         ]);
     }
 }
