@@ -236,3 +236,18 @@ impl TengwarMode for Quenya {
         }
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_quenya() {
+        test_tengwar!(Quenya, "eleni" => [
+            CARRIER_SHORT, DC_OVER_ACUTE_1, // e
+            TENGWA_LAMBE, DC_OVER_ACUTE_1, // le
+            TEMA_TINCO.double_sh, DC_OVER_DOT_1, // ni
+        ]);
+    }
+}
