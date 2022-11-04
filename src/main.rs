@@ -101,6 +101,14 @@ struct ModeFlags {
 #[derive(Debug, Parser)]
 #[command(version, max_term_width(100))]
 struct Command {
+    /// Use all available forms of ligature formation.
+    #[arg(long = "ligatures", short = 'l')]
+    ligate_all: bool,
+
+    /// Use the ligated short carrier when applicable.
+    #[arg(long, short = 's')]
+    ligate_short: bool,
+
     /// Use zero-width joiners to ligate output.
     ///
     /// In certain typefaces, a zero-width joiner character may be used to form
@@ -110,12 +118,8 @@ struct Command {
     /// For typefaces that do not support these ligatures, the presence of the
     ///     joiners should not affect rendering; However, it does increase the
     ///     number of bytes in the output by approximately 15%.
-    #[arg(long, short)]
-    ligatures: bool,
-
-    /// Use the "ligated short carrier" when applicable.
-    #[arg(long, short = 's')]
-    lig_short: bool,
+    #[arg(long, short = 'z')]
+    ligate_zwj: bool,
 
     /// Text to be transliterated.
     ///
@@ -127,6 +131,13 @@ struct Command {
 }
 
 impl Command {
+    fn convert(&self, text: impl AsRef<str>) -> String {
+        let short: bool = self.ligate_all || self.ligate_short;
+        let zwj: bool = self.ligate_all || self.ligate_zwj;
+
+        self.mode().convert(text, short, zwj)
+    }
+
     const fn mode(&self) -> Mode {
         if self.mode_flags.quenya {
             Mode::Quenya
@@ -145,27 +156,18 @@ impl Command {
 
 fn main() {
     let command: Command = clap::Parser::parse();
-    let mode: Mode = command.mode();
 
     if command.text.is_empty() {
         for line in stdin().lock().lines() {
             if let Ok(text) = line {
-                let conv: String = mode.convert(
-                    text,
-                    command.lig_short,
-                    command.ligatures,
-                );
+                let conv: String = command.convert(text);
 
                 println!("{}", conv);
             }
         }
     } else {
         let text: String = command.text.join(" ");
-        let conv: String = mode.convert(
-            text,
-            command.lig_short,
-            command.ligatures,
-        );
+        let conv: String = command.convert(text);
 
         print!("{}", conv);
         exit(stdout().write(b"\n").is_err() as i32);
@@ -174,6 +176,7 @@ fn main() {
 
 
 #[test]
+#[cfg(test)]
 fn verify_cli() {
     <Command as clap::CommandFactory>::command().debug_assert();
 }
