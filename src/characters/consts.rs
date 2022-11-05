@@ -280,12 +280,12 @@ pub const TEMA_QESSE: Tema = Tema {
     double_ex: '',
 };
 
-// impl Tema {
-//     pub const TINCO: Self = TEMA_TINCO;
-//     pub const PARMA: Self = TEMA_PARMA;
-//     pub const CALMA: Self = TEMA_CALMA;
-//     pub const QESSE: Self = TEMA_QESSE;
-// }
+impl Tema {
+    pub const TINCO: Self = TEMA_TINCO;
+    pub const PARMA: Self = TEMA_PARMA;
+    pub const CALMA: Self = TEMA_CALMA;
+    pub const QESSE: Self = TEMA_QESSE;
+}
 
 
 //  Alternate spellings.

@@ -1,4 +1,5 @@
 use std::ops::Index;
+use super::Tengwa;
 
 
 /// The Témar are the four series of the regular tengwar. Each Téma is composed
@@ -61,6 +62,31 @@ impl Tema {
             Tyelle { stem_dn: Y, stem_up: Y, doubled: Y } => &self.double_ex,
         }
     }
+
+    pub const fn find_tyelle(&self, c: char) -> Option<Tyelle> {
+        let tyelle: Tyelle = if c == self.single_dn {
+            Tyelle::new().single().descending()
+        } else if c == self.double_dn {
+            Tyelle::new().double().descending()
+        } else if c == self.single_up {
+            Tyelle::new().single().ascending()
+        } else if c == self.double_up {
+            Tyelle::new().double().ascending()
+        } else if c == self.double_sh {
+            Tyelle::new().double().short()
+        } else if c == self.single_sh {
+            Tyelle::new().single().short()
+        } else if c == self.single_ex {
+            Tyelle::new().single().extended()
+        } else if c == self.double_ex {
+            Tyelle::new().double().extended()
+        } else {
+            return None;
+        };
+
+        // debug_assert_eq!(self.get_char(tyelle), &c);
+        Some(tyelle)
+    }
 }
 
 impl Index<Tyelle> for Tema {
@@ -81,41 +107,55 @@ impl<'t> TengwaRegular<'t> {
         Self { tema, tyelle: Tyelle::new() }
     }
 
+    pub const fn find(char: char) -> Option<Self> {
+        if let Some(tyelle) = Tema::TINCO.find_tyelle(char) {
+            Some(Tema::TINCO.get_tengwa(tyelle))
+        } else if let Some(tyelle) = Tema::PARMA.find_tyelle(char) {
+            Some(Tema::PARMA.get_tengwa(tyelle))
+        } else if let Some(tyelle) = Tema::CALMA.find_tyelle(char) {
+            Some(Tema::CALMA.get_tengwa(tyelle))
+        } else if let Some(tyelle) = Tema::QESSE.find_tyelle(char) {
+            Some(Tema::QESSE.get_tengwa(tyelle))
+        } else {
+            None
+        }
+    }
+
     pub const fn as_char(&self) -> &char {
         self.tema.get_char(self.tyelle)
     }
 
+    pub const fn wrapped(self) -> Tengwa<'t> {
+        Tengwa::Regular(self)
+    }
+
     pub const fn double(mut self) -> Self {
-        self.tyelle.doubled = true;
+        self.tyelle = self.tyelle.double();
         self
     }
 
     pub const fn single(mut self) -> Self {
-        self.tyelle.doubled = false;
+        self.tyelle = self.tyelle.single();
         self
     }
 
     pub const fn ascending(mut self) -> Self {
-        self.tyelle.stem_dn = false;
-        self.tyelle.stem_up = true;
+        self.tyelle = self.tyelle.ascending();
         self
     }
 
     pub const fn descending(mut self) -> Self {
-        self.tyelle.stem_dn = true;
-        self.tyelle.stem_up = false;
+        self.tyelle = self.tyelle.descending();
         self
     }
 
     pub const fn short(mut self) -> Self {
-        self.tyelle.stem_dn = false;
-        self.tyelle.stem_up = false;
+        self.tyelle = self.tyelle.short();
         self
     }
 
     pub const fn extended(mut self) -> Self {
-        self.tyelle.stem_dn = true;
-        self.tyelle.stem_up = true;
+        self.tyelle = self.tyelle.extended();
         self
     }
 }
@@ -145,6 +185,11 @@ impl Tyelle {
             doubled: false,
         }
     }
+
+    pub const fn is_ascending(&self) -> bool { self.stem_up && !self.stem_dn }
+    pub const fn is_descending(&self) -> bool { !self.stem_up && self.stem_dn }
+    pub const fn is_short(&self) -> bool { !self.stem_up && !self.stem_dn }
+    pub const fn is_extended(&self) -> bool { self.stem_up && self.stem_dn }
 
     pub const fn on_tema<'t>(&self, tema: &'t Tema) -> TengwaRegular<'t> {
         TengwaRegular { tema, tyelle: *self }
@@ -193,6 +238,30 @@ impl Tyelle {
         self.stem_dn = true;
         self.stem_up = true;
         self
+    }
+
+    pub fn make_double(&mut self) {
+        *self = self.double();
+    }
+
+    pub fn make_single(&mut self) {
+        *self = self.single();
+    }
+
+    pub fn make_ascending(&mut self) {
+        *self = self.ascending();
+    }
+
+    pub fn make_descending(&mut self) {
+        *self = self.descending();
+    }
+
+    pub fn make_short(&mut self) {
+        *self = self.short();
+    }
+
+    pub fn make_extended(&mut self) {
+        *self = self.extended();
     }
 }
 

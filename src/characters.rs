@@ -116,3 +116,131 @@ pub const fn mod_rince(base: char, is_final: bool) -> char {
         _ => SA_RINCE,
     }
 }
+
+/*
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[repr(transparent)]
+pub struct TengwaIrregular(char);
+
+impl TengwaIrregular {
+    // pub const MIN: Self = Self(TENGWA_ROMEN);
+    pub const MIN: Self = Self(TENGWA_TINCO);
+    pub const MAX: Self = Self(TENGWA_WAIA);
+
+    pub const fn new(char: char) -> Option<Self> {
+        if Self::MIN.0 <= char && char <= Self::MAX.0
+            // && char != '\u{E02F}' && char != '\u{E033}'
+        {
+            Some(Self(char))
+        } else {
+            None
+        }
+    }
+
+    pub const unsafe fn new_unchecked(char: char) -> Self { Self(char) }
+}
+
+impl std::ops::Deref for TengwaIrregular {
+    type Target = char;
+    fn deref(&self) -> &Self::Target { &self.0 }
+}*/
+
+
+/// A type representing a single base tengwa, either irregular or regular.
+///
+/// The `Regular` variant contains a [`TengwaRegular`], which has additional
+///     information regarding the actual shape of the character.
+#[derive(Clone, Copy, Debug)]
+pub enum Tengwa<'t> {
+    Irregular(char),
+    // Irregular(TengwaIrregular),
+    Regular(TengwaRegular<'t>),
+}
+
+impl<'t> Tengwa<'t> {
+    pub const fn either_from(char: char) -> Self {
+        match TengwaRegular::find(char) {
+            Some(tengwa) => Self::Regular(tengwa),
+            None => Self::Irregular(char),
+        }
+    }
+
+    pub const fn irregular_from(char: char) -> Self {
+        Self::Irregular(char)
+    }
+
+    /*pub const unsafe fn either_from_unchecked(char: char) -> Self {
+        match TengwaRegular::find(char) {
+            Some(tengwa) => Self::Regular(tengwa),
+            None => Self::Irregular(TengwaIrregular::new_unchecked(char)),
+        }
+    }
+
+    pub const fn try_either_from(char: char) -> Option<Self> {
+        match TengwaRegular::find(char) {
+            Some(tengwa) => Some(Self::Regular(tengwa)),
+            None => Self::try_irregular_from(char),
+        }
+    }
+
+    pub const fn try_irregular_from(char: char) -> Option<Self> {
+        match TengwaIrregular::new(char) {
+            Some(tengwa) => Some(Self::Irregular(tengwa)),
+            None => None,
+        }
+    }*/
+
+    pub const fn try_regular_from(char: char) -> Option<Self> {
+        match TengwaRegular::find(char) {
+            Some(tengwa) => Some(Self::Regular(tengwa)),
+            None => None,
+        }
+    }
+
+    pub const fn as_char(&self) -> &char {
+        match self {
+            Tengwa::Irregular(char) => char,
+            // Tengwa::Irregular(char) => &char.0,
+            Tengwa::Regular(tengwa) => tengwa.as_char(),
+        }
+    }
+
+    pub const fn as_irregular(&self) -> Option<&char> {
+        match self {
+            Tengwa::Irregular(char) => Some(char),
+            // Tengwa::Irregular(char) => Some(&char.0),
+            Tengwa::Regular(_) => None,
+        }
+    }
+
+    pub const fn as_regular(&self) -> Option<&TengwaRegular<'t>> {
+        match self {
+            Tengwa::Irregular(_) => None,
+            Tengwa::Regular(tengwa) => Some(tengwa),
+        }
+    }
+}
+
+impl<'t> std::ops::Deref for Tengwa<'t> {
+    type Target = char;
+    fn deref(&self) -> &Self::Target { self.as_char() }
+}
+
+impl<'t> From<TengwaRegular<'t>> for Tengwa<'t> {
+    fn from(tengwa: TengwaRegular<'t>) -> Self { Self::Regular(tengwa) }
+}
+
+impl<'t> From<char> for Tengwa<'t> {
+    fn from(char: char) -> Self {
+        // Self::either_from(char)
+        Self::irregular_from(char)
+    }
+}
+
+/*impl<'t> TryFrom<char> for Tengwa<'t> {
+    type Error = ();
+
+    fn try_from(char: char) -> Result<Self, Self::Error> {
+        Self::try_either_from(char).ok_or(())
+    }
+}*/
