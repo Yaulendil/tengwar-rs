@@ -97,6 +97,16 @@ impl Glyph {
         }
     }
 
+    pub const fn with_cons(mut self, cons: char) -> Self {
+        self.cons = Some(cons);
+        self
+    }
+
+    pub const fn with_vowel(mut self, tehta: Tehta) -> Self {
+        self.vowel = Some(tehta);
+        self
+    }
+
     /// Mark this glyph as being labialized. It will be rendered with a wavy
     ///     overbar.
     pub const fn with_labial(mut self) -> Self {
@@ -122,6 +132,21 @@ impl Glyph {
     pub const fn with_silme(mut self) -> Self {
         self.silme = true;
         self
+    }
+
+    /// Update this glyph with the consonant attributes of another glyph.
+    pub fn integrate_consonant(&mut self, other: Self) {
+        self.cons = other.cons;
+        self.nasal = other.nasal;
+        self.labial = other.labial;
+        self.palatal = other.palatal;
+        self.long_cons = other.long_cons;
+    }
+
+    /// Update this glyph with the vowel attributes of another glyph.
+    pub fn integrate_vowel(&mut self, other: Self) {
+        self.vowel = other.vowel;
+        self.long_vowel = other.long_vowel;
     }
 }
 
@@ -254,5 +279,11 @@ impl Display for Glyph {
         }
 
         Ok(())
+    }
+}
+
+impl From<char> for Glyph {
+    fn from(cons: char) -> Self {
+        Self::new_cons(cons, false)
     }
 }

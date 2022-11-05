@@ -249,12 +249,8 @@ impl TengwarMode for Gondor {
                     //  Check for a nasalized consonant.
                     if let ['m' | 'n', rest @ ..] = chunk {
                         if let Some(new) = get_consonant(rest) {
-                            current.cons = new.cons;
+                            current.integrate_consonant(new);
                             current.nasal = true;
-                            current.labial = new.labial;
-                            current.palatal = new.palatal;
-                            current.long_cons = new.long_cons;
-
                             return ParseAction::MatchedPart(chunk.len());
                         }
                     }
@@ -262,25 +258,13 @@ impl TengwarMode for Gondor {
                     //  Check for a final F, which should be spelled with Ampa
                     //      instead of Formen.
                     else if let ['f', ahead @ ..] = chunk {
-                        let new = Self::decide_f(ahead);
-
-                        current.cons = new.cons;
-                        current.nasal = new.nasal;
-                        current.labial = new.labial;
-                        current.palatal = new.palatal;
-                        current.long_cons = new.long_cons;
-
+                        current.integrate_consonant(Self::decide_f(ahead));
                         return ParseAction::MatchedPart(1);
                     }
 
                     //  Check for a regular consonant.
                     if let Some(new) = get_consonant(chunk) {
-                        current.cons = new.cons;
-                        current.nasal = new.nasal;
-                        current.labial = new.labial;
-                        current.palatal = new.palatal;
-                        current.long_cons = new.long_cons;
-
+                        current.integrate_consonant(new);
                         ParseAction::MatchedPart(chunk.len())
                     } else {
                         ParseAction::MatchedNone
@@ -318,8 +302,8 @@ impl TengwarMode for Gondor {
                 }
             }
 
-            //  Check for a final F, which should be spelled with Ampa
-            //      instead of Formen.
+            //  Check for a final F, which should be spelled with Ampa instead
+            //      of Formen.
             else if let ['f', ahead @ ..] = chunk {
                 self.current = Some(Self::decide_f(ahead));
                 return ParseAction::MatchedPart(1);
