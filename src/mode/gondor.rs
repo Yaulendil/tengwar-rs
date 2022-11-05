@@ -288,3 +288,64 @@ impl TengwarMode for Gondor {
         }
     }
 }
+
+
+#[test]
+#[cfg(test)]
+fn test_gondor() {
+    let edhellen = test_tengwar!(Gondor, "edhellen" => [
+        TENGWA_ANTO, TEHTA_E.short(), // edh
+        TENGWA_LAMBE, DC_UNDER_LINE_H, TEHTA_E.short(), // ell
+        TENGWA_NUMEN, TEHTA_E.short(), // en
+    ]);
+    test_tengwar!(Gondor, "eðellen" == edhellen);
+    test_tengwar!(Gondor, "edellen" != edhellen);
+    test_tengwar!(Gondor, "eþellen" != edhellen);
+    test_tengwar!(Gondor, "ethellen" != edhellen);
+
+    let andaith = test_tengwar!(Gondor, "andaith" => [
+        TENGWA_ANDO, DC_OVER_LINE, TEHTA_A.short(), // and
+        CARRIER_DIPH_I, TEHTA_A.short(), // ai
+        TENGWA_THULE, // th
+    ]);
+    test_tengwar!(Gondor, "andaiþ" == andaith);
+    test_tengwar!(Gondor, "andait" != andaith);
+    test_tengwar!(Gondor, "andaið" != andaith);
+    test_tengwar!(Gondor, "andaidh" != andaith);
+
+    //  Final F, after consonant.
+    let parf = test_tengwar!(Gondor, "parf" => [
+        TENGWA_PARMA, // p
+        TENGWA_ROMEN, TEHTA_A.short(), // ar
+        TENGWA_AMPA, // f (final)
+    ]);
+    test_tengwar!(Gondor, "parv" == parf);
+    test_tengwar!(Gondor, "parph" != parf);
+
+    //  Final F, after vowel.
+    let alaf = test_tengwar!(Gondor, "alaf" => [
+        TENGWA_LAMBE, TEHTA_A.short(), // al
+        TENGWA_AMPA, TEHTA_A.short(), // af (final)
+    ]);
+    test_tengwar!(Gondor, "alav" == alaf);
+    test_tengwar!(Gondor, "alaph" != alaf);
+
+    //  Medial F, after consonant.
+    let alfirin = test_tengwar!(Gondor, "alfirin" => [
+        TENGWA_LAMBE, TEHTA_A.short(), // al
+        TENGWA_FORMEN, // f (medial)
+        TENGWA_ROMEN, TEHTA_I.short(), // ir
+        TENGWA_NUMEN, TEHTA_I.short(), // in
+    ]);
+    test_tengwar!(Gondor, "alphirin" == alfirin);
+    test_tengwar!(Gondor, "alvirin" != alfirin);
+
+    //  Medial F, after vowel.
+    let aphadon = test_tengwar!(Gondor, "aphadon" => [
+        TENGWA_FORMEN, TEHTA_A.short(), // af (medial)
+        TENGWA_ANDO, TEHTA_A.short(), // ad
+        TENGWA_NUMEN, TEHTA_O.short(), // on
+    ]);
+    test_tengwar!(Gondor, "afadon" == aphadon);
+    test_tengwar!(Gondor, "avadon" != aphadon);
+}
