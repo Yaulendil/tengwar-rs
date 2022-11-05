@@ -21,7 +21,8 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
 
         ['p']           /**/ => TEMA_PARMA.single_dn,
         ['b']           /**/ => TEMA_PARMA.double_dn,
-        ['f']           /**/ => TEMA_PARMA.single_up,
+        ['p', 'h']
+        | ['f']         /**/ => TEMA_PARMA.single_up,
         ['v']           /**/ => TEMA_PARMA.double_up,
         ['m']           /**/ => TEMA_PARMA.double_sh,
         // ['v']           /**/ => TEMA_PARMA.single_sh,
@@ -114,6 +115,53 @@ pub struct Gondor {
     previous: Option<Glyph>,
 }
 
+impl Gondor {
+    fn decide_f(next: &[char]) -> Glyph {
+        // let unvoiced = Glyph::new_cons(TENGWA_FORMEN, false);
+        let unvoiced = get_consonant(&['f']).unwrap();
+
+        let mut mode = Self::default();
+        mode.previous = Some(unvoiced);
+
+        let mut is_final: bool = true;
+        let mut n: usize = next.len();
+
+        while 0 < n {
+            match mode.process(&next[..n]) {
+                ParseAction::MatchedNone => {
+                    //  Next token is unknown.
+                    n -= 1;
+                }
+                ParseAction::MatchedPart(_) => {
+                    //  Next token is a tengwa.
+                    is_final = false;
+                    break;
+                }
+                ParseAction::MatchedToken {
+                    token: Token::Tengwa(_),
+                    ..
+                } => {
+                    //  Next token is a tengwa.
+                    is_final = false;
+                    break;
+                }
+                _ => {
+                    //  Next token is NOT a tengwa.
+                    is_final = true;
+                    break;
+                }
+            }
+        }
+
+        if is_final {
+            // Glyph::new_cons(TENGWA_AMPA, false)
+            get_consonant(&['v']).unwrap()
+        } else {
+            unvoiced
+        }
+    }
+}
+
 impl TengwarMode for Gondor {
     fn finalize(&self, token: &mut Token, next: Option<&Token>) {
         if let Token::Tengwa(glyph) = token {
@@ -157,8 +205,7 @@ impl TengwarMode for Gondor {
             if let Some(cons) = current.cons {
                 match chunk {
                     ['w'] if !current.labial
-                        && (cons == TEMA_TINCO.double_dn
-                        || cons == TEMA_QESSE.double_dn)
+                        && (cons == TENGWA_ANDO || cons == TENGWA_UNGWE)
                     => {
                         //  TODO: Rediscover why this is done. Tecendil displays
                         //      the same behavior, but this is not listed in the
@@ -198,8 +245,8 @@ impl TengwarMode for Gondor {
                     ParseAction::MatchedPart(2)
                 }
 
-                //  Check for a nasalized consonant.
                 else {
+                    //  Check for a nasalized consonant.
                     if let ['m' | 'n', rest @ ..] = chunk {
                         if let Some(new) = get_consonant(rest) {
                             current.cons = new.cons;
@@ -210,6 +257,20 @@ impl TengwarMode for Gondor {
 
                             return ParseAction::MatchedPart(chunk.len());
                         }
+                    }
+
+                    //  Check for a final F, which should be spelled with Ampa
+                    //      instead of Formen.
+                    else if let ['f', ahead @ ..] = chunk {
+                        let new = Self::decide_f(ahead);
+
+                        current.cons = new.cons;
+                        current.nasal = new.nasal;
+                        current.labial = new.labial;
+                        current.palatal = new.palatal;
+                        current.long_cons = new.long_cons;
+
+                        return ParseAction::MatchedPart(1);
                     }
 
                     //  Check for a regular consonant.
@@ -244,11 +305,9 @@ impl TengwarMode for Gondor {
             else if ['l', 'h'] == chunk && !self.previous.is_some() {
                 self.current = Some(Glyph::new_cons(TENGWA_ALDA, false));
                 return ParseAction::MatchedPart(2);
-                // return finish!(Glyph::new_cons(TENGWA_ALDA, false), 2);
             } else if ['r', 'h'] == chunk && !self.previous.is_some() {
                 self.current = Some(Glyph::new_cons(TENGWA_ARDA, false));
                 return ParseAction::MatchedPart(2);
-                // return finish!(Glyph::new_cons(TENGWA_ARDA, false), 2);
             }
 
             //  Check for a nasalized consonant.
@@ -256,29 +315,32 @@ impl TengwarMode for Gondor {
                 if let Some(new) = get_consonant(rest) {
                     self.current = Some(new.with_nasal());
                     return ParseAction::MatchedPart(chunk.len());
-                    // return finish!(new.with_nasal(), chunk.len());
                 }
+            }
+
+            //  Check for a final F, which should be spelled with Ampa
+            //      instead of Formen.
+            else if let ['f', ahead @ ..] = chunk {
+                self.current = Some(Self::decide_f(ahead));
+                return ParseAction::MatchedPart(1);
             }
 
             //  Check for any consonant.
             if let Some(glyph) = get_consonant(chunk) {
                 self.current = Some(glyph);
                 ParseAction::MatchedPart(chunk.len())
-                // finish!(new, chunk.len())
             }
 
             //  Check for a diphthong.
             else if let Some(new) = get_diphthong(chunk) {
                 self.current = Some(new);
                 ParseAction::MatchedPart(chunk.len())
-                // finish!(new, chunk.len())
             }
 
             //  Check for a single vowel.
             else if let Some((vowel, long)) = get_vowel(chunk) {
                 self.current = Some(Glyph::new_vowel(vowel, long));
                 ParseAction::MatchedPart(chunk.len())
-                // finish!(Glyph::new_vowel(vowel, long), chunk.len())
             }
 
             //  Give up.
