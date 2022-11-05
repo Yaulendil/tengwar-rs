@@ -139,6 +139,8 @@ impl TengwarMode for Quenya {
             }};
         }
 
+        let initial: bool = self.previous.is_none();
+
         if let ['\\', _, ..] = chunk {
             ParseAction::Escape
         } else if let Some(current) = &mut self.current {
@@ -156,27 +158,22 @@ impl TengwarMode for Quenya {
                         ParseAction::MatchedPart(1)
                     }
                     ['s', 's'] => {
+                        //  This cannot modify a consonant, but if the window is
+                        //      allowed to narrow, it will become ['s'], which
+                        //      will modify it incorrectly. Need to output the
+                        //      current glyph immediately.
                         finish!(*current, 0)
                     }
                     ['l' | 'r'] => {
-                        if current.cons == Some(TENGWA_HYARMEN) {
-                            current.cons = Some(TENGWA_HALLA);
-                        }
-
+                        current.replace_consonant(TENGWA_HYARMEN, TENGWA_HALLA);
                         finish!(*current, 0)
                     }
                     _ => {
                         if let Some(_) = get_diphthong(chunk) {
-                            if current.cons == Some(TENGWA_ORE) {
-                                current.cons = Some(TENGWA_ROMEN);
-                            }
-
+                            current.replace_consonant(TENGWA_ORE, TENGWA_ROMEN);
                             finish!(*current, 0)
                         } else if let Some((vowel, long)) = get_vowel(chunk) {
-                            if current.cons == Some(TENGWA_ORE) {
-                                current.cons = Some(TENGWA_ROMEN);
-                            }
-
+                            current.replace_consonant(TENGWA_ORE, TENGWA_ROMEN);
                             current.vowel = Some(vowel);
                             current.long_vowel = long;
                             finish!(*current, chunk.len())
@@ -191,14 +188,10 @@ impl TengwarMode for Quenya {
 
             //  Check for special cases.
             if let ['x'] = chunk {
-                let glyph = Glyph::new_cons(TENGWA_CALMA, false);
-
-                self.current = Some(glyph.with_silme());
+                self.current = Some(Glyph::from(TENGWA_CALMA).with_silme());
                 ParseAction::MatchedPart(1)
             } else if let ['y', ..] = chunk {
-                let glyph = Glyph::new_cons(TENGWA_ANNA, false);
-
-                self.current = Some(glyph.with_palatal());
+                self.current = Some(Glyph::from(TENGWA_ANNA).with_palatal());
                 ParseAction::MatchedPart(1)
             }
 
@@ -206,12 +199,7 @@ impl TengwarMode for Quenya {
             else if let Some(glyph) = get_consonant(chunk) {
                 let new = self.current.insert(glyph);
 
-                if self.previous.is_some() {
-                    //  Medial H is represented by Aha, not Hyarmen.
-                    if new.cons == Some(TENGWA_HYARMEN) {
-                        new.cons = Some(TENGWA_AHA);
-                    }
-                } else {
+                if initial {
                     //  TODO: These special cases allow for using basic ASCII
                     //      `ng`, instead of needing to use `ñ`, to specify the
                     //      archaic initial spellings. However, this approach
@@ -223,14 +211,13 @@ impl TengwarMode for Quenya {
                     //      phrases like "etya-ngoldorin".
 
                     //  Initial NG is represented by Ñoldo, not Anga.
-                    if new.cons == Some(TENGWA_ANGA) {
-                        new.cons = Some(TENGWA_NOLDO);
-                    }
+                    new.replace_consonant(TENGWA_ANGA, TENGWA_NOLDO);
 
                     //  Initial NGW is represented by Ñwalmë, not Ungwë.
-                    if new.cons == Some(TENGWA_UNGWE) {
-                        new.cons = Some(TENGWA_NWALME);
-                    }
+                    new.replace_consonant(TENGWA_UNGWE, TENGWA_NWALME);
+                } else {
+                    //  Medial H is represented by Aha, not Hyarmen.
+                    new.replace_consonant(TENGWA_HYARMEN, TENGWA_AHA);
                 }
 
                 ParseAction::MatchedPart(chunk.len())

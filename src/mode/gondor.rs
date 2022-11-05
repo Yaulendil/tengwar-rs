@@ -17,7 +17,7 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         ['ð']
         | ['d', 'h']    /**/ => TEMA_TINCO.double_up, // Voiced Fricative
         ['n']           /**/ => TEMA_TINCO.double_sh,
-        ['r']           /**/ => TENGWA_ROMEN,
+        ['r']           /**/ => TENGWA_ORE,
 
         ['p']           /**/ => TEMA_PARMA.single_dn,
         ['b']           /**/ => TEMA_PARMA.double_dn,
@@ -202,11 +202,8 @@ impl TengwarMode for Gondor {
         if let Token::Tengwa(glyph) = token {
             glyph.long_first = true;
 
-            if glyph.cons == Some(TENGWA_ROMEN) {
-                match next {
-                    Some(Token::Tengwa(_)) => {}
-                    _ => glyph.cons = Some(TENGWA_ORE),
-                }
+            if let Some(Token::Tengwa(_)) = next {
+                glyph.replace_consonant(TENGWA_ORE, TENGWA_ROMEN);
             }
         }
     }

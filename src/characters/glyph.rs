@@ -149,6 +149,15 @@ impl Glyph {
         self.vowel = other.vowel;
         self.long_vowel = other.long_vowel;
     }
+
+    pub fn replace_consonant(&mut self, old: char, new: char) -> bool {
+        if self.cons == Some(old) {
+            self.cons = Some(new);
+            true
+        } else {
+            false
+        }
+    }
 }
 
 impl Glyph {
