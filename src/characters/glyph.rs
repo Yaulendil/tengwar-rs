@@ -137,6 +137,7 @@ impl Glyph {
     /// Update this glyph with the consonant attributes of another glyph.
     pub fn integrate_consonant(&mut self, other: Self) {
         self.cons = other.cons;
+        self.silme = other.silme;
         self.nasal = other.nasal;
         self.labial = other.labial;
         self.palatal = other.palatal;
