@@ -3,33 +3,29 @@ use super::{ParseAction, TengwarMode};
 
 
 const CARRIER_DIPH_E: char = TENGWA_YANTA;
-const CARRIER_DIPH_I: char = TEMA_CALMA.single_sh;
+const CARRIER_DIPH_I: char = TENGWA_ANNA;
 const CARRIER_DIPH_U: char = TENGWA_URE;
 
 
 pub const fn consonant_char(slice: &[char]) -> Option<char> {
     Some(match slice {
         //  Regular
-        ['t']           /**/ => TEMA_TINCO.single_dn, // Base
-        ['d']           /**/ => TEMA_TINCO.double_dn, // Voiced
-        ['þ']
+        ['t']           /**/ => TEMA_TINCO.single_dn,
+        ['d']           /**/ => TEMA_TINCO.double_dn,
+        ['t', 'h']
         | ['θ']
-        | ['t', 'h']    /**/ => TEMA_TINCO.single_up, // Fricative
-        ['ð']
-        | ['d', 'h']    /**/ => TEMA_TINCO.double_up, // Voiced Fricative
+        | ['þ']         /**/ => TEMA_TINCO.single_up,
+        ['d', 'h']
+        | ['ð']         /**/ => TEMA_TINCO.double_up,
         ['n']           /**/ => TEMA_TINCO.double_sh,
-        ['r']           /**/ => TENGWA_ORE,
+        ['r']           /**/ => TEMA_TINCO.single_sh,
 
         ['p']           /**/ => TEMA_PARMA.single_dn,
         ['b']           /**/ => TEMA_PARMA.double_dn,
         ['p', 'h']
-        | ['f']
         | ['φ']         /**/ => TEMA_PARMA.single_up,
         ['v']           /**/ => TEMA_PARMA.double_up,
         ['m']           /**/ => TEMA_PARMA.double_sh,
-        // ['v']           /**/ => TEMA_PARMA.single_sh,
-
-        // ['y']           /**/ => TEMA_CALMA.single_sh,
 
         ['c']
         | ['k']         /**/ => TEMA_QESSE.single_dn,
@@ -42,9 +38,9 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         ['w']           /**/ => TEMA_QESSE.single_sh,
 
         //  Irregular
-        ['r', 'h']      /**/ => TENGWA_ARDA,
         ['l']           /**/ => TENGWA_LAMBE,
         ['l', 'h']      /**/ => TENGWA_ALDA,
+        ['r', 'h']      /**/ => TENGWA_ARDA,
         ['s']           /**/ => TENGWA_SILME,
         ['s', 's']
         | ['z']         /**/ => TENGWA_ESSE,
@@ -114,17 +110,11 @@ pub const fn get_vowel(slice: &[char]) -> Option<(Tehta, bool)> {
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Gondor {
     current: Option<Glyph>,
-    previous: Option<Glyph>,
 }
 
 impl Gondor {
     pub fn decide_f(next: &[char]) -> Glyph {
-        // let unvoiced = Glyph::new_cons(TENGWA_FORMEN, false);
-        let unvoiced = get_consonant(&['f']).unwrap();
-
         let mut mode = Self::default();
-        mode.previous = Some(unvoiced);
-
         let mut is_final: bool = true;
         let mut n: usize = next.len();
 
@@ -155,12 +145,8 @@ impl Gondor {
             }
         }
 
-        if is_final {
-            // Glyph::new_cons(TENGWA_AMPA, false)
-            get_consonant(&['v']).unwrap()
-        } else {
-            unvoiced
-        }
+        let phonetic: &[char] = if is_final { &['v'] } else { &['p', 'h'] };
+        consonant_char(phonetic).unwrap().into()
     }
 
     pub fn find_consonant(chunk: &[char], initial: bool) -> Option<(Glyph, usize)> {
@@ -211,8 +197,7 @@ impl TengwarMode for Gondor {
     }
 
     fn finish_current(&mut self) -> Option<Token> {
-        self.previous = self.current.take();
-        self.previous.map(Token::Tengwa)
+        self.current.take().map(Token::Tengwa)
     }
 
     fn process(&mut self, chunk: &[char]) -> ParseAction {
@@ -220,9 +205,7 @@ impl TengwarMode for Gondor {
             ($glyph:expr) => {finish!($glyph, 0)};
             ($glyph:expr, $len:expr) => {{
                 let glyph = $glyph;
-
                 self.current = None;
-                self.previous = Some(glyph);
 
                 ParseAction::MatchedToken {
                     token: Token::Tengwa(glyph),
@@ -338,7 +321,7 @@ fn test_gondor() {
     let parf = test_tengwar!(Gondor, "parf" => [
         TENGWA_PARMA, // p
         TENGWA_ROMEN, TEHTA_A.short(), // ar
-        TENGWA_AMPA, // f (final)
+        TENGWA_AMPA, // v
     ]);
     test_tengwar!(Gondor, "parv" == parf);
     test_tengwar!(Gondor, "parφ" != parf);
@@ -347,7 +330,7 @@ fn test_gondor() {
     //  Final F, after vowel.
     let alaf = test_tengwar!(Gondor, "alaf" => [
         TENGWA_LAMBE, TEHTA_A.short(), // al
-        TENGWA_AMPA, TEHTA_A.short(), // af (final)
+        TENGWA_AMPA, TEHTA_A.short(), // av
     ]);
     test_tengwar!(Gondor, "alav" == alaf);
     test_tengwar!(Gondor, "alaφ" != alaf);
@@ -356,7 +339,7 @@ fn test_gondor() {
     //  Medial F, after consonant.
     let alfirin = test_tengwar!(Gondor, "alfirin" => [
         TENGWA_LAMBE, TEHTA_A.short(), // al
-        TENGWA_FORMEN, // f (medial)
+        TENGWA_FORMEN, // ph
         TENGWA_ROMEN, TEHTA_I.short(), // ir
         TENGWA_NUMEN, TEHTA_I.short(), // in
     ]);
@@ -367,7 +350,7 @@ fn test_gondor() {
 
     //  Medial F, after vowel.
     let aphadon = test_tengwar!(Gondor, "aphadon" => [
-        TENGWA_FORMEN, TEHTA_A.short(), // af (medial)
+        TENGWA_FORMEN, TEHTA_A.short(), // aph
         TENGWA_ANDO, TEHTA_A.short(), // ad
         TENGWA_NUMEN, TEHTA_O.short(), // on
     ]);
