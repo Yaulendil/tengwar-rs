@@ -2,6 +2,17 @@ use crate::{characters::punctuation, Token, Transcriber};
 use super::{ParseAction, TengwarMode};
 
 
+const fn to_lower(c: char) -> char {
+    match c {
+        'Ñ' => 'ñ', 'Ð' => 'ð', 'Þ' => 'þ', 'Θ' => 'θ', 'Φ' => 'φ',
+        'Ä' => 'ä', 'Ë' => 'ë', 'Ï' => 'ï', 'Ö' => 'ö', 'Ü' => 'ü', 'Ÿ' => 'ÿ',
+        'Á' => 'á', 'É' => 'é', 'Í' => 'í', 'Ó' => 'ó', 'Ú' => 'ú', 'Ý' => 'ý',
+        'Â' => 'â', 'Ê' => 'ê', 'Î' => 'î', 'Ô' => 'ô', 'Û' => 'û', 'Ŷ' => 'ŷ',
+        _ => c.to_ascii_lowercase(),
+    }
+}
+
+
 /// The result of a single "step" of a [`ModeIter`]. Multiple steps can be
 ///     performed for each iteration.
 #[derive(Clone, Debug)]
@@ -42,7 +53,7 @@ impl<M: TengwarMode> ModeIter<M> {
         let mut lower = chars.clone();
 
         for char in &mut lower {
-            char.make_ascii_lowercase();
+            *char = to_lower(*char);
         }
 
         Self {

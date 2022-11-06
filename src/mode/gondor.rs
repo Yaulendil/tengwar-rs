@@ -1,5 +1,5 @@
 use crate::{characters::*, Token};
-use crate::mode::{ParseAction, TengwarMode};
+use super::{ParseAction, TengwarMode};
 
 
 const CARRIER_DIPH_E: char = TENGWA_YANTA;
@@ -13,6 +13,7 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         ['t']           /**/ => TEMA_TINCO.single_dn, // Base
         ['d']           /**/ => TEMA_TINCO.double_dn, // Voiced
         ['þ']
+        | ['θ']
         | ['t', 'h']    /**/ => TEMA_TINCO.single_up, // Fricative
         ['ð']
         | ['d', 'h']    /**/ => TEMA_TINCO.double_up, // Voiced Fricative
@@ -22,7 +23,8 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         ['p']           /**/ => TEMA_PARMA.single_dn,
         ['b']           /**/ => TEMA_PARMA.double_dn,
         ['p', 'h']
-        | ['f']         /**/ => TEMA_PARMA.single_up,
+        | ['f']
+        | ['φ']         /**/ => TEMA_PARMA.single_up,
         ['v']           /**/ => TEMA_PARMA.double_up,
         ['m']           /**/ => TEMA_PARMA.double_sh,
         // ['v']           /**/ => TEMA_PARMA.single_sh,
@@ -313,7 +315,9 @@ fn test_gondor() {
         TENGWA_NUMEN, TEHTA_E.short(), // en
     ]);
     test_tengwar!(Gondor, "eðellen" == edhellen);
+    test_tengwar!(Gondor, "EÐELLEN" == edhellen);
     test_tengwar!(Gondor, "edellen" != edhellen);
+    test_tengwar!(Gondor, "eθellen" != edhellen);
     test_tengwar!(Gondor, "eþellen" != edhellen);
     test_tengwar!(Gondor, "ethellen" != edhellen);
 
@@ -322,7 +326,10 @@ fn test_gondor() {
         CARRIER_DIPH_I, TEHTA_A.short(), // ai
         TENGWA_THULE, // th
     ]);
+    test_tengwar!(Gondor, "andaiθ" == andaith);
+    test_tengwar!(Gondor, "ANDAIΘ" == andaith);
     test_tengwar!(Gondor, "andaiþ" == andaith);
+    test_tengwar!(Gondor, "ANDAIÞ" == andaith);
     test_tengwar!(Gondor, "andait" != andaith);
     test_tengwar!(Gondor, "andaið" != andaith);
     test_tengwar!(Gondor, "andaidh" != andaith);
@@ -334,6 +341,7 @@ fn test_gondor() {
         TENGWA_AMPA, // f (final)
     ]);
     test_tengwar!(Gondor, "parv" == parf);
+    test_tengwar!(Gondor, "parφ" != parf);
     test_tengwar!(Gondor, "parph" != parf);
 
     //  Final F, after vowel.
@@ -342,6 +350,7 @@ fn test_gondor() {
         TENGWA_AMPA, TEHTA_A.short(), // af (final)
     ]);
     test_tengwar!(Gondor, "alav" == alaf);
+    test_tengwar!(Gondor, "alaφ" != alaf);
     test_tengwar!(Gondor, "alaph" != alaf);
 
     //  Medial F, after consonant.
@@ -352,6 +361,8 @@ fn test_gondor() {
         TENGWA_NUMEN, TEHTA_I.short(), // in
     ]);
     test_tengwar!(Gondor, "alphirin" == alfirin);
+    test_tengwar!(Gondor, "alφirin" == alfirin);
+    test_tengwar!(Gondor, "ALΦIRIN" == alfirin);
     test_tengwar!(Gondor, "alvirin" != alfirin);
 
     //  Medial F, after vowel.
@@ -361,5 +372,7 @@ fn test_gondor() {
         TENGWA_NUMEN, TEHTA_O.short(), // on
     ]);
     test_tengwar!(Gondor, "afadon" == aphadon);
+    test_tengwar!(Gondor, "aφadon" == aphadon);
+    test_tengwar!(Gondor, "AΦADON" == aphadon);
     test_tengwar!(Gondor, "avadon" != aphadon);
 }

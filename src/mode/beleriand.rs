@@ -18,6 +18,7 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         ['t']           /**/ => TEMA_TINCO.single_dn, // Base
         ['d']           /**/ => TEMA_TINCO.double_dn, // Voiced
         ['þ']
+        | ['θ']
         | ['t', 'h']    /**/ => TEMA_TINCO.single_up, // Fricative
         ['ð']
         | ['d', 'h']    /**/ => TEMA_TINCO.double_up, // Voiced Fricative
@@ -27,7 +28,8 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         ['p']           /**/ => TEMA_PARMA.single_dn,
         ['b']           /**/ => TEMA_PARMA.double_dn,
         ['p', 'h']
-        | ['f']         /**/ => TEMA_PARMA.single_up,
+        | ['f']
+        | ['φ']         /**/ => TEMA_PARMA.single_up,
         ['v']           /**/ => TEMA_PARMA.double_up,
         ['m', 'm']      /**/ => TEMA_PARMA.double_sh,
         ['m']           /**/ => TEMA_PARMA.single_sh,

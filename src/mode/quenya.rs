@@ -13,6 +13,7 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         ['d']
         | ['n', 'd']    /**/ => TEMA_TINCO.double_dn,
         ['þ']
+        | ['θ']
         | ['t', 'h']    /**/ => TEMA_TINCO.single_up,
         ['n', 't']      /**/ => TEMA_TINCO.double_up,
         ['n']           /**/ => TEMA_TINCO.double_sh,
@@ -21,7 +22,7 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         ['p']           /**/ => TEMA_PARMA.single_dn,
         ['b']
         | ['m', 'b']    /**/ => TEMA_PARMA.double_dn,
-        ['f']           /**/ => TEMA_PARMA.single_up,
+        ['φ'] | ['f']   /**/ => TEMA_PARMA.single_up,
         ['m', 'p']      /**/ => TEMA_PARMA.double_up,
         ['m']           /**/ => TEMA_PARMA.double_sh,
         ['v']           /**/ => TEMA_PARMA.single_sh,
@@ -258,6 +259,7 @@ mod tests {
         ]);
         test_tengwar!(Quenya, "Eleni Sílar" == eleni_silar);
         test_tengwar!(Quenya, "Elënï Sílär" == eleni_silar);
+        test_tengwar!(Quenya, "ELËNÏ SÍLÄR" == eleni_silar);
         test_tengwar!(Quenya, "ELeNi SiiLaR" == eleni_silar);
         test_tengwar!(Quenya, "ELENI SIILAR" == eleni_silar);
 
@@ -333,6 +335,9 @@ mod tests {
             TENGWA_LAMBE, TEHTA_E.short(), // lë
         ]);
         test_tengwar!(Quenya, "thuule" == thuule); // ASCII spelling.
+        test_tengwar!(Quenya, "θúlë" == thuule);
+        test_tengwar!(Quenya, "ΘÚLË" == thuule);
+        test_tengwar!(Quenya, "ÞÚLË" == thuule);
         test_tengwar!(Quenya, "súlë" != thuule);
 
         let calma = test_tengwar!(Quenya, "calma" => [
@@ -357,6 +362,7 @@ mod tests {
             TENGWA_ALDA, TEHTA_O.short(), // ldo
         ]);
         test_tengwar!(Quenya, "ngoldo" == ngoldo); // ASCII spelling.
+        test_tengwar!(Quenya, "ÑOLDO" == ngoldo);
         test_tengwar!(Quenya, "noldo" != ngoldo);
 
         //  Initial NGW (> NW).
