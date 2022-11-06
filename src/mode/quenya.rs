@@ -61,7 +61,7 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
 }
 
 
-const fn get_consonant(slice: &[char]) -> Option<Glyph> {
+pub const fn get_consonant(slice: &[char]) -> Option<Glyph> {
     match consonant_char(slice) {
         Some(cons) => Some(Glyph::new_cons(cons, false)),
         None => match slice {
@@ -196,9 +196,7 @@ impl TengwarMode for Quenya {
             }
 
             //  Check for a consonant.
-            else if let Some(glyph) = get_consonant(chunk) {
-                let new = self.current.insert(glyph);
-
+            else if let Some(mut new) = get_consonant(chunk) {
                 if initial {
                     //  TODO: These special cases allow for using basic ASCII
                     //      `ng`, instead of needing to use `ñ`, to specify the
@@ -220,6 +218,7 @@ impl TengwarMode for Quenya {
                     new.replace_consonant(TENGWA_HYARMEN, TENGWA_AHA);
                 }
 
+                self.current = Some(new);
                 ParseAction::MatchedPart(chunk.len())
             }
 
@@ -233,10 +232,7 @@ impl TengwarMode for Quenya {
             else if let Some((vowel, long)) = get_vowel(chunk) {
                 self.current = Some(Glyph::new_vowel(vowel, long));
                 ParseAction::MatchedPart(chunk.len())
-            }
-
-            //  Give up.
-            else {
+            } else {
                 ParseAction::MatchedNone
             }
         }
