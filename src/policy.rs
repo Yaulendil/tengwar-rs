@@ -5,13 +5,13 @@ use crate::characters::*;
 #[allow(unused_variables)]
 pub trait Policy {
     /// Returns a boolean indicating whether a given character may form a
-    ///     ligature with an ["Ára" long carrier](CARRIER_LONG) that follows it.
+    ///     ligature with a [long carrier](CARRIER_LONG) that follows it.
     ///
     /// The ligature will be formed by emitting a Zero-Width Joiner between the
     ///     two characters.
     fn can_ligate_with_ara(&self, c: char) -> bool { false }
 
-    /// Returns a boolean indicating whether a ["Telco" short carrier](CARRIER_SHORT)
+    /// Returns a boolean indicating whether a [short carrier](CARRIER_SHORT)
     ///     may form a ligature with a given character that follows it.
     ///
     /// The ligature will be formed by replacing the short carrier character
