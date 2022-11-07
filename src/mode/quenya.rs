@@ -8,27 +8,27 @@ pub const CARRIER_DIPH_U: char = TENGWA_URE;
 
 pub const fn consonant_char(slice: &[char]) -> Option<char> {
     Some(match slice {
-        //  Regular
+        //  Tincotéma.
         ['t']           /**/ => TEMA_TINCO.single_dn,
         ['d']
         | ['n', 'd']    /**/ => TEMA_TINCO.double_dn,
-        ['þ']
-        | ['θ']
-        | ['t', 'h']    /**/ => TEMA_TINCO.single_up,
+        ['t', 'h']
+        | ['þ'] | ['θ'] /**/ => TEMA_TINCO.single_up,
         ['n', 't']      /**/ => TEMA_TINCO.double_up,
         ['n']           /**/ => TEMA_TINCO.double_sh,
         ['r']           /**/ => TEMA_TINCO.single_sh,
 
+        //  Parmatéma.
         ['p']           /**/ => TEMA_PARMA.single_dn,
         ['b']
         | ['m', 'b']    /**/ => TEMA_PARMA.double_dn,
-        ['φ'] | ['f']   /**/ => TEMA_PARMA.single_up,
+        ['f'] | ['φ']   /**/ => TEMA_PARMA.single_up,
         ['m', 'p']      /**/ => TEMA_PARMA.double_up,
         ['m']           /**/ => TEMA_PARMA.double_sh,
         ['v']           /**/ => TEMA_PARMA.single_sh,
 
-        ['c']
-        | ['k']         /**/ => TEMA_CALMA.single_dn,
+        //  Calmatéma.
+        ['c'] | ['k']   /**/ => TEMA_CALMA.single_dn,
         ['n', 'g']
         | ['g']         /**/ => TEMA_CALMA.double_dn,
         ['c', 'h']      /**/ => TEMA_CALMA.single_up,
@@ -36,6 +36,7 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         ['ñ']           /**/ => TEMA_CALMA.double_sh,
         ['y']           /**/ => TEMA_CALMA.single_sh,
 
+        //  Qessetéma.
         ['q']
         | ['q', 'u']
         | ['c', 'w']
@@ -47,7 +48,7 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         ['ñ', 'w']      /**/ => TEMA_QESSE.double_sh,
         ['w']           /**/ => TEMA_QESSE.single_sh,
 
-        //  Irregular
+        //  Irregulars.
         ['r', 'd']      /**/ => TENGWA_ARDA,
         ['l']           /**/ => TENGWA_LAMBE,
         ['l', 'd']      /**/ => TENGWA_ALDA,

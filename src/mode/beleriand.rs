@@ -15,17 +15,17 @@ pub const VOWEL_Y: char = TENGWA_SILME_NUQ;
 
 pub const fn consonant_char(slice: &[char]) -> Option<char> {
     Some(match slice {
-        //  Regular
-        ['t']           /**/ => TEMA_TINCO.single_dn, // Base
-        ['d']           /**/ => TEMA_TINCO.double_dn, // Voiced
-        ['þ']
-        | ['θ']
-        | ['t', 'h']    /**/ => TEMA_TINCO.single_up, // Fricative
-        ['ð']
-        | ['d', 'h']    /**/ => TEMA_TINCO.double_up, // Voiced Fricative
+        //  Tincotéma.
+        ['t']           /**/ => TEMA_TINCO.single_dn,
+        ['d']           /**/ => TEMA_TINCO.double_dn,
+        ['t', 'h']
+        | ['θ'] | ['þ'] /**/ => TEMA_TINCO.single_up,
+        ['d', 'h']
+        | ['ð']         /**/ => TEMA_TINCO.double_up,
         ['n', 'n']      /**/ => TEMA_TINCO.double_sh,
         ['n']           /**/ => TEMA_TINCO.single_sh,
 
+        //  Parmatéma.
         ['p']           /**/ => TEMA_PARMA.single_dn,
         ['b']           /**/ => TEMA_PARMA.double_dn,
         ['p', 'h']
@@ -34,20 +34,30 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         ['m', 'm']      /**/ => TEMA_PARMA.double_sh,
         ['m']           /**/ => TEMA_PARMA.single_sh,
 
-        ['c']
-        | ['k']         /**/ => TEMA_CALMA.single_dn,
+        //  Calmatéma.
+        ['c'] | ['k']   /**/ => TEMA_CALMA.single_dn,
         ['g']           /**/ => TEMA_CALMA.double_dn,
         ['c', 'h']
         | ['k', 'h']    /**/ => TEMA_CALMA.single_up,
         ['g', 'h']      /**/ => TEMA_CALMA.double_up,
+        /*['n', 'g']
+        | ['ñ']         /**/ => TEMA_CALMA.double_sh,*/ // TODO
+        // []           /**/ => TEMA_CALMA.single_sh, // Vowel O.
 
+        //  Qessetéma.
+        // []           /**/ => TEMA_QESSE.single_dn,
+        // []           /**/ => TEMA_QESSE.double_dn,
+        // []           /**/ => TEMA_QESSE.single_up,
+        // []           /**/ => TEMA_QESSE.double_up,
+        // []           /**/ => TEMA_QESSE.double_sh,
         ['w']           /**/ => TEMA_QESSE.single_sh,
 
-        //  Irregular
-        ['r']           /**/ => TENGWA_ROMEN,
-        // ['r', 'h']      /**/ => TENGWA_ARDA,
+        //  Irregulars.
         ['l']           /**/ => TENGWA_LAMBE,
-        // ['l', 'h']      /**/ => TENGWA_ALDA,
+        ['r']           /**/ => TENGWA_ROMEN,
+        ['l', 'h']      /**/ => TENGWA_ALDA,
+        ['r', 'h']      /**/ => TENGWA_ARDA,
+        ['m', 'h']      /**/ => TENGWA_VALA_HOOKED,
         ['s']           /**/ => TENGWA_SILME,
         ['s', 's']
         | ['z']         /**/ => TENGWA_ESSE,

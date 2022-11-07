@@ -9,35 +9,44 @@ pub const CARRIER_DIPH_U: char = TENGWA_URE;
 
 pub const fn consonant_char(slice: &[char]) -> Option<char> {
     Some(match slice {
-        //  Regular
+        //  Tincotéma.
         ['t']           /**/ => TEMA_TINCO.single_dn,
         ['d']           /**/ => TEMA_TINCO.double_dn,
         ['t', 'h']
-        | ['θ']
-        | ['þ']         /**/ => TEMA_TINCO.single_up,
+        | ['θ'] | ['þ'] /**/ => TEMA_TINCO.single_up,
         ['d', 'h']
         | ['ð']         /**/ => TEMA_TINCO.double_up,
         ['n']           /**/ => TEMA_TINCO.double_sh,
         ['r']           /**/ => TEMA_TINCO.single_sh,
 
+        //  Parmatéma.
         ['p']           /**/ => TEMA_PARMA.single_dn,
         ['b']           /**/ => TEMA_PARMA.double_dn,
         ['p', 'h']
         | ['φ']         /**/ => TEMA_PARMA.single_up,
         ['v']           /**/ => TEMA_PARMA.double_up,
         ['m']           /**/ => TEMA_PARMA.double_sh,
+        // []           /**/ => TEMA_PARMA.single_sh,
 
-        ['c']
-        | ['k']         /**/ => TEMA_QESSE.single_dn,
+        //  Calmatéma.
+        // []           /**/ => TEMA_CALMA.single_dn,
+        // []           /**/ => TEMA_CALMA.double_dn,
+        // []           /**/ => TEMA_CALMA.single_up,
+        // []           /**/ => TEMA_CALMA.double_up,
+        // []           /**/ => TEMA_CALMA.double_sh,
+        // []           /**/ => TEMA_CALMA.single_sh, // Diphthongs of I.
+
+        //  Qessetéma.
+        ['c'] | ['k']   /**/ => TEMA_QESSE.single_dn,
         ['g']           /**/ => TEMA_QESSE.double_dn,
         ['c', 'h']
         | ['k', 'h']    /**/ => TEMA_QESSE.single_up,
         ['g', 'h']      /**/ => TEMA_QESSE.double_up,
-        ['ñ']
-        | ['n', 'g']    /**/ => TEMA_QESSE.double_sh,
+        ['n', 'g']
+        | ['ñ']         /**/ => TEMA_QESSE.double_sh,
         ['w']           /**/ => TEMA_QESSE.single_sh,
 
-        //  Irregular
+        //  Irregulars.
         ['l']           /**/ => TENGWA_LAMBE,
         ['l', 'h']      /**/ => TENGWA_ALDA,
         ['r', 'h']      /**/ => TENGWA_ARDA,
