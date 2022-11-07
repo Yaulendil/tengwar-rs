@@ -404,35 +404,45 @@ mod tests {
         test_tengwar!(Quenya, "eze" == esse);
 
         //  Test all diphthongs.
-        test_tengwar!(Quenya, "aiwë" => [
-            CARRIER_DIPH_I, TEHTA_A.short(), // ai
-            TENGWA_WILYA, TEHTA_E.short(), // wë
-        ]);
-        test_tengwar!(Quenya, "oialë" => [
-            CARRIER_DIPH_I, TEHTA_O.short(), // oi
-            CARRIER_SHORT, TEHTA_A.short(), // a
-            TENGWA_LAMBE, TEHTA_E.short(), // lë
-        ]);
-        test_tengwar!(Quenya, "ruina" => [
-            TENGWA_ROMEN, // r
-            CARRIER_DIPH_I, TEHTA_U.short(), // ui
-            TENGWA_NUMEN, TEHTA_A.short(), // na
-        ]);
+        test_tengwar!(Quenya, "ai" => [CARRIER_DIPH_I, TEHTA_A.base()]);
+        test_tengwar!(Quenya, "oi" => [CARRIER_DIPH_I, TEHTA_O.base()]);
+        test_tengwar!(Quenya, "ui" => [CARRIER_DIPH_I, TEHTA_U.base()]);
+        test_tengwar!(Quenya, "au" => [CARRIER_DIPH_U, TEHTA_A.base()]);
+        test_tengwar!(Quenya, "eu" => [CARRIER_DIPH_U, TEHTA_E.base()]);
+        test_tengwar!(Quenya, "iu" => [CARRIER_DIPH_U, TEHTA_I.base()]);
 
-        test_tengwar!(Quenya, "rauca" => [
-            TENGWA_ROMEN, // r
-            CARRIER_DIPH_U, TEHTA_A.short(), // au
-            TENGWA_CALMA, TEHTA_A.short(), // ca
-        ]);
-        test_tengwar!(Quenya, "ceurë" => [
-            TENGWA_CALMA, // c
-            CARRIER_DIPH_U, TEHTA_E.short(), // eu
-            TENGWA_ROMEN, TEHTA_E.short(), // rë
-        ]);
-        test_tengwar!(Quenya, "miuë" => [
-            TENGWA_MALTA, // m
-            CARRIER_DIPH_U, TEHTA_I.short(), // iu
-            CARRIER_SHORT, TEHTA_E.short(), // ë
-        ]);
+        //  Test all vowels, alone.
+        test_tengwar!(Quenya, "a" => [CARRIER_SHORT, TEHTA_A.base()]);
+        test_tengwar!(Quenya, "e" => [CARRIER_SHORT, TEHTA_E.base()]);
+        test_tengwar!(Quenya, "i" => [CARRIER_SHORT, TEHTA_I.base()]);
+        test_tengwar!(Quenya, "o" => [CARRIER_SHORT, TEHTA_O.base()]);
+        test_tengwar!(Quenya, "u" => [CARRIER_SHORT, TEHTA_U.base()]);
+        test_tengwar!(Quenya, "á" => [CARRIER_LONG, TEHTA_A.base()] as aa);
+        test_tengwar!(Quenya, "é" => [CARRIER_LONG, TEHTA_E.base()] as ee);
+        test_tengwar!(Quenya, "í" => [CARRIER_LONG, TEHTA_I.base()] as ii);
+        test_tengwar!(Quenya, "ó" => [CARRIER_LONG, TEHTA_O.base()] as oo);
+        test_tengwar!(Quenya, "ú" => [CARRIER_LONG, TEHTA_U.base()] as uu);
+        test_tengwar!(Quenya, "aa" == aa);
+        test_tengwar!(Quenya, "ee" == ee);
+        test_tengwar!(Quenya, "ii" == ii);
+        test_tengwar!(Quenya, "oo" == oo);
+        test_tengwar!(Quenya, "uu" == uu);
+
+        //  Test all vowels, after consonants.
+        test_tengwar!(Quenya, "la" => [TENGWA_LAMBE, TEHTA_A.base()]);
+        test_tengwar!(Quenya, "le" => [TENGWA_LAMBE, TEHTA_E.base()]);
+        test_tengwar!(Quenya, "li" => [TENGWA_LAMBE, TEHTA_I.base()]);
+        test_tengwar!(Quenya, "lo" => [TENGWA_LAMBE, TEHTA_O.base()]);
+        test_tengwar!(Quenya, "lu" => [TENGWA_LAMBE, TEHTA_U.base()]);
+        test_tengwar!(Quenya, "lá" => [TENGWA_LAMBE, pre_long!(TEHTA_A), TEHTA_A.long()] as laa);
+        test_tengwar!(Quenya, "lé" => [TENGWA_LAMBE, pre_long!(TEHTA_E), TEHTA_E.long()] as lee);
+        test_tengwar!(Quenya, "lí" => [TENGWA_LAMBE, pre_long!(TEHTA_I), TEHTA_I.long()] as lii);
+        test_tengwar!(Quenya, "ló" => [TENGWA_LAMBE, pre_long!(TEHTA_O), TEHTA_O.long()] as loo);
+        test_tengwar!(Quenya, "lú" => [TENGWA_LAMBE, pre_long!(TEHTA_U), TEHTA_U.long()] as luu);
+        test_tengwar!(Quenya, "laa" == laa);
+        test_tengwar!(Quenya, "lee" == lee);
+        test_tengwar!(Quenya, "lii" == lii);
+        test_tengwar!(Quenya, "loo" == loo);
+        test_tengwar!(Quenya, "luu" == luu);
     }
 }

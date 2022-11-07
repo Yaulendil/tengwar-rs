@@ -59,14 +59,29 @@ macro_rules! nuq {
     };
 }
 
-macro_rules! pre_long {
-    ($tehta:expr) => {
-        #[cfg(not(feature = "long-vowel-unique"))]
-        if cfg!(feature = "long-vowel-double") {
-            $tehta.long()
-        } else {
-            CARRIER_LONG
+impl crate::characters::Tehta {
+    pub const fn pre_long(&self) -> char {
+        match self {
+            Self::Single(_) => crate::characters::CARRIER_LONG,
+            Self::Double(c) => *c,
+            Self::Altern(_, _) => unreachable!(),
         }
+    }
+}
+
+#[cfg(not(feature = "long-vowel-unique"))]
+macro_rules! pre_long {($tehta:expr) => {$tehta.pre_long()}}
+#[cfg(feature = "long-vowel-unique")]
+macro_rules! pre_long {
+    (TEHTA_A) => { $crate::characters::CARRIER_LONG };
+    (TEHTA_I) => { $crate::characters::CARRIER_LONG };
+    (TEHTA_Y) => { $crate::characters::CARRIER_LONG };
+    ($tehta:expr) => {
+        //  NOTE: Leaving this branch empty would refuse to compile. Apparently
+        //      having something here, even it it will never be included in the
+        //      build, makes it valid in the positions needed.
+        #[cfg(not(feature = "long-vowel-unique"))]
+        $tehta.pre_long()
     };
 }
 
