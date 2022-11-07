@@ -292,14 +292,6 @@ fn test_gondor() {
         CARRIER_SHORT, TEHTA_E.base(), // ë
     ]);
 
-    test_tengwar!(Gondor, "ae" => [CARRIER_DIPH_E, TEHTA_A.base()]);
-    test_tengwar!(Gondor, "oe" => [CARRIER_DIPH_E, TEHTA_O.base()]);
-    test_tengwar!(Gondor, "ai" => [CARRIER_DIPH_I, TEHTA_A.base()]);
-    test_tengwar!(Gondor, "ei" => [CARRIER_DIPH_I, TEHTA_E.base()]);
-    test_tengwar!(Gondor, "ui" => [CARRIER_DIPH_I, TEHTA_U.base()]);
-    test_tengwar!(Gondor, "au" => [CARRIER_DIPH_U, TEHTA_A.base()] as au);
-    test_tengwar!(Gondor, "aw" == au);
-
     let edhellen = test_tengwar!(Gondor, "edhellen" => [
         TENGWA_ANTO, TEHTA_E.base(), // edh
         TENGWA_LAMBE, DC_UNDER_LINE_H, TEHTA_E.base(), // ell
@@ -366,4 +358,66 @@ fn test_gondor() {
     test_tengwar!(Gondor, "aφadon" == aphadon);
     test_tengwar!(Gondor, "AΦADON" == aphadon);
     test_tengwar!(Gondor, "avadon" != aphadon);
+
+    //  Test all diphthongs.
+    test_tengwar!(Gondor, "ae" => [CARRIER_DIPH_E, TEHTA_A.base()]);
+    test_tengwar!(Gondor, "oe" => [CARRIER_DIPH_E, TEHTA_O.base()]);
+    test_tengwar!(Gondor, "ai" => [CARRIER_DIPH_I, TEHTA_A.base()]);
+    test_tengwar!(Gondor, "ei" => [CARRIER_DIPH_I, TEHTA_E.base()]);
+    test_tengwar!(Gondor, "ui" => [CARRIER_DIPH_I, TEHTA_U.base()]);
+    test_tengwar!(Gondor, "au" => [CARRIER_DIPH_U, TEHTA_A.base()] as au);
+    test_tengwar!(Gondor, "aw" == au);
+
+    //  Test all vowels, alone.
+    test_tengwar!(Gondor, "a" => [CARRIER_SHORT, TEHTA_A.base()]);
+    test_tengwar!(Gondor, "e" => [CARRIER_SHORT, TEHTA_E.base()]);
+    test_tengwar!(Gondor, "i" => [CARRIER_SHORT, TEHTA_I.base()]);
+    test_tengwar!(Gondor, "o" => [CARRIER_SHORT, TEHTA_O.base()]);
+    test_tengwar!(Gondor, "u" => [CARRIER_SHORT, TEHTA_U.base()]);
+    test_tengwar!(Gondor, "y" => [CARRIER_SHORT, TEHTA_Y.base()]);
+    test_tengwar!(Gondor, "á" => [CARRIER_LONG, TEHTA_A.base()] as aa);
+    test_tengwar!(Gondor, "é" => [CARRIER_LONG, TEHTA_E.base()] as ee);
+    test_tengwar!(Gondor, "í" => [CARRIER_LONG, TEHTA_I.base()] as ii);
+    test_tengwar!(Gondor, "ó" => [CARRIER_LONG, TEHTA_O.base()] as oo);
+    test_tengwar!(Gondor, "ú" => [CARRIER_LONG, TEHTA_U.base()] as uu);
+    test_tengwar!(Gondor, "ý" => [CARRIER_LONG, TEHTA_Y.base()] as yy);
+    test_tengwar!(Gondor, "â" == aa);
+    test_tengwar!(Gondor, "ê" == ee);
+    test_tengwar!(Gondor, "î" == ii);
+    test_tengwar!(Gondor, "ô" == oo);
+    test_tengwar!(Gondor, "û" == uu);
+    test_tengwar!(Gondor, "ŷ" == yy);
+    test_tengwar!(Gondor, "aa" == aa);
+    test_tengwar!(Gondor, "ee" == ee);
+    test_tengwar!(Gondor, "ii" == ii);
+    test_tengwar!(Gondor, "oo" == oo);
+    test_tengwar!(Gondor, "uu" == uu);
+    test_tengwar!(Gondor, "yy" == yy);
+
+    //  Test all vowels, after consonants.
+    test_tengwar!(Gondor, "ath" => [TENGWA_THULE, TEHTA_A.base()]);
+    test_tengwar!(Gondor, "eth" => [TENGWA_THULE, TEHTA_E.base()]);
+    test_tengwar!(Gondor, "ith" => [TENGWA_THULE, TEHTA_I.base()]);
+    test_tengwar!(Gondor, "oth" => [TENGWA_THULE, TEHTA_O.base()]);
+    test_tengwar!(Gondor, "uth" => [TENGWA_THULE, TEHTA_U.base()]);
+    test_tengwar!(Gondor, "yth" => [TENGWA_THULE, TEHTA_Y.base()]);
+    /*
+    test_tengwar!(Gondor, "áth" => [TENGWA_THULE, pre_long!(TEHTA_A), TEHTA_A.long()] as aath);
+    test_tengwar!(Gondor, "éth" => [TENGWA_THULE, pre_long!(TEHTA_E), TEHTA_E.long()] as eeth);
+    test_tengwar!(Gondor, "íth" => [TENGWA_THULE, pre_long!(TEHTA_I), TEHTA_I.long()] as iith);
+    test_tengwar!(Gondor, "óth" => [TENGWA_THULE, pre_long!(TEHTA_O), TEHTA_O.long()] as ooth);
+    test_tengwar!(Gondor, "úth" => [TENGWA_THULE, pre_long!(TEHTA_U), TEHTA_U.long()] as uuth);
+    test_tengwar!(Gondor, "ýth" => [TENGWA_THULE, pre_long!(TEHTA_Y), TEHTA_Y.long()] as yyth);
+    test_tengwar!(Gondor, "âth" == aath);
+    test_tengwar!(Gondor, "êth" == eeth);
+    test_tengwar!(Gondor, "îth" == iith);
+    test_tengwar!(Gondor, "ôth" == ooth);
+    test_tengwar!(Gondor, "ûth" == uuth);
+    test_tengwar!(Gondor, "ŷth" == yyth);
+    test_tengwar!(Gondor, "aath" == aath);
+    test_tengwar!(Gondor, "eeth" == eeth);
+    test_tengwar!(Gondor, "iith" == iith);
+    test_tengwar!(Gondor, "ooth" == ooth);
+    test_tengwar!(Gondor, "uuth" == uuth);
+    test_tengwar!(Gondor, "yyth" == yyth);*/
 }
