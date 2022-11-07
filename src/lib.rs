@@ -9,18 +9,20 @@
 //! # Modes
 //!
 //! Three modes are currently provided: [`Quenya`] ("Classical"), [`Beleriand`],
-//!     and [`Gondor`]. Each mode is a zero-size singleton that implements the
-//!     [`TengwarMode`] trait.
+//!     and [`Gondor`]. Each mode implements the [`TengwarMode`] trait.
 //!
 //! # Examples
 //!
 //! [`AsRef<str>`]: AsRef
+//! [`collect`]: Iterator::collect
 //! [`transcribe`]: TengwarMode::transcribe
+//! [`transcriber`]: ToTengwar::transcriber
 //! [`to_tengwar`]: ToTengwar::to_tengwar
 //!
 //! The most basic way to convert text is the [`transcribe`] associated function
 //!     on the [`TengwarMode`] trait. This function accepts any input type that
-//!     implements [`AsRef<str>`].
+//!     implements [`AsRef<str>`], and can return any type that implements
+//!     `FromIterator<Token>`; This includes `Vec<Token>` and [`String`].
 //! ```
 //! use tengwar::{Quenya, TengwarMode};
 //!
@@ -33,10 +35,30 @@
 //! }
 //! ```
 //!
-//! With the use of the [`ToTengwar`] helper trait, a method is provided on the
-//!     input type directly. This trait is automatically implemented for types
-//!     that implement [`AsRef<str>`], where it is a simple passthrough to the
-//!     [`TengwarMode::transcribe`] function.
+//! With the use of the [`ToTengwar`] helper trait, two methods are provided on
+//!     the input type directly. This trait is automatically implemented for all
+//!     types implementing [`AsRef<str>`]. The first method is [`transcriber`],
+//!     which constructs a [`Transcriber`] for the text, allowing iteration over
+//!     [`Token`]s.
+//! ```
+//! use tengwar::{Quenya, ToTengwar};
+//!
+//! let mut transcriber = "namárië:-".transcriber::<Quenya>();
+//! transcriber.ligate_short = false;
+//! transcriber.ligate_zwj = false;
+//!
+//! let text: String = transcriber.collect();
+//!
+//! if cfg!(feature = "circumflex") {
+//!     assert_eq!(text, "");
+//! } else {
+//!     assert_eq!(text, "");
+//! }
+//! ```
+//!
+//! The other method is [`to_tengwar`]. This is mostly a convenience method,
+//!     which simply calls [`transcriber`] and immediately [`collect`]s the
+//!     iterator into the output type.
 //! ```
 //! use tengwar::{Quenya, ToTengwar};
 //!
@@ -50,9 +72,9 @@
 //! ```
 //!
 //! Also available, and likely the easiest to discover via code completion, is
-//!     the crate-level [`transcribe`] function, which takes an implementor of
-//!     [`TengwarMode`] as a generic parameter. This function accepts any input
-//!     type that implements [`ToTengwar`], and is a passthrough to the
+//!     the top-level [`crate::transcribe`] function, which takes an implementor
+//!     of [`TengwarMode`] as a generic parameter. This function accepts any
+//!     input type that implements [`ToTengwar`], and is a passthrough to the
 //!     [`to_tengwar`] method.
 //! ```
 //! use tengwar::{Quenya, transcribe};
@@ -78,7 +100,7 @@ use std::{
     fmt::{self, Display, Formatter, Write},
     iter::{FromIterator, Peekable},
 };
-use crate::mode::ModeIter;
+use mode::ModeIter;
 
 
 /// Convert a compatible object (typically text) into the Tengwar.
