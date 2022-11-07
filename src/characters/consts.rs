@@ -1,12 +1,12 @@
 use super::{tehta::Tehta, tema::Tema};
 
 
-/// Ára, a carrier marking for a "long" vowel.
-pub const CARRIER_LONG: char = '';
-/// Telco, a carrier marking for a "short" vowel.
-pub const CARRIER_SHORT: char = '';
-/// A ligating variant of [Telco](CARRIER_SHORT).
-pub const CARRIER_SHORT_LIG: char = '';
+/// A carrier marking for a long vowel.
+pub const CARRIER_LONG: char = TENGWA_ARA;
+/// A carrier marking for a short vowel.
+pub const CARRIER_SHORT: char = TENGWA_TELCO;
+/// A ligating variant of the [short carrier](CARRIER_SHORT).
+pub const CARRIER_SHORT_LIG: char = TENGWA_TELCO_LIG;
 
 
 /// Return a carrier mark appropriate for whether a vowel is long.
@@ -327,11 +327,9 @@ pub const TENGWA_NWALME: char = TEMA_QESSE.double_sh;
 pub const TENGWA_WILYA: char = TEMA_QESSE.single_sh;
 
 
-/// A variant of Vala with an extra hook.
-pub const TENGWA_CURL_SINGLE: char = '';
-/// A variant of Malta with an extra hook.
-pub const TENGWA_CURL_DOUBLE: char = '';
-
+//  Irregular tengwar. Arranged in MOSTLY the same order as the codepoints, with
+//      some changes for (subjectively) more understandable grouping.
+//  U+E02_
 pub const TENGWA_ROMEN: char = '';
 pub const TENGWA_ARDA: char = '';
 pub const TENGWA_LAMBE: char = '';
@@ -345,22 +343,32 @@ pub const TENGWA_ESSE_NUQ: char = '';
 
 pub const TENGWA_HYARMEN: char = '';
 pub const TENGWA_HWESTA_SINDARINWA: char = '';
-/// Carrier Tengwa for '_i' Diphthongs.
 pub const TENGWA_YANTA: char = '';
-/// Carrier Tengwa for '_u' Diphthongs.
 pub const TENGWA_URE: char = '';
 
+/// A short vertical mark.
+pub const TENGWA_TELCO: char = '';
+/// A long vertical mark extending downwards.
+pub const TENGWA_ARA: char = '';
+/// A long vertical mark extending upwards.
 pub const TENGWA_HALLA: char = '';
-pub const TENGWA_WAIA: char = '';
+
+//  U+E03_
 pub const TENGWA_OSSE: char = '';
 pub const TENGWA_OSSE_REV: char = '';
-
-pub const TENGWA_ANNA_OPEN: char = '';
-pub const TENGWA_BOMBADIL_HW: char = '';
 pub const TENGWA_BOMBADIL_W: char = '';
-pub const TENGWA_LOWDHAM_HW: char = '';
 
+/// A ligating variant of [Telco](TENGWA_TELCO).
+pub const TENGWA_TELCO_LIG: char = '';
+pub const TENGWA_ANNA_OPEN: char = '';
 pub const TENGWA_CHRISTOPHER_QU: char = '';
+pub const TENGWA_BOMBADIL_HW: char = '';
+/// A variant of [Malta](TENGWA_MALTA) with an extra hook.
+pub const TENGWA_MALTA_HOOKED: char = '';
+/// A variant of [Vala](TENGWA_VALA) with an extra hook.
+pub const TENGWA_VALA_HOOKED: char = '';
+pub const TENGWA_LOWDHAM_HW: char = '';
+pub const TENGWA_WAIA: char = '';
 
 /// "Zero-Width Joiner", used for forming ligatures.
 pub const ZWJ: char = '‍';
@@ -374,9 +382,9 @@ pub const fn width(c: char) -> Option<usize> {
         | ZWJ
         => Some(0),
 
-        TENGWA_TINCO..=CARRIER_SHORT
+        TENGWA_TINCO..=TENGWA_TELCO
         | TENGWA_OSSE_REV..=TENGWA_OSSE
-        | CARRIER_SHORT_LIG..=TENGWA_WAIA
+        | TENGWA_TELCO_LIG..=TENGWA_WAIA
         | SA_RINCE_FINAL
         | PUNCT_DOT_1..=PUNCT_THORIN
         | numeral::NUM_0..=numeral::NUM_C

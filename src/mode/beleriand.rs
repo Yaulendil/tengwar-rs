@@ -2,12 +2,13 @@ use crate::{characters::*, Token};
 use super::{ParseAction, TengwarMode};
 
 
-const TEHTA_LONG: Tehta = TEHTA_E;
+/// Tehta indicating a long vowel.
+const TEHTA_LONG: Tehta = Tehta::Double(DC_OVER_ACUTE_1);
 
 const VOWEL_A: char = TENGWA_OSSE;
 const VOWEL_E: char = TENGWA_YANTA;
-const VOWEL_I: char = CARRIER_SHORT;
-const VOWEL_O: char = TEMA_CALMA.single_sh;
+const VOWEL_I: char = TENGWA_TELCO;
+const VOWEL_O: char = TENGWA_ANNA;
 const VOWEL_U: char = TENGWA_URE;
 const VOWEL_Y: char = TENGWA_SILME_NUQ;
 
