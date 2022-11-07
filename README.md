@@ -39,12 +39,12 @@ Alternative "Modes" can be selected via command-line switch:
     > tengwar --gondor "Ennyn Durin aran Moria :. pedo mellon a minno :"
              
 
-The full list of available modes can be viewed with `tengwar --help`.
+The full list of available modes can be viewed with `tengwar -h`.
 
 ### Ligation with Zero-Width Joiners
 
 In certain typefaces, the [Zero-Width Joiner](https://en.wikipedia.org/wiki/Zero-width_joiner) may be used to form ligatures of Tengwar.
-When invoked with the `--ligatures` switch on the command line, this program will insert joiners into the output text between certain characters, based on various overly convoluted rules.
+When invoked with the `--ligate-zwj` (or `-z`) switch on the command line, this program will insert joiners into the output text between certain characters, based on various overly convoluted rules.
 These rules are based on the ligature behavior of [Tengwar Telcontar](https://freetengwar.sourceforge.net/tengtelc.html), as well as some degree of personal taste.
 
 For typefaces that do not support these ligatures, the presence of the joining characters ***should*** not affect the rendering;
@@ -56,7 +56,7 @@ Tengwar [punctuation](https://at.mansbjorkman.net/teng_punctuation.htm) is essen
 It is therefore probably best to not even try, and instead to punctuate the input text with the output in mind.
 
 This program does convert punctuation marks into Unicode codepoints, but whitespace is passed through verbatim, neither added nor subtracted¹.
-As of this writing at version `0.7.0`, punctuation is processed as can be seen above and in the following table:
+As of this writing at version `0.8.0`, punctuation is processed as can be seen above and in the following table:
 
 | Input              | Output |
 |--------------------|:------:|
@@ -74,6 +74,10 @@ As of this writing at version `0.7.0`, punctuation is processed as can be seen a
 | `)`, `]`, `”`, `„` |  ``   |
 
 The Pipe character (`|`) is also converted to ``, but it cannot be included in this table due to a technical limitation of the Markdown format.
+
+It may be important to note that the Tilde (`~`) is **not** converted, despite strongly resembling the punctuation character ``.
+This is because the Tilde represents a specific type of whitespace in LaTeX, and running within LaTeX is the motivating use case for the creation of this program.
+The Tilde is left alone so that it can safely pass through and be read by LaTeX.
 
 ---
 
