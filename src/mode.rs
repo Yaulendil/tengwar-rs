@@ -1,15 +1,12 @@
 //! This module consolidates the modes of transliteration for simplicity.
 
-#[cfg(test)]
-#[macro_use]
-mod test_macros;
-
 pub mod beleriand;
 // pub mod general;
 pub mod gondor;
 pub mod quenya;
 
 mod iter;
+mod tests;
 
 pub use beleriand::Beleriand;
 // pub use general::General;
