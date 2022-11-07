@@ -3,7 +3,7 @@
 #[macro_use]
 mod macros;
 
-// mod beleriand;
+mod beleriand;
 // mod general;
 mod gondor;
 mod quenya;

@@ -3,14 +3,14 @@ use super::{ParseAction, TengwarMode};
 
 
 /// Tehta indicating a long vowel.
-const TEHTA_LONG: Tehta = Tehta::Double(DC_OVER_ACUTE_1);
+pub const TEHTA_LONG: Tehta = Tehta::Double(DC_OVER_ACUTE_1);
 
-const VOWEL_A: char = TENGWA_OSSE;
-const VOWEL_E: char = TENGWA_YANTA;
-const VOWEL_I: char = TENGWA_TELCO;
-const VOWEL_O: char = TENGWA_ANNA;
-const VOWEL_U: char = TENGWA_URE;
-const VOWEL_Y: char = TENGWA_SILME_NUQ;
+pub const VOWEL_A: char = TENGWA_OSSE;
+pub const VOWEL_E: char = TENGWA_YANTA;
+pub const VOWEL_I: char = TENGWA_TELCO;
+pub const VOWEL_O: char = TENGWA_ANNA;
+pub const VOWEL_U: char = TENGWA_URE;
+pub const VOWEL_Y: char = TENGWA_SILME_NUQ;
 
 
 pub const fn consonant_char(slice: &[char]) -> Option<char> {
