@@ -6,8 +6,14 @@ macro_rules! test_tengwar {
     ($mode:ty, $input:expr => [$($chars:tt)*] as $bind:ident) => {
         let $bind = test_tengwar!($mode, $input => [$($chars)*]);
     };
-    ($mode:ty, $input:expr => [$($chars:expr),* $(,)?]) => {{
-        let expected: String = [$($chars),*].into_iter().collect();
+    ($mode:ty, $input:expr => $expected:expr, as $bind:ident) => {
+        let $bind = test_tengwar!($mode, $input => $expected);
+    };
+    ($mode:ty, $input:expr => [$($chars:tt)*]) => {
+        test_tengwar!($mode, $input => ([$($chars)*]))
+    };
+    ($mode:ty, $input:expr => $expected:expr) => {{
+        let expected: String = $expected.into_iter().collect();
         let received: String = <$mode>::transcribe($input);
 
         assert_eq!(expected, received,

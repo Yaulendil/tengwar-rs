@@ -401,23 +401,52 @@ fn test_gondor() {
     test_tengwar!(Gondor, "oth" => [TENGWA_THULE, TEHTA_O.base()]);
     test_tengwar!(Gondor, "uth" => [TENGWA_THULE, TEHTA_U.base()]);
     test_tengwar!(Gondor, "yth" => [TENGWA_THULE, TEHTA_Y.base()]);
-    /*
-    test_tengwar!(Gondor, "áth" => [TENGWA_THULE, pre_long!(TEHTA_A), TEHTA_A.long()] as aath);
-    test_tengwar!(Gondor, "éth" => [TENGWA_THULE, pre_long!(TEHTA_E), TEHTA_E.long()] as eeth);
-    test_tengwar!(Gondor, "íth" => [TENGWA_THULE, pre_long!(TEHTA_I), TEHTA_I.long()] as iith);
-    test_tengwar!(Gondor, "óth" => [TENGWA_THULE, pre_long!(TEHTA_O), TEHTA_O.long()] as ooth);
-    test_tengwar!(Gondor, "úth" => [TENGWA_THULE, pre_long!(TEHTA_U), TEHTA_U.long()] as uuth);
-    test_tengwar!(Gondor, "ýth" => [TENGWA_THULE, pre_long!(TEHTA_Y), TEHTA_Y.long()] as yyth);
+
+    let (test_aath, test_eeth, test_iith, test_ooth, test_uuth, test_yyth);
+
+    #[cfg(not(any(feature = "long-vowel-double", feature = "long-vowel-unique")))] {
+        test_aath = [CARRIER_LONG, TEHTA_A.base(), TENGWA_THULE];
+        test_eeth = [CARRIER_LONG, TEHTA_E.base(), TENGWA_THULE];
+        test_iith = [CARRIER_LONG, TEHTA_I.base(), TENGWA_THULE];
+        test_ooth = [CARRIER_LONG, TEHTA_O.base(), TENGWA_THULE];
+        test_uuth = [CARRIER_LONG, TEHTA_U.base(), TENGWA_THULE];
+        test_yyth = [CARRIER_LONG, TEHTA_Y.base(), TENGWA_THULE];
+    }
+    #[cfg(all(feature = "long-vowel-double", not(feature = "long-vowel-unique")))] {
+        test_aath = [CARRIER_LONG, TEHTA_A.base(), TENGWA_THULE];
+        test_eeth = [TENGWA_THULE, TEHTA_E.base(), TEHTA_E.base()];
+        test_iith = [CARRIER_LONG, TEHTA_I.base(), TENGWA_THULE];
+        test_ooth = [TENGWA_THULE, TEHTA_O.base(), TEHTA_O.base()];
+        test_uuth = [TENGWA_THULE, TEHTA_U.base(), TEHTA_U.base()];
+        test_yyth = [CARRIER_LONG, TEHTA_Y.base(), TENGWA_THULE];
+    }
+    #[cfg(feature = "long-vowel-unique")] {
+        test_aath = [CARRIER_LONG, TEHTA_A.base(), TENGWA_THULE];
+        test_eeth = [TENGWA_THULE, TEHTA_E.long()];
+        test_iith = [CARRIER_LONG, TEHTA_I.base(), TENGWA_THULE];
+        test_ooth = [TENGWA_THULE, TEHTA_O.long()];
+        test_uuth = [TENGWA_THULE, TEHTA_U.long()];
+        test_yyth = [CARRIER_LONG, TEHTA_Y.base(), TENGWA_THULE];
+    }
+
+    test_tengwar!(Gondor, "áth" => test_aath, as aath);
+    test_tengwar!(Gondor, "éth" => test_eeth, as eeth);
+    test_tengwar!(Gondor, "íth" => test_iith, as iith);
+    test_tengwar!(Gondor, "óth" => test_ooth, as ooth);
+    test_tengwar!(Gondor, "úth" => test_uuth, as uuth);
+    test_tengwar!(Gondor, "ýth" => test_yyth, as yyth);
+
     test_tengwar!(Gondor, "âth" == aath);
     test_tengwar!(Gondor, "êth" == eeth);
     test_tengwar!(Gondor, "îth" == iith);
     test_tengwar!(Gondor, "ôth" == ooth);
     test_tengwar!(Gondor, "ûth" == uuth);
     test_tengwar!(Gondor, "ŷth" == yyth);
+
     test_tengwar!(Gondor, "aath" == aath);
     test_tengwar!(Gondor, "eeth" == eeth);
     test_tengwar!(Gondor, "iith" == iith);
     test_tengwar!(Gondor, "ooth" == ooth);
     test_tengwar!(Gondor, "uuth" == uuth);
-    test_tengwar!(Gondor, "yyth" == yyth);*/
+    test_tengwar!(Gondor, "yyth" == yyth);
 }
