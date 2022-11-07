@@ -48,7 +48,6 @@ impl Mode {
 
 
 #[derive(Args, Debug)]
-#[command(next_help_heading = "Mode Options")]
 struct ModeFlags {
     /// Transliterate in the Classical Mode (default).
     ///
@@ -57,7 +56,7 @@ struct ModeFlags {
     ///     or a "carrier" mark.
     ///
     /// This mode is typically used for Quenya.
-    #[arg(long, short)]
+    #[arg(long, short = 'Q')]
     #[arg(group = "mode")]
     quenya: bool,
 
@@ -69,7 +68,7 @@ struct ModeFlags {
     ///
     /// This mode was used for Sindarin during the third age, throughout many of
     ///     the western regions of Middle-earth.
-    #[arg(long, short)]
+    #[arg(long, short = 'G')]
     #[arg(group = "mode")]
     gondor: bool,
 
@@ -81,7 +80,7 @@ struct ModeFlags {
     ///
     /// This mode was used for Sindarin in Beleriand during the first age, as
     ///     well as in Eregion during the second age.
-    #[arg(long, short)]
+    #[arg(long, short = 'B')]
     #[arg(group = "mode")]
     beleriand: bool,
 
@@ -92,7 +91,47 @@ struct ModeFlags {
 }
 
 
-/// Transliterate text into the Tengwar of Fëanáro Finwion.
+#[derive(Clone, Copy, Debug, ValueEnum)]
+enum LongVowels {
+    /// Always use the extended carrier mark.
+    Separate,
+    /// Where possible, use doubled diacritics.
+    Doubled,
+    /// Where possible, use unique diacritics.
+    Unique,
+}
+
+
+#[derive(Args, Debug)]
+struct StyleFlags {
+    /*/// Use an alternate "yanta" diacritic for A-vowels.
+    ///
+    /// The alternate form is simpler and much quicker to write by hand than the
+    ///     default tri-dot, and may be preferred when typesetting text intended
+    ///     to be handwritten.
+    #[arg(long, short = 'a')]
+    alt_a: bool,*/
+
+    /*/// Use a more ornate "sa-rincë" for final sibilants.
+    #[arg(long, short = 'r')]
+    alt_rince: bool,*/
+
+    /*/// Set behavior for long vowels.
+    #[arg(long, short = 'l', value_name = "STYLE")]
+    #[arg(default_value_t = LongVowels::Doubled, value_enum)]
+    long: LongVowels,*/
+
+    /*/// Do not use inverted "nuquerna" variants.
+    ///
+    /// Some tengwar typically occupy the center space above them, where a vowel
+    ///     diacritic would be placed. When one of these tengwar needs to have a
+    ///     vowel, it is often inverted to make room; This option prevents that.
+    #[arg(long, short = 'n')]
+    no_nuquerna: bool,*/
+}
+
+
+/// Transliterate text into J.R.R. Tolkien's Tengwar.
 ///
 /// Since the Tengwar are simply a writing system, and not a full language,
 /// there are various "modes" that can be used for transliteration. The default
@@ -101,8 +140,13 @@ struct ModeFlags {
 #[derive(Debug, Parser)]
 #[command(version, max_term_width(100))]
 struct Command {
+    /// Text to be transliterated.
+    ///
+    /// If this is not provided, Standard Input will be used instead.
+    text: Vec<String>,
+
     /// Use all available forms of ligature formation.
-    #[arg(long = "ligatures", short = 'l')]
+    #[arg(long)]
     ligate_all: bool,
 
     /// Use the ligated short carrier when applicable.
@@ -121,12 +165,12 @@ struct Command {
     #[arg(long, short = 'z')]
     ligate_zwj: bool,
 
-    /// Text to be transliterated.
-    ///
-    /// If this is not provided, Standard Input will be used instead.
-    text: Vec<String>,
+    /// Options for determining output style.
+    #[command(flatten, next_help_heading = "Style")]
+    style_flags: StyleFlags,
 
-    #[command(flatten)]
+    /// Options for selecting the operating mode.
+    #[command(flatten, next_help_heading = "Modes")]
     mode_flags: ModeFlags,
 }
 

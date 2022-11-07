@@ -27,14 +27,11 @@ itertools = "0.10.0"
 
 [dependencies.clap]
 version = "4.0.18"
-features = ["cargo", "derive"]
+features = ["cargo", "derive", "wrap_help"]
 
 
 [features]
 default = ["long-vowel-double", "nuquernar"]
-
-# Enable features that require an unstable toolchain.
-nightly = ["clap/wrap_help"]
 
 # Use alternate Sa-rincë for tengwar that support it.
 alt-rince = []
