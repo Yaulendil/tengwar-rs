@@ -5,7 +5,7 @@ use std::{io::{BufRead, stdin, stdout, Write}, process::exit};
 use tengwar::*;
 
 
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug, ValueEnum)]
 enum Mode {
     Quenya,
     Gondor,
@@ -88,6 +88,15 @@ struct ModeFlags {
     #[arg(long, short)]
     #[arg(group = "mode")]
     english: bool,*/
+
+    /// Set a mode by name.
+    #[arg(hide = true)] // NOTE: Unsure whether this option will be kept.
+    #[arg(long = "mode", short = 'M', value_name = "MODE")]
+    #[arg(group = "mode", value_enum)]
+    by_name: Option<Mode>,
+    //  TODO: Fallback, replacing Mode::DEFAULT, rather than first check?
+    // #[arg(default_value_t = Mode::Quenya)]
+    // by_name: Mode,
 }
 
 
@@ -172,6 +181,10 @@ struct Command {
     /// Options for selecting the operating mode.
     #[command(flatten, next_help_heading = "Modes")]
     mode_flags: ModeFlags,
+
+    #[arg(long, hide = true)]
+    #[cfg(debug_assertions)]
+    debug: bool,
 }
 
 impl Command {
@@ -183,13 +196,23 @@ impl Command {
     }
 
     const fn mode(&self) -> Mode {
-        if self.mode_flags.quenya {
+        let ModeFlags {
+            quenya,
+            gondor,
+            beleriand,
+            /*english,*/
+            by_name,
+        } = self.mode_flags;
+
+        if let Some(mode) = by_name {
+            mode
+        } else if quenya {
             Mode::Quenya
-        } else if self.mode_flags.gondor {
+        } else if gondor {
             Mode::Gondor
-        } else if self.mode_flags.beleriand {
+        } else if beleriand {
             Mode::Beleriand
-        /*} else if self.mode_flags.english {
+        /*} else if english {
             Mode::English*/
         } else {
             Mode::DEFAULT
@@ -200,6 +223,12 @@ impl Command {
 
 fn main() {
     let command: Command = clap::Parser::parse();
+
+    #[cfg(debug_assertions)]
+    if command.debug {
+        dbg!(command);
+        exit(0);
+    }
 
     if command.text.is_empty() {
         for line in stdin().lock().lines() {
