@@ -3,7 +3,7 @@ use super::*;
 
 
 #[test]
-fn test_gondor() {
+fn test_gondor_words() {
     test_tengwar!(Gondor, "axë" => [
         TENGWA_CALMA, TEHTA_A.base(), SA_RINCE, // ax
         CARRIER_SHORT, TEHTA_E.base(), // ë
@@ -75,7 +75,11 @@ fn test_gondor() {
     test_tengwar!(Gondor, "aφadon" == aphadon);
     test_tengwar!(Gondor, "AΦADON" == aphadon);
     test_tengwar!(Gondor, "avadon" != aphadon);
+}
 
+
+#[test]
+fn test_gondor_vowels() {
     //  Test all diphthongs.
     test_tengwar!(Gondor, "ae" => [CARRIER_DIPH_E, TEHTA_A.base()]);
     test_tengwar!(Gondor, "oe" => [CARRIER_DIPH_E, TEHTA_O.base()]);

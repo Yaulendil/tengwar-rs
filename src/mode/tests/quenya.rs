@@ -3,7 +3,7 @@ use super::*;
 
 
 #[test]
-fn test_quenya() {
+fn test_quenya_words() {
     let eleni_silar = test_tengwar!(Quenya, "eleni sílar" => [
         CARRIER_SHORT, TEHTA_E.base(), // e
         TENGWA_LAMBE, TEHTA_E.base(), // le
@@ -170,7 +170,11 @@ fn test_quenya() {
         TENGWA_LAMBE, pre_long!(TEHTA_O), TEHTA_O.long(), // ló
         TENGWA_CALMA, TEHTA_E.base(), // cë
     ]);
+}
 
+
+#[test]
+fn test_quenya_vowels() {
     //  Test all diphthongs.
     test_tengwar!(Quenya, "ai" => [CARRIER_DIPH_I, TEHTA_A.base()]);
     test_tengwar!(Quenya, "oi" => [CARRIER_DIPH_I, TEHTA_O.base()]);
