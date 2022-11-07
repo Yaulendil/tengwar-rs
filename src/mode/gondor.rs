@@ -292,6 +292,14 @@ fn test_gondor() {
         CARRIER_SHORT, TEHTA_E.short(), // ë
     ]);
 
+    test_tengwar!(Gondor, "ae" => [CARRIER_DIPH_E, TEHTA_A.short()]);
+    test_tengwar!(Gondor, "oe" => [CARRIER_DIPH_E, TEHTA_O.short()]);
+    test_tengwar!(Gondor, "ai" => [CARRIER_DIPH_I, TEHTA_A.short()]);
+    test_tengwar!(Gondor, "ei" => [CARRIER_DIPH_I, TEHTA_E.short()]);
+    test_tengwar!(Gondor, "ui" => [CARRIER_DIPH_I, TEHTA_U.short()]);
+    test_tengwar!(Gondor, "au" => [CARRIER_DIPH_U, TEHTA_A.short()] as au);
+    test_tengwar!(Gondor, "aw" == au);
+
     let edhellen = test_tengwar!(Gondor, "edhellen" => [
         TENGWA_ANTO, TEHTA_E.short(), // edh
         TENGWA_LAMBE, DC_UNDER_LINE_H, TEHTA_E.short(), // ell

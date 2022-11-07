@@ -1,12 +1,15 @@
 //! Utility module for more easily writing more meaningful test code.
+#![cfg(test)]
+
 
 macro_rules! test_tengwar {
-    ($mode:ty, $input:expr => [$($chars:expr),+ $(,)?]) => {{
-        let expected: String = [$($chars),+].into_iter().collect();
+    ($mode:ty, $input:expr => [$($chars:tt)*] as $bind:ident) => {
+        let $bind = test_tengwar!($mode, $input => [$($chars)*]);
+    };
+    ($mode:ty, $input:expr => [$($chars:expr),* $(,)?]) => {{
+        let expected: String = [$($chars),*].into_iter().collect();
         let received: String = <$mode>::transcribe($input);
-        // let chars: Vec<char> = received.chars().collect();
 
-        // assert_eq!(chars, [$($chars),+],
         assert_eq!(expected, received,
             "Transcription of {input:?} does not match expectation.\
             \n  Expected: {expected}\
@@ -14,6 +17,7 @@ macro_rules! test_tengwar {
             input = $input,
         );
 
+        // eprintln!("{received}");
         ($input, received)
     }};
     ($mode:ty, $input:tt == $expected:expr) => {{
