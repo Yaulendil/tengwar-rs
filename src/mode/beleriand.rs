@@ -29,7 +29,6 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         ['p']           /**/ => TEMA_PARMA.single_dn,
         ['b']           /**/ => TEMA_PARMA.double_dn,
         ['p', 'h']
-        | ['f']
         | ['φ']         /**/ => TEMA_PARMA.single_up,
         ['v']           /**/ => TEMA_PARMA.double_up,
         ['m', 'm']      /**/ => TEMA_PARMA.double_sh,
@@ -117,6 +116,44 @@ pub struct Beleriand {
     previous: Option<Glyph>,
 }
 
+impl Beleriand {
+    pub fn decide_f(next: &[char]) -> Glyph {
+        let mut mode = Self::default();
+        let mut is_final: bool = true;
+        let mut n: usize = next.len();
+
+        while 0 < n {
+            match mode.process(&next[..n]) {
+                ParseAction::MatchedNone => {
+                    //  Next token is unknown.
+                    n -= 1;
+                }
+                ParseAction::MatchedPart(_) => {
+                    //  Next token is a tengwa.
+                    is_final = false;
+                    break;
+                }
+                ParseAction::MatchedToken {
+                    token: Token::Tengwa(_),
+                    ..
+                } => {
+                    //  Next token is a tengwa.
+                    is_final = false;
+                    break;
+                }
+                _ => {
+                    //  Next token is NOT a tengwa.
+                    is_final = true;
+                    break;
+                }
+            }
+        }
+
+        let phonetic: &[char] = if is_final { &['v'] } else { &['p', 'h'] };
+        consonant_char(phonetic).unwrap().into()
+    }
+}
+
 impl TengwarMode for Beleriand {
     fn finish_current(&mut self) -> Option<Token> {
         self.previous = self.current.take();
@@ -168,12 +205,17 @@ impl TengwarMode for Beleriand {
                 finish!(Glyph::new_cons(TENGWA_ARDA, false), 2)
             }
 
+            //  Check for F, and decide whether it is final.
+            else if let ['f', ahead @ ..]  = chunk {
+                finish!(Self::decide_f(ahead), 1)
+            }
+
             //  Check for a consonant.
             else if let Some(new) = get_consonant(chunk) {
                 finish!(new, chunk.len())
             } else {
                 //  Check for a nazalized consonant.
-                if let ['m', rest @ ..] | ['n', rest @ ..] = chunk {
+                if let ['m' | 'n', rest @ ..] = chunk {
                     if let Some(new) = get_consonant(rest) {
                         return finish!(new.with_nasal(), chunk.len());
                     }
@@ -187,10 +229,7 @@ impl TengwarMode for Beleriand {
                 //  Check for a single vowel.
                 else if let Some(glyph) = get_vowel(chunk) {
                     finish!(glyph, chunk.len())
-                }
-
-                //  Give up.
-                else {
+                } else {
                     ParseAction::MatchedNone
                 }
             }
