@@ -288,22 +288,22 @@ impl TengwarMode for Gondor {
 #[cfg(test)]
 fn test_gondor() {
     test_tengwar!(Gondor, "axë" => [
-        TENGWA_CALMA, TEHTA_A.short(), SA_RINCE, // ax
-        CARRIER_SHORT, TEHTA_E.short(), // ë
+        TENGWA_CALMA, TEHTA_A.base(), SA_RINCE, // ax
+        CARRIER_SHORT, TEHTA_E.base(), // ë
     ]);
 
-    test_tengwar!(Gondor, "ae" => [CARRIER_DIPH_E, TEHTA_A.short()]);
-    test_tengwar!(Gondor, "oe" => [CARRIER_DIPH_E, TEHTA_O.short()]);
-    test_tengwar!(Gondor, "ai" => [CARRIER_DIPH_I, TEHTA_A.short()]);
-    test_tengwar!(Gondor, "ei" => [CARRIER_DIPH_I, TEHTA_E.short()]);
-    test_tengwar!(Gondor, "ui" => [CARRIER_DIPH_I, TEHTA_U.short()]);
-    test_tengwar!(Gondor, "au" => [CARRIER_DIPH_U, TEHTA_A.short()] as au);
+    test_tengwar!(Gondor, "ae" => [CARRIER_DIPH_E, TEHTA_A.base()]);
+    test_tengwar!(Gondor, "oe" => [CARRIER_DIPH_E, TEHTA_O.base()]);
+    test_tengwar!(Gondor, "ai" => [CARRIER_DIPH_I, TEHTA_A.base()]);
+    test_tengwar!(Gondor, "ei" => [CARRIER_DIPH_I, TEHTA_E.base()]);
+    test_tengwar!(Gondor, "ui" => [CARRIER_DIPH_I, TEHTA_U.base()]);
+    test_tengwar!(Gondor, "au" => [CARRIER_DIPH_U, TEHTA_A.base()] as au);
     test_tengwar!(Gondor, "aw" == au);
 
     let edhellen = test_tengwar!(Gondor, "edhellen" => [
-        TENGWA_ANTO, TEHTA_E.short(), // edh
-        TENGWA_LAMBE, DC_UNDER_LINE_H, TEHTA_E.short(), // ell
-        TENGWA_NUMEN, TEHTA_E.short(), // en
+        TENGWA_ANTO, TEHTA_E.base(), // edh
+        TENGWA_LAMBE, DC_UNDER_LINE_H, TEHTA_E.base(), // ell
+        TENGWA_NUMEN, TEHTA_E.base(), // en
     ]);
     test_tengwar!(Gondor, "eðellen" == edhellen);
     test_tengwar!(Gondor, "EÐELLEN" == edhellen);
@@ -313,8 +313,8 @@ fn test_gondor() {
     test_tengwar!(Gondor, "ethellen" != edhellen);
 
     let andaith = test_tengwar!(Gondor, "andaith" => [
-        TENGWA_ANDO, DC_OVER_LINE, TEHTA_A.short(), // and
-        CARRIER_DIPH_I, TEHTA_A.short(), // ai
+        TENGWA_ANDO, DC_OVER_LINE, TEHTA_A.base(), // and
+        CARRIER_DIPH_I, TEHTA_A.base(), // ai
         TENGWA_THULE, // th
     ]);
     test_tengwar!(Gondor, "andaiθ" == andaith);
@@ -328,7 +328,7 @@ fn test_gondor() {
     //  Final F, after consonant.
     let parf = test_tengwar!(Gondor, "parf" => [
         TENGWA_PARMA, // p
-        TENGWA_ROMEN, TEHTA_A.short(), // ar
+        TENGWA_ROMEN, TEHTA_A.base(), // ar
         TENGWA_AMPA, // v
     ]);
     test_tengwar!(Gondor, "parv" == parf);
@@ -337,8 +337,8 @@ fn test_gondor() {
 
     //  Final F, after vowel.
     let alaf = test_tengwar!(Gondor, "alaf" => [
-        TENGWA_LAMBE, TEHTA_A.short(), // al
-        TENGWA_AMPA, TEHTA_A.short(), // av
+        TENGWA_LAMBE, TEHTA_A.base(), // al
+        TENGWA_AMPA, TEHTA_A.base(), // av
     ]);
     test_tengwar!(Gondor, "alav" == alaf);
     test_tengwar!(Gondor, "alaφ" != alaf);
@@ -346,10 +346,10 @@ fn test_gondor() {
 
     //  Medial F, after consonant.
     let alfirin = test_tengwar!(Gondor, "alfirin" => [
-        TENGWA_LAMBE, TEHTA_A.short(), // al
+        TENGWA_LAMBE, TEHTA_A.base(), // al
         TENGWA_FORMEN, // ph
-        TENGWA_ROMEN, TEHTA_I.short(), // ir
-        TENGWA_NUMEN, TEHTA_I.short(), // in
+        TENGWA_ROMEN, TEHTA_I.base(), // ir
+        TENGWA_NUMEN, TEHTA_I.base(), // in
     ]);
     test_tengwar!(Gondor, "alphirin" == alfirin);
     test_tengwar!(Gondor, "alφirin" == alfirin);
@@ -358,9 +358,9 @@ fn test_gondor() {
 
     //  Medial F, after vowel.
     let aphadon = test_tengwar!(Gondor, "aphadon" => [
-        TENGWA_FORMEN, TEHTA_A.short(), // aph
-        TENGWA_ANDO, TEHTA_A.short(), // ad
-        TENGWA_NUMEN, TEHTA_O.short(), // on
+        TENGWA_FORMEN, TEHTA_A.base(), // aph
+        TENGWA_ANDO, TEHTA_A.base(), // ad
+        TENGWA_NUMEN, TEHTA_O.base(), // on
     ]);
     test_tengwar!(Gondor, "afadon" == aphadon);
     test_tengwar!(Gondor, "aφadon" == aphadon);

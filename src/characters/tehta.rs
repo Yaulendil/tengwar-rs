@@ -24,14 +24,25 @@ impl Tehta {
         matches!(self, Self::Double(..))
     }
 
-    /*pub const fn mark(&self, long: bool) -> char {
+    pub const fn alt(&self) -> Option<char> {
+        match self {
+            Self::Single(_) => None,
+            Self::Double(_) => None,
+            Self::Altern(_, mark) => Some(*mark),
+        }
+    }
+
+    /// Return the basic mark, used for short vowels.
+    pub const fn base(&self) -> char {
         match self {
             Self::Single(mark) => *mark,
             Self::Double(mark) => *mark,
-            Self::Altern(mark, alt) => if long { *alt } else { *mark }
+            Self::Altern(mark, _) => *mark,
         }
-    }*/
+    }
 
+    /// Return the long mark, used for long vowels. It may or may not be the
+    ///     same as the base mark.
     pub const fn long(&self) -> char {
         match self {
             Self::Single(mark) => *mark,
@@ -40,13 +51,13 @@ impl Tehta {
         }
     }
 
-    pub const fn short(&self) -> char {
+    /*pub const fn mark(&self, long: bool) -> char {
         match self {
             Self::Single(mark) => *mark,
             Self::Double(mark) => *mark,
-            Self::Altern(mark, _) => *mark,
+            Self::Altern(mark, alt) => if long { *alt } else { *mark }
         }
-    }
+    }*/
 
     /// Returns `true` if the long variant of this tehta would be written with
     ///     the extended "Ára" carrier.

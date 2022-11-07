@@ -248,13 +248,13 @@ mod tests {
     #[test]
     fn test_quenya() {
         let eleni_silar = test_tengwar!(Quenya, "eleni sílar" => [
-            CARRIER_SHORT, TEHTA_E.short(), // e
-            TENGWA_LAMBE, TEHTA_E.short(), // le
-            TENGWA_NUMEN, TEHTA_I.short(), // ni
+            CARRIER_SHORT, TEHTA_E.base(), // e
+            TENGWA_LAMBE, TEHTA_E.base(), // le
+            TENGWA_NUMEN, TEHTA_I.base(), // ni
             ' ',
             TENGWA_SILME, // s
             CARRIER_LONG, TEHTA_I.long(), // í
-            TENGWA_LAMBE, TEHTA_A.short(), // la
+            TENGWA_LAMBE, TEHTA_A.base(), // la
             TENGWA_ORE, // r
         ]);
         test_tengwar!(Quenya, "Eleni Sílar" == eleni_silar);
@@ -264,40 +264,40 @@ mod tests {
         test_tengwar!(Quenya, "ELENI SIILAR" == eleni_silar);
 
         test_tengwar!(Quenya, "Elen síla lúmenn' omentielvo :" => [
-            CARRIER_SHORT, TEHTA_E.short(), // e
-            TENGWA_LAMBE, TEHTA_E.short(), // le
+            CARRIER_SHORT, TEHTA_E.base(), // e
+            TENGWA_LAMBE, TEHTA_E.base(), // le
             TENGWA_NUMEN, // n
             ' ',
             TENGWA_SILME, // s
             CARRIER_LONG, TEHTA_I.long(), // í
-            TENGWA_LAMBE, TEHTA_A.short(), // la
+            TENGWA_LAMBE, TEHTA_A.base(), // la
             ' ',
             TENGWA_LAMBE, pre_long!(TEHTA_U), TEHTA_U.long(), // lú
-            TENGWA_MALTA, TEHTA_E.short(), // me
+            TENGWA_MALTA, TEHTA_E.base(), // me
             TENGWA_NUMEN, DC_UNDER_LINE_H, // nn
             PUNCT_DOT_1, // '
             ' ',
-            CARRIER_SHORT, TEHTA_O.short(), // o
-            TENGWA_MALTA, TEHTA_E.short(), // me
-            TENGWA_ANTO, TEHTA_I.short(), // nti
-            CARRIER_SHORT, TEHTA_E.short(), // e
+            CARRIER_SHORT, TEHTA_O.base(), // o
+            TENGWA_MALTA, TEHTA_E.base(), // me
+            TENGWA_ANTO, TEHTA_I.base(), // nti
+            CARRIER_SHORT, TEHTA_E.base(), // e
             TENGWA_LAMBE, // l
-            TENGWA_VALA, TEHTA_O.short(), // vo
+            TENGWA_VALA, TEHTA_O.base(), // vo
             ' ', PUNCT_DOT_2,
         ]);
 
         let helcaraxe = test_tengwar!(Quenya, "helcaraxë" => [
-            TENGWA_HYARMEN, TEHTA_E.short(), // he
+            TENGWA_HYARMEN, TEHTA_E.base(), // he
             TENGWA_LAMBE, // l
-            TENGWA_CALMA, TEHTA_A.short(), // ca
-            TENGWA_ROMEN, TEHTA_A.short(), // ra
-            TENGWA_CALMA, TEHTA_E.short(), rince!(), // xë
+            TENGWA_CALMA, TEHTA_A.base(), // ca
+            TENGWA_ROMEN, TEHTA_A.base(), // ra
+            TENGWA_CALMA, TEHTA_E.base(), rince!(), // xë
         ]);
         test_tengwar!(Quenya, "helkarakse" == helcaraxe);
 
         let quenya = test_tengwar!(Quenya, "quenya" => [
-            TENGWA_QESSE, TEHTA_E.short(), // que
-            TENGWA_NUMEN, MOD_PALATAL, TEHTA_A.short(), // nya
+            TENGWA_QESSE, TEHTA_E.base(), // que
+            TENGWA_NUMEN, MOD_PALATAL, TEHTA_A.base(), // nya
         ]);
         test_tengwar!(Quenya, "qenya" == quenya);
         test_tengwar!(Quenya, "kwenya" == quenya);
@@ -306,33 +306,33 @@ mod tests {
         test_tengwar!(Quenya, "cuenya" != quenya);
 
         let _aha = test_tengwar!(Quenya, "aha" => [
-            CARRIER_SHORT, TEHTA_A.short(), // a
-            TENGWA_AHA, TEHTA_A.short(), // ha
+            CARRIER_SHORT, TEHTA_A.base(), // a
+            TENGWA_AHA, TEHTA_A.base(), // ha
         ]);
 
         let _hyarmen = test_tengwar!(Quenya, "hyarmen" => [
-            TENGWA_HYARMEN, MOD_PALATAL, TEHTA_A.short(), // hya
+            TENGWA_HYARMEN, MOD_PALATAL, TEHTA_A.base(), // hya
             TENGWA_ORE, // r
-            TENGWA_MALTA, TEHTA_E.short(), // me
+            TENGWA_MALTA, TEHTA_E.base(), // me
             TENGWA_NUMEN, // n
         ]);
 
         let _hwesta = test_tengwar!(Quenya, "hwesta" => [
-            TENGWA_HWESTA, TEHTA_E.short(), // hwe
+            TENGWA_HWESTA, TEHTA_E.base(), // hwe
             TENGWA_SILME, // s
-            TENGWA_TINCO, TEHTA_A.short(), // ta
+            TENGWA_TINCO, TEHTA_A.base(), // ta
         ]);
 
         let ara = test_tengwar!(Quenya, "ára" => [
             CARRIER_LONG, TEHTA_A.long(), // á
-            TENGWA_ROMEN, TEHTA_A.short(), // ra
+            TENGWA_ROMEN, TEHTA_A.base(), // ra
         ]);
         test_tengwar!(Quenya, "aara" == ara); // ASCII spelling.
 
         //  Archaic TH (> S).
         let thuule = test_tengwar!(Quenya, "þúlë" => [
             TENGWA_THULE, pre_long!(TEHTA_U), TEHTA_U.long(), // þú
-            TENGWA_LAMBE, TEHTA_E.short(), // lë
+            TENGWA_LAMBE, TEHTA_E.base(), // lë
         ]);
         test_tengwar!(Quenya, "thuule" == thuule); // ASCII spelling.
         test_tengwar!(Quenya, "θúlë" == thuule);
@@ -341,16 +341,16 @@ mod tests {
         test_tengwar!(Quenya, "súlë" != thuule);
 
         let calma = test_tengwar!(Quenya, "calma" => [
-            TENGWA_CALMA, TEHTA_A.short(), // ca
+            TENGWA_CALMA, TEHTA_A.base(), // ca
             TENGWA_LAMBE, // l
-            TENGWA_MALTA, TEHTA_A.short(), // ma
+            TENGWA_MALTA, TEHTA_A.base(), // ma
         ]);
         test_tengwar!(Quenya, "kalma" == calma);
 
         //  Initial and final N.
         let nuumen = test_tengwar!(Quenya, "númen" => [
             TENGWA_NUMEN, pre_long!(TEHTA_U), TEHTA_U.long(), // nú
-            TENGWA_MALTA, TEHTA_E.short(), // me
+            TENGWA_MALTA, TEHTA_E.base(), // me
             TENGWA_NUMEN, // n
         ]);
         test_tengwar!(Quenya, "nuumen" == nuumen); // ASCII spelling.
@@ -358,8 +358,8 @@ mod tests {
 
         //  Initial NG (> N).
         let ngoldo = test_tengwar!(Quenya, "ñoldo" => [
-            TENGWA_NOLDO, TEHTA_O.short(), // ño
-            TENGWA_ALDA, TEHTA_O.short(), // ldo
+            TENGWA_NOLDO, TEHTA_O.base(), // ño
+            TENGWA_ALDA, TEHTA_O.base(), // ldo
         ]);
         test_tengwar!(Quenya, "ngoldo" == ngoldo); // ASCII spelling.
         test_tengwar!(Quenya, "ÑOLDO" == ngoldo);
@@ -367,39 +367,39 @@ mod tests {
 
         //  Initial NGW (> NW).
         let ngwalme = test_tengwar!(Quenya, "ñwalmë" => [
-            TENGWA_NWALME, TEHTA_A.short(), // ñwa
+            TENGWA_NWALME, TEHTA_A.base(), // ñwa
             TENGWA_LAMBE, // l
-            TENGWA_MALTA, TEHTA_E.short(), // më
+            TENGWA_MALTA, TEHTA_E.base(), // më
         ]);
         test_tengwar!(Quenya, "ngwalme" == ngwalme); // ASCII spelling.
         test_tengwar!(Quenya, "nwalmë" != ngwalme);
 
         //  Medial NG.
         let anga = test_tengwar!(Quenya, "anga" => [
-            CARRIER_SHORT, TEHTA_A.short(), // a
-            TENGWA_ANGA, TEHTA_A.short(), // nga
+            CARRIER_SHORT, TEHTA_A.base(), // a
+            TENGWA_ANGA, TEHTA_A.base(), // nga
         ]);
         test_tengwar!(Quenya, "aña" != anga);
         test_tengwar!(Quenya, "ana" != anga);
 
         //  Medial NGW.
         let ungwe = test_tengwar!(Quenya, "ungwë" => [
-            CARRIER_SHORT, TEHTA_U.short(), // u
-            TENGWA_UNGWE, TEHTA_E.short(), // ngwë
+            CARRIER_SHORT, TEHTA_U.base(), // u
+            TENGWA_UNGWE, TEHTA_E.base(), // ngwë
         ]);
         test_tengwar!(Quenya, "ungwe" == ungwe); // ASCII spelling.
         test_tengwar!(Quenya, "uñwë" != ungwe);
         test_tengwar!(Quenya, "unwë" != ungwe);
 
         let _silme = test_tengwar!(Quenya, "silmë" => [
-            nuq!(TENGWA_SILME), TEHTA_I.short(), // si
+            nuq!(TENGWA_SILME), TEHTA_I.base(), // si
             TENGWA_LAMBE, // l
-            TENGWA_MALTA, TEHTA_E.short(), // më
+            TENGWA_MALTA, TEHTA_E.base(), // më
         ]);
 
         let esse = test_tengwar!(Quenya, "essë" => [
-            CARRIER_SHORT, TEHTA_E.short(), // e,
-            nuq!(TENGWA_ESSE), TEHTA_E.short(), // ssë
+            CARRIER_SHORT, TEHTA_E.base(), // e,
+            nuq!(TENGWA_ESSE), TEHTA_E.base(), // ssë
         ]);
         test_tengwar!(Quenya, "eze" == esse);
 
