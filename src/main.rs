@@ -2,6 +2,7 @@
 extern crate clap;
 
 mod bin_mode;
+mod bin_test;
 
 use std::{io::{BufRead, stdin, stdout, Write}, process::exit};
 use bin_mode::*;
@@ -205,11 +206,4 @@ fn main() {
         print!("{}", conv);
         exit(stdout().write(b"\n").is_err() as i32);
     }
-}
-
-
-#[test]
-#[cfg(test)]
-fn verify_cli() {
-    <Command as clap::CommandFactory>::command().debug_assert();
 }
