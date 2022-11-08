@@ -88,6 +88,9 @@
 //! }
 //! ```
 
+#[macro_use]
+extern crate cfg_if;
+
 pub mod characters;
 pub mod mode;
 mod policy;
