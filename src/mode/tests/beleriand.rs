@@ -120,11 +120,17 @@ fn test_beleriand_words() {
     ]);
 
     //  Consonantal initial I.
-    let _iorhael = test_tengwar!(Beleriand, "jorhael" => [
+    let iorhael = test_tengwar!(Beleriand, "iorhael" => [
         TENGWA_ARA, VOWEL_O, TENGWA_ROMEN,
         TENGWA_HYARMEN, VOWEL_A, VOWEL_E, TENGWA_LAMBE,
     ]);
-    // test_tengwar!(Beleriand, "iorhael" == iorhael); // TODO
+    test_tengwar!(Beleriand, "jorhael" == iorhael);
+    test_tengwar!(Beleriand, "yorhael" != iorhael);
+
+    //  Non-consonantal I in the same vowel cluster.
+    let _dior = test_tengwar!(Beleriand, "dior" => [
+        TENGWA_ANDO, VOWEL_I, VOWEL_O, TENGWA_ROMEN,
+    ]);
 }
 
 

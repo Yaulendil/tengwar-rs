@@ -2,6 +2,9 @@ use crate::{characters::*, Token};
 use super::{ParseAction, TengwarMode};
 
 
+/// Tengwa for a consonantal initial I.
+pub const CONSONANT_I: char = TENGWA_YANTA;
+
 pub const CARRIER_DIPH_E: char = TENGWA_YANTA;
 pub const CARRIER_DIPH_I: char = TENGWA_ANNA;
 pub const CARRIER_DIPH_U: char = TENGWA_URE;
@@ -57,7 +60,7 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
 
         ['h']           /**/ => TENGWA_HYARMEN,
         ['h', 'w']      /**/ => TENGWA_HWESTA_SINDARINWA,
-        ['j']           /**/ => TENGWA_YANTA,
+        ['j']           /**/ => CONSONANT_I,
 
         _ => { return None; }
     })
@@ -120,6 +123,7 @@ pub const fn get_vowel(slice: &[char]) -> Option<(Tehta, bool)> {
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Gondor {
     current: Option<Glyph>,
+    previous: Option<Glyph>,
 }
 
 impl Gondor {
@@ -210,7 +214,8 @@ impl TengwarMode for Gondor {
     }
 
     fn finish_current(&mut self) -> Option<Token> {
-        self.current.take().map(Token::Tengwa)
+        self.previous = self.current.take();
+        self.previous.map(Token::Tengwa)
     }
 
     fn process(&mut self, chunk: &[char]) -> ParseAction {
@@ -218,7 +223,9 @@ impl TengwarMode for Gondor {
             ($glyph:expr) => {finish!($glyph, 0)};
             ($glyph:expr, $len:expr) => {{
                 let glyph = $glyph;
+
                 self.current = None;
+                self.previous = Some(glyph);
 
                 ParseAction::MatchedToken {
                     token: Token::Tengwa(glyph),
@@ -226,6 +233,8 @@ impl TengwarMode for Gondor {
                 }
             }};
         }
+
+        let initial: bool = self.previous.is_none();
 
         if let ['\\', _, ..] = chunk {
             ParseAction::Escape
@@ -262,7 +271,6 @@ impl TengwarMode for Gondor {
                 }
             } else {
                 //  Current tengwa does NOT have a consonant. Try to find one.
-
                 if let Some((new, len)) = Self::find_consonant(chunk, false) {
                     current.integrate_consonant(new);
                     ParseAction::MatchedPart(len)
@@ -290,6 +298,23 @@ impl TengwarMode for Gondor {
                 self.current = Some(Glyph::new_vowel(vowel, long));
                 ParseAction::MatchedPart(chunk.len())
             } else {
+                if initial {
+                    if let ['i', rest @ ..] = chunk {
+                        let first = ParseAction::MatchedToken {
+                            token: Token::Tengwa(CONSONANT_I.into()),
+                            len: chunk.len(),
+                        };
+
+                        if let Some(new) = get_diphthong(rest) {
+                            self.current = Some(new);
+                            return first;
+                        } else if let Some((vowel, long)) = get_vowel(rest) {
+                            self.current = Some(Glyph::new_vowel(vowel, long));
+                            return first;
+                        }
+                    }
+                }
+
                 ParseAction::MatchedNone
             }
         }

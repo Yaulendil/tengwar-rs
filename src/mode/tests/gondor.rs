@@ -149,14 +149,22 @@ fn test_gondor_words() {
     ]);
 
     //  Consonantal initial I.
-    let _iorhael = test_tengwar!(Gondor, "jorhael" => [
+    let iorhael = test_tengwar!(Gondor, "iorhael" => [
         TENGWA_YANTA, // i
         TENGWA_ROMEN, TEHTA_O.base(), // or
         TENGWA_HYARMEN, // h
         CARRIER_DIPH_E, TEHTA_A.base(), // ae
         TENGWA_LAMBE, // l
     ]);
-    // test_tengwar!(Gondor, "iorhael" == iorhael); // TODO
+    test_tengwar!(Gondor, "jorhael" == iorhael);
+    test_tengwar!(Gondor, "yorhael" != iorhael);
+
+    //  Non-consonantal I in the same vowel cluster.
+    let _dior = test_tengwar!(Gondor, "dior" => [
+        TENGWA_ANDO, // d
+        CARRIER_SHORT, TEHTA_I.base(), // i
+        TENGWA_ORE, TEHTA_O.base(), // or
+    ]);
 }
 
 

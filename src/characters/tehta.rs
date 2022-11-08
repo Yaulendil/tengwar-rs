@@ -3,7 +3,7 @@ use super::consts::carrier;
 
 
 /// A diacritical vowel marker that may be rendered in an alternate "long" form.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Tehta {
     /// There is only one form that this diacritic can take. The long form must
     ///     be rendered with an extended carrier mark.

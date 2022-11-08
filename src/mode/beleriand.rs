@@ -2,6 +2,9 @@ use crate::{characters::*, Token};
 use super::{ParseAction, TengwarMode};
 
 
+/// Tengwa for a consonantal initial I.
+pub const CONSONANT_I: char = TENGWA_ARA;
+
 /// Tehta indicating a long vowel.
 pub const TEHTA_LONG: Tehta = Tehta::Double(DC_OVER_ACUTE_1);
 
@@ -64,7 +67,7 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
 
         ['h']           /**/ => TENGWA_HYARMEN,
         ['h', 'w']      /**/ => TENGWA_HWESTA_SINDARINWA,
-        ['j']           /**/ => TENGWA_ARA,
+        ['j']           /**/ => CONSONANT_I,
 
         _ => { return None; }
     })
@@ -188,6 +191,8 @@ impl TengwarMode for Beleriand {
             }};
         }
 
+        let initial: bool = self.previous.is_none();
+
         if let ['\\', _, ..] = chunk {
             ParseAction::Escape
         } else if let Some(current) = &mut self.current {
@@ -240,6 +245,23 @@ impl TengwarMode for Beleriand {
                 else if let Some(glyph) = get_vowel(chunk) {
                     finish!(glyph, chunk.len())
                 } else {
+                    if initial {
+                        if let ['i', rest @ ..] = chunk {
+                            let first = ParseAction::MatchedToken {
+                                token: Token::Tengwa(CONSONANT_I.into()),
+                                len: chunk.len(),
+                            };
+
+                            if let Some(new) = get_diphthong(rest) {
+                                self.current = Some(new);
+                                return first;
+                            } else if let Some(new) = get_vowel(rest) {
+                                self.current = Some(new);
+                                return first;
+                            }
+                        }
+                    }
+
                     ParseAction::MatchedNone
                 }
             }
