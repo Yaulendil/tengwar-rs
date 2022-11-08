@@ -1,50 +1,10 @@
 #[macro_use]
 extern crate clap;
 
+mod bin_mode;
+
 use std::{io::{BufRead, stdin, stdout, Write}, process::exit};
-use tengwar::*;
-
-
-#[derive(Clone, Copy, Debug, ValueEnum)]
-enum Mode {
-    Quenya,
-    Gondor,
-    Beleriand,
-    /*English,*/
-}
-
-impl Mode {
-    const DEFAULT: Mode = Mode::Quenya;
-
-    fn convert(&self, input: impl AsRef<str>, short: bool, zwj: bool) -> String {
-        match self {
-            Self::Quenya => {
-                let mut iter = input.transcriber::<Quenya>();
-                iter.ligate_short = short;
-                iter.ligate_zwj = zwj;
-                iter.collect()
-            }
-            Self::Gondor => {
-                let mut iter = input.transcriber::<Gondor>();
-                iter.ligate_short = short;
-                iter.ligate_zwj = zwj;
-                iter.collect()
-            }
-            Self::Beleriand => {
-                let mut iter = input.transcriber::<Beleriand>();
-                iter.ligate_short = short;
-                iter.ligate_zwj = zwj;
-                iter.collect()
-            }
-            /*Self::English => {
-                let mut iter = input.tengwar_iter::<English>();
-                iter.ligate_short = short;
-                iter.ligate_zwj = lig;
-                iter.collect()
-            }*/
-        }
-    }
-}
+use bin_mode::*;
 
 
 #[derive(Args, Debug)]
@@ -92,9 +52,9 @@ struct ModeFlags {
     /// Set a mode by name.
     #[arg(hide = true)] // NOTE: Unsure whether this option will be kept.
     #[arg(long = "mode", short = 'M', value_name = "MODE")]
-    #[arg(group = "mode", value_enum)]
+    #[arg(group = "mode", value_enum, ignore_case = true)]
     by_name: Option<Mode>,
-    //  TODO: Fallback, replacing Mode::DEFAULT, rather than first check?
+    //  TODO: Use as fallback, replacing Mode::DEFAULT, rather than first check?
     // #[arg(default_value_t = Mode::Quenya)]
     // by_name: Mode,
 }
