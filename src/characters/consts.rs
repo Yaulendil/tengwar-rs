@@ -94,28 +94,26 @@ pub const MOD_NASAL: char = DC_OVER_LINE;
 /// Marking to denote a sound that leads into a "y" sound.
 pub const MOD_PALATAL: char = DC_UNDER_DOT_2;
 
-pub mod numeral {
-    pub const NUM_0: char = '';
-    pub const NUM_1: char = '';
-    pub const NUM_2: char = '';
-    pub const NUM_3: char = '';
-    pub const NUM_4: char = '';
-    pub const NUM_5: char = '';
-    pub const NUM_6: char = '';
-    pub const NUM_7: char = '';
-    pub const NUM_8: char = '';
-    pub const NUM_9: char = '';
-    pub const NUM_A: char = '';
-    pub const NUM_B: char = '';
-    pub const NUM_C: char = '';
-}
+pub const NUM_0: char = '';
+pub const NUM_1: char = '';
+pub const NUM_2: char = '';
+pub const NUM_3: char = '';
+pub const NUM_4: char = '';
+pub const NUM_5: char = '';
+pub const NUM_6: char = '';
+pub const NUM_7: char = '';
+pub const NUM_8: char = '';
+pub const NUM_9: char = '';
+pub const NUM_A: char = '';
+pub const NUM_B: char = '';
+pub const NUM_C: char = '';
 
 /// Index in this array corresponds to the numerical value of the digit.
 pub const NUMERAL: [char; 13] = [
-    numeral::NUM_0,
-    numeral::NUM_1, numeral::NUM_2, numeral::NUM_3, numeral::NUM_4,
-    numeral::NUM_5, numeral::NUM_6, numeral::NUM_7, numeral::NUM_8,
-    numeral::NUM_9, numeral::NUM_A, numeral::NUM_B, numeral::NUM_C,
+    NUM_0,
+    NUM_1, NUM_2, NUM_3, NUM_4,
+    NUM_5, NUM_6, NUM_7, NUM_8,
+    NUM_9, NUM_A, NUM_B, NUM_C,
 ];
 
 
@@ -385,7 +383,7 @@ pub const fn width(c: char) -> Option<usize> {
         | TENGWA_TELCO_LIG..=TENGWA_WAIA
         | SA_RINCE_FINAL
         | PUNCT_DOT_1..=PUNCT_THORIN
-        | numeral::NUM_0..=numeral::NUM_C
+        | NUM_0..=NUM_C
         => Some(1),
 
         _ => None,
