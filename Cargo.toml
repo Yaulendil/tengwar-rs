@@ -37,6 +37,8 @@ default = ["long-vowel-double", "nuquernar"]
 alt-rince = []
 # Tri-dot tehta for "A" is replaced with the circumflex-like variant.
 circumflex = []
+# Use standard Unicode characters for dot punctuation.
+dots-standard = []
 long-vowel-double = []
 long-vowel-unique = []
 # Silmë and Essë are inverted when they take a tehta.

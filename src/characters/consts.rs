@@ -121,16 +121,38 @@ pub const NUMERAL: [char; 13] = [
 
 /// A single dot positioned inside the preceding character.
 pub const PUNCT_DOT_0: char = DC_INNER_DOT_1;
-/// One dot, at middle height.
-pub const PUNCT_DOT_1: char = '';
-/// Two dots, resembling an ASCII colon.
-pub const PUNCT_DOT_2: char = '';
-/// Three dots, arranged vertically.
-pub const PUNCT_DOT_3: char = '';
-/// Four dots in a diamond configuration.
-pub const PUNCT_DOT_4: char = '';
-/// Five dots in a plus-shape.
-pub const PUNCT_DOT_5: char = '';
+
+/// Dot punctuation codepoints that already exist in Unicode.
+#[cfg(feature = "dots-standard")]
+mod _dots {
+    /// One dot, at middle height.
+    pub const PUNCT_DOT_1: char = '⸱';
+    /// Two dots, arranged vertically; The ASCII colon.
+    pub const PUNCT_DOT_2: char = ':';
+    /// Three dots, arranged vertically; The tricolon.
+    pub const PUNCT_DOT_3: char = '⁝';
+    /// Four dots in a diamond configuration.
+    pub const PUNCT_DOT_4: char = '⁘';
+    /// Five dots in a plus-shape.
+    pub const PUNCT_DOT_5: char = '⸭';
+}
+
+/// Dedicated Tengwar dot punctuation codepoints.
+#[cfg(not(feature = "dots-standard"))]
+mod _dots {
+    /// One dot, at middle height.
+    pub const PUNCT_DOT_1: char = '';
+    /// Two dots, arranged vertically, resembling an ASCII colon.
+    pub const PUNCT_DOT_2: char = '';
+    /// Three dots, arranged vertically, resembling a tricolon.
+    pub const PUNCT_DOT_3: char = '';
+    /// Four dots in a diamond configuration.
+    pub const PUNCT_DOT_4: char = '';
+    /// Five dots in a plus-shape.
+    pub const PUNCT_DOT_5: char = '';
+}
+
+pub use _dots::*;
 
 /// A wavy vertical line, used to express strong feeling.
 pub const PUNCT_EXCLAM: char = '';
