@@ -7,4 +7,5 @@ debug/
 target/
 
 **/*.rs.bk
+*.sh
 *.txt

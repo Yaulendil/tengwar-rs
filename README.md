@@ -29,6 +29,8 @@ When run directly, reads all command-line arguments and prints them back in Teng
 If no arguments are provided, reads from Standard Input and prints transliteration to Standard Output line by line.
 All input is assumed to be UTF-8 encoded, and output will also be UTF-8 encoded.
 
+A short summary of the program can be seen by running `tengwar -h`, and much more detailed help text is available with `tengwar --help`.
+
 ### Modes
 
 Alternative "Modes" can be selected via command-line switch:
@@ -41,7 +43,19 @@ Alternative "Modes" can be selected via command-line switch:
 
 The full list of available modes can be viewed with `tengwar -h`.
 
-### Ligation with Zero-Width Joiners
+### Ligation
+
+Two forms of ligation are currently supported.
+The `--ligate-all` option will enable both of them at the same time.
+
+#### Short Carriers
+
+The short carrier () has an alternate "ligating" form (), which extends to the right, connecting to the next character.
+When invoked with `--ligate-short` (or `-s`), this program will use the ligating form where appropriate.
+
+Unlike with zero-width joiners (where lack of font support is unlikely to be a problem), this variant is an entirely different character, and may not be provided at all by some fonts.
+
+#### Zero-Width Joiners
 
 In certain typefaces, the [Zero-Width Joiner](https://en.wikipedia.org/wiki/Zero-width_joiner) may be used to form ligatures of Tengwar.
 When invoked with the `--ligate-zwj` (or `-z`) switch on the command line, this program will insert joiners into the output text between certain characters, based on various overly convoluted rules.
