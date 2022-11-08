@@ -189,21 +189,14 @@ impl Glyph {
 impl Display for Glyph {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let base: char = self.base();
-        let Glyph {
-            base: tengwa, tehta, rince,
-            nasal, labial, palatal,
-            long_cons, long_vowel, long_first,
-            ligate_zwj, is_final,
-            ..
-        } = self;
 
         #[cfg_attr(feature = "nuquernar", allow(unused_mut))]
-        let mut long: bool = *long_vowel && tengwa.is_some();
+        let mut long: bool = self.long_vowel && self.base.is_some();
         let nuquerna_ignored: bool = !cfg!(feature = "nuquernar")
             && can_be_nuquerna(base);
 
-        let tehta_post: Option<&Tehta> = match tehta {
-            Some(tehta) if long && *long_first => {
+        let tehta_post: Option<&Tehta> = match &self.tehta {
+            Some(tehta) if long && self.long_first => {
                 //  This tehta is a long vowel, and represents the preceding
                 //      vowel.
                 if tehta.uses_ara() {
@@ -231,19 +224,19 @@ impl Display for Glyph {
 
         f.write_char(base)?;
 
-        if *nasal {
+        if self.nasal {
             f.write_char(MOD_NASAL)?;
         }
 
-        if *long_cons {
+        if self.long_cons {
             f.write_char(MOD_LONG_CONS)?;
         }
 
-        if *labial {
+        if self.labial {
             f.write_char(MOD_LABIAL)?;
         }
 
-        if *palatal {
+        if self.palatal {
             f.write_char(MOD_PALATAL)?;
         }
 
@@ -253,7 +246,7 @@ impl Display for Glyph {
                     //  The vowel tehta will be placed on a following Ára
                     //      carrier. If the base should ligate with Ára, write
                     //      the joiner now.
-                    if *ligate_zwj && ligates_with_ara(base) {
+                    if self.ligate_zwj && ligates_with_ara(base) {
                         f.write_char(ZWJ)?;
                     }
                 } else if nuquerna_ignored {
@@ -262,7 +255,7 @@ impl Display for Glyph {
                     //      which, without intervention, will use a more complex
                     //      diacritic. The long vowel should be put on an Ára
                     //      carrier instead to decrease visual chaos.
-                    if *ligate_zwj && ligates_with_ara(base) {
+                    if self.ligate_zwj && ligates_with_ara(base) {
                         f.write_char(ZWJ)?;
                     }
 
@@ -274,8 +267,8 @@ impl Display for Glyph {
             tehta.write(f, long)?;
         }
 
-        if *rince {
-            f.write_char(mod_rince(base, *is_final))?;
+        if self.rince {
+            f.write_char(mod_rince(base, self.is_final))?;
         }
 
         Ok(())
