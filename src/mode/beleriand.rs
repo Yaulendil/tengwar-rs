@@ -40,8 +40,8 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         ['c', 'h']
         | ['k', 'h']    /**/ => TEMA_CALMA.single_up,
         ['g', 'h']      /**/ => TEMA_CALMA.double_up,
-        /*['n', 'g']
-        | ['ñ']         /**/ => TEMA_CALMA.double_sh,*/ // TODO
+        ['n', 'g']
+        | ['ñ']         /**/ => TEMA_CALMA.double_sh,
         // []           /**/ => TEMA_CALMA.single_sh, // Vowel O.
 
         //  Qessetéma.
@@ -64,7 +64,7 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
 
         ['h']           /**/ => TENGWA_HYARMEN,
         ['h', 'w']      /**/ => TENGWA_HWESTA_SINDARINWA,
-        ['j']           /**/ => TENGWA_YANTA,
+        ['j']           /**/ => TENGWA_ARA,
 
         _ => { return None; }
     })

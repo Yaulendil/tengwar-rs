@@ -15,6 +15,9 @@ pub const fn carrier(long: bool) -> char {
 }
 
 
+/// One dot inside a tengwa.
+pub const DC_INNER_DOT_1: char = '';
+
 /// One acute accent above a tengwa.
 pub const DC_OVER_ACUTE_1: char = '';
 /// Two acute accents above a tengwa.
@@ -117,7 +120,7 @@ pub const NUMERAL: [char; 13] = [
 
 
 /// A single dot positioned inside the preceding character.
-pub const PUNCT_DOT_0: char = '';
+pub const PUNCT_DOT_0: char = DC_INNER_DOT_1;
 /// One dot, at middle height.
 pub const PUNCT_DOT_1: char = '';
 /// Two dots, resembling an ASCII colon.

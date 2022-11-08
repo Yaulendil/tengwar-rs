@@ -50,6 +50,7 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         ['l']           /**/ => TENGWA_LAMBE,
         ['l', 'h']      /**/ => TENGWA_ALDA,
         ['r', 'h']      /**/ => TENGWA_ARDA,
+        ['m', 'h']      /**/ => TENGWA_MALTA_HOOKED,
         ['s']           /**/ => TENGWA_SILME,
         ['s', 's']
         | ['z']         /**/ => TENGWA_ESSE,
