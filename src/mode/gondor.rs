@@ -205,7 +205,7 @@ impl Gondor {
 impl TengwarMode for Gondor {
     fn finalize(&self, token: &mut Token, next: Option<&Token>) {
         if let Token::Tengwa(glyph) = token {
-            glyph.long_first = true;
+            glyph.tehta_first = true;
 
             if let Some(Token::Tengwa(_)) = next {
                 glyph.replace_consonant(TENGWA_ORE, TENGWA_ROMEN);

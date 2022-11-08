@@ -174,10 +174,10 @@ impl TengwarMode for Quenya {
                         if let Some(_) = get_diphthong(chunk) {
                             current.replace_consonant(TENGWA_ORE, TENGWA_ROMEN);
                             finish!(*current, 0)
-                        } else if let Some((tehta, long)) = get_vowel(chunk) {
+                        } else if let Some((vowel, long)) = get_vowel(chunk) {
                             current.replace_consonant(TENGWA_ORE, TENGWA_ROMEN);
-                            current.tehta = Some(tehta);
-                            current.long_vowel = long;
+                            current.tehta = Some(vowel);
+                            current.tehta_alt = long;
                             finish!(*current, chunk.len())
                         } else {
                             ParseAction::MatchedNone

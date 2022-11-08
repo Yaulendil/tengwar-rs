@@ -214,13 +214,13 @@ impl<I: Iterator<Item=Token>> Iterator for Transcriber<I> {
 
             match self.inner.peek() {
                 Some(Token::Tengwa(next)) => {
-                    glyph.is_final = false;
+                    glyph.rince_alt = false;
                     glyph.ligate_short = self.ligate_short
                         && glyph.is_short_carrier()
                         && next.telco_ligates();
                 }
                 _ => {
-                    glyph.is_final = true;
+                    glyph.rince_alt = true;
                     glyph.ligate_short = false;
                 }
             }
