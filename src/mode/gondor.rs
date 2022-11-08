@@ -239,15 +239,15 @@ impl TengwarMode for Gondor {
         if let ['\\', _, ..] = chunk {
             ParseAction::Escape
         } else if let Some(current) = &mut self.current {
-            //  A tengwa is currently being constructed. Try to continue it.
+            //  A glyph is currently being constructed. Try to continue it.
 
-            if let Some(cons) = current.cons {
-                //  Current tengwa already has a consonant. Look for something
+            if let Some(base) = current.base {
+                //  Current glyph already has a base tengwa. Look for something
                 //      that would modify it.
 
                 match chunk {
                     ['w'] if !current.labial
-                        && (cons == TENGWA_ANDO || cons == TENGWA_UNGWE)
+                        && (base == TENGWA_ANDO || base == TENGWA_UNGWE)
                     => {
                         //  TODO: Rediscover why this is done. Tecendil displays
                         //      the same behavior, but this is not listed in the
@@ -256,8 +256,8 @@ impl TengwarMode for Gondor {
                         current.labial = true;
                         ParseAction::MatchedPart(1)
                     }
-                    ['s'] if !current.silme && rince_valid(cons) => {
-                        current.silme = true;
+                    ['s'] if !current.rince && rince_valid(base) => {
+                        current.rince = true;
                         ParseAction::MatchedPart(1)
                     }
                     ['s', 's'] => {
@@ -279,7 +279,7 @@ impl TengwarMode for Gondor {
                 }
             }
         } else {
-            //  Try to find a new tengwa.
+            //  Try to find a new glyph.
 
             //  Check for any consonant.
             if let Some((new, len)) = Self::find_consonant(chunk, true) {

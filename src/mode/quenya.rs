@@ -148,15 +148,15 @@ impl TengwarMode for Quenya {
         } else if let Some(current) = &mut self.current {
             //  A tengwa is currently being constructed. Try to continue it.
 
-            match &current.vowel {
+            match &current.tehta {
                 Some(_) => ParseAction::MatchedNone,
                 None => match chunk {
                     ['y'] if !current.palatal => {
                         current.palatal = true;
                         ParseAction::MatchedPart(1)
                     }
-                    ['s'] if !current.silme => {
-                        current.silme = true;
+                    ['s'] if !current.rince => {
+                        current.rince = true;
                         ParseAction::MatchedPart(1)
                     }
                     ['s', 's'] => {
@@ -174,9 +174,9 @@ impl TengwarMode for Quenya {
                         if let Some(_) = get_diphthong(chunk) {
                             current.replace_consonant(TENGWA_ORE, TENGWA_ROMEN);
                             finish!(*current, 0)
-                        } else if let Some((vowel, long)) = get_vowel(chunk) {
+                        } else if let Some((tehta, long)) = get_vowel(chunk) {
                             current.replace_consonant(TENGWA_ORE, TENGWA_ROMEN);
-                            current.vowel = Some(vowel);
+                            current.tehta = Some(tehta);
                             current.long_vowel = long;
                             finish!(*current, chunk.len())
                         } else {

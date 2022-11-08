@@ -2,18 +2,19 @@ use std::fmt::{Display, Formatter, Write};
 use super::*;
 
 
-/// A single base tengwa, and all of its modifications. This includes the vowel
+/// A single base tengwa, and all of its modifications. This includes the tehta
 ///     marking, flags for additional diacritics, flags for consonant and vowel
 ///     length, and an indicator of finality.
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Glyph {
-    /// A consonant character.
-    pub cons: Option<char>,
-    /// A diacritical vowel to modify the consonant.
-    pub vowel: Option<Tehta>,
+    /// A base character.
+    pub base: Option<char>,
+    /// A diacritical marking above the base character.
+    pub tehta: Option<Tehta>,
+
     /// If Silmë follows another tengwa, the base character may be modified by
     ///     a sa-rincë instead.
-    pub silme: bool,
+    pub rince: bool,
     /// A nasalized consonant is typically represented by an overbar.
     pub nasal: bool,
     /// A labialized consonant is represented by an additional diacritic.
@@ -47,9 +48,9 @@ impl Glyph {
     /// Define a new empty glyph.
     pub const fn new() -> Self {
         Self {
-            cons: None,
-            vowel: None,
-            silme: false,
+            base: None,
+            tehta: None,
+            rince: false,
             nasal: false,
             labial: false,
             palatal: false,
@@ -62,48 +63,37 @@ impl Glyph {
         }
     }
 
-    /// Define a glyph with both a base character and a diacritical `Tehta`.
-    pub const fn new_both(cons: char, vowel: Tehta) -> Self {
-        Self {
-            cons: Some(cons),
-            vowel: Some(vowel),
-            ..Self::new()
-        }
+    /// Define a glyph with both a base [`char`] and a diacritical [`Tehta`].
+    pub const fn new_both(tengwa: char, tehta: Tehta) -> Self {
+        Self { base: Some(tengwa), tehta: Some(tehta), ..Self::new() }
     }
 
-    /// Define a glyph with only a base character. It may be marked as Long.
-    pub const fn new_cons(cons: char, long: bool) -> Self {
-        Self {
-            cons: Some(cons),
-            long_cons: long,
-            ..Self::new()
-        }
+    /// Define a glyph with only a base [`char`]. It may be marked as Long.
+    pub const fn new_cons(tengwa: char, long_cons: bool) -> Self {
+        Self { base: Some(tengwa), long_cons, ..Self::new() }
     }
 
-    /// Define a glyph with only a diacritical Tehta. It may be marked as Long.
-    pub const fn new_vowel(vowel: Tehta, long: bool) -> Self {
-        Self {
-            vowel: Some(vowel),
-            long_vowel: long,
-            ..Self::new()
-        }
+    /// Define a glyph with only a diacritical [`Tehta`]. It may be marked as
+    ///     Long.
+    pub const fn new_vowel(tehta: Tehta, long_vowel: bool) -> Self {
+        Self { tehta: Some(tehta), long_vowel, ..Self::new() }
     }
 
     pub const fn is_short_carrier(&self) -> bool {
         match self {
-            Self { cons: None, vowel: None, .. } => true,
-            Self { cons: None, long_vowel: false, .. } => true,
+            Self { base: None, tehta: None, .. } => true,
+            Self { base: None, long_vowel: false, .. } => true,
             Self { .. } => false,
         }
     }
 
-    pub const fn with_cons(mut self, cons: char) -> Self {
-        self.cons = Some(cons);
+    pub const fn with_tengwa(mut self, tengwa: char) -> Self {
+        self.base = Some(tengwa);
         self
     }
 
-    pub const fn with_vowel(mut self, tehta: Tehta) -> Self {
-        self.vowel = Some(tehta);
+    pub const fn with_tehta(mut self, tehta: Tehta) -> Self {
+        self.tehta = Some(tehta);
         self
     }
 
@@ -130,14 +120,14 @@ impl Glyph {
     /// Mark this glyph as being followed by a sibilant. It may be rendered with
     ///     a flourish.
     pub const fn with_silme(mut self) -> Self {
-        self.silme = true;
+        self.rince = true;
         self
     }
 
     /// Update this glyph with the consonant attributes of another glyph.
     pub fn integrate_consonant(&mut self, other: Self) {
-        self.cons = other.cons;
-        self.silme = other.silme;
+        self.base = other.base;
+        self.rince = other.rince;
         self.nasal = other.nasal;
         self.labial = other.labial;
         self.palatal = other.palatal;
@@ -146,13 +136,13 @@ impl Glyph {
 
     /// Update this glyph with the vowel attributes of another glyph.
     pub fn integrate_vowel(&mut self, other: Self) {
-        self.vowel = other.vowel;
+        self.tehta = other.tehta;
         self.long_vowel = other.long_vowel;
     }
 
     pub fn replace_consonant(&mut self, old: char, new: char) -> bool {
-        if self.cons == Some(old) {
-            self.cons = Some(new);
+        if self.base == Some(old) {
+            self.base = Some(new);
             true
         } else {
             false
@@ -166,11 +156,11 @@ impl Glyph {
     pub const fn base(&self) -> char {
         match self {
             #[cfg(feature = "nuquernar")]
-            &Glyph { cons: Some(con), vowel: Some(ref vowel), long_vowel, .. } if {
-                can_be_nuquerna(con) && !(long_vowel && vowel.uses_ara())
-            } => nuquerna(con),
+            &Glyph { base: Some(base), tehta: Some(ref tehta), long_vowel, .. } if {
+                can_be_nuquerna(base) && !(long_vowel && tehta.uses_ara())
+            } => nuquerna(base),
 
-            &Glyph { cons: Some(con), .. } => con,
+            &Glyph { base: Some(base), .. } => base,
             /*// &Glyph { long_vowel: true, .. } => carrier(true),
             // &Glyph { ligate_short: true, .. } => CARRIER_SHORT_LIG,
             &Glyph { long_vowel, .. } => carrier(long_vowel),*/
@@ -200,7 +190,7 @@ impl Display for Glyph {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let base: char = self.base();
         let Glyph {
-            cons, vowel, silme,
+            base: tengwa, tehta, rince,
             nasal, labial, palatal,
             long_cons, long_vowel, long_first,
             ligate_zwj, is_final,
@@ -208,11 +198,11 @@ impl Display for Glyph {
         } = self;
 
         #[cfg_attr(feature = "nuquernar", allow(unused_mut))]
-        let mut long: bool = *long_vowel && cons.is_some();
+        let mut long: bool = *long_vowel && tengwa.is_some();
         let nuquerna_ignored: bool = !cfg!(feature = "nuquernar")
             && can_be_nuquerna(base);
 
-        let vowel_post: Option<&Tehta> = match vowel {
+        let tehta_post: Option<&Tehta> = match tehta {
             Some(tehta) if long && *long_first => {
                 //  This tehta is a long vowel, and represents the preceding
                 //      vowel.
@@ -257,9 +247,9 @@ impl Display for Glyph {
             f.write_char(MOD_PALATAL)?;
         }
 
-        if let Some(vowel) = vowel_post {
+        if let Some(tehta) = tehta_post {
             if long {
-                if vowel.uses_ara() {
+                if tehta.uses_ara() {
                     //  The vowel tehta will be placed on a following Ára
                     //      carrier. If the base should ligate with Ára, write
                     //      the joiner now.
@@ -281,10 +271,10 @@ impl Display for Glyph {
                 }
             }
 
-            vowel.write(f, long)?;
+            tehta.write(f, long)?;
         }
 
-        if *silme {
+        if *rince {
             f.write_char(mod_rince(base, *is_final))?;
         }
 

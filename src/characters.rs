@@ -85,17 +85,17 @@ pub const fn telco_ligates_with(_base: char) -> bool {
 ///     rules are based on the "Tengwar Telcontar" font, and are to some degree
 ///     based on opinion.
 pub const fn ligature_valid(prev: &Glyph, next: &Glyph) -> bool {
-    if matches!(prev.cons, Some(TENGWA_SILME) | Some(TENGWA_ESSE)) {
-        !(prev.vowel.is_some() && next.vowel.is_some()) && match next.cons {
+    if matches!(prev.base, Some(TENGWA_SILME) | Some(TENGWA_ESSE)) {
+        !(prev.tehta.is_some() && next.tehta.is_some()) && match next.base {
             Some(con) => can_be_nuquerna(con)
                 || (TEMA_TINCO.single_dn <= con && con <= TENGWA_ARDA),
             None => false,
         }
-    } else if let (Some(left), Some(right)) = (prev.cons, next.cons) {
+    } else if let (Some(left), Some(right)) = (prev.base, next.base) {
         TEMA_TINCO.single_dn <= left && left <= TENGWA_ARDA
             && TEMA_TINCO.single_dn <= right && right <= TENGWA_ARDA
     } else {
-        !(prev.vowel.is_some() && next.vowel.is_some())
+        !(prev.tehta.is_some() && next.tehta.is_some())
     }
 }
 
