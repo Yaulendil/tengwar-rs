@@ -77,6 +77,54 @@ fn test_beleriand_words() {
     test_tengwar!(Beleriand, "aφadon" == aphadon);
     test_tengwar!(Beleriand, "AΦADON" == aphadon);
     test_tengwar!(Beleriand, "avadon" != aphadon);
+
+    let telch = test_tengwar!(Beleriand, "telch" => [
+        TENGWA_TINCO, VOWEL_E, TENGWA_LAMBE, TENGWA_AHA,
+    ]);
+    test_tengwar!(Beleriand, "telkh" == telch);
+    let calen = test_tengwar!(Beleriand, "calen" => [
+        TENGWA_CALMA, VOWEL_A, TENGWA_LAMBE, VOWEL_E, TENGWA_ORE,
+    ]);
+    test_tengwar!(Beleriand, "kalen" == calen);
+
+    let _hebin = test_tengwar!(Beleriand, "hebin" => [
+        TENGWA_HYARMEN, VOWEL_E, TENGWA_UMBAR, VOWEL_I, TENGWA_ORE,
+    ]);
+    let _grist = test_tengwar!(Beleriand, "grist" => [
+        TENGWA_ANGA, TENGWA_ROMEN, VOWEL_I, TENGWA_SILME, TENGWA_TINCO,
+    ]);
+    let _acharn = test_tengwar!(Beleriand, "acharn" => [
+        VOWEL_A, TENGWA_AHA, VOWEL_A, TENGWA_ROMEN, TENGWA_ORE,
+    ]);
+    let _wethrin = test_tengwar!(Beleriand, "wethrin" => [
+        TENGWA_WILYA, VOWEL_E, TENGWA_THULE, TENGWA_ROMEN, VOWEL_I, TENGWA_ORE,
+    ]);
+
+    //  Doubled nasals.
+    let _venn = test_tengwar!(Beleriand, "venn" => [
+        TENGWA_AMPA, VOWEL_E, TENGWA_NUMEN,
+    ]);
+    let _namma = test_tengwar!(Beleriand, "namma" => [
+        TENGWA_ORE, VOWEL_A, TENGWA_MALTA, VOWEL_A,
+    ]);
+
+    //  Softened sounds.
+    let _rhuun = test_tengwar!(Beleriand, "rhûn" => [
+        TENGWA_ARDA, VOWEL_U, LONG, TENGWA_ORE,
+    ]);
+    let _lhuug = test_tengwar!(Beleriand, "lhûg" => [
+        TENGWA_ALDA, VOWEL_U, LONG, TENGWA_ANGA,
+    ]);
+    let _mhellyn = test_tengwar!(Beleriand, "mhellyn" => [
+        TENGWA_VALA_HOOKED, VOWEL_E, TENGWA_LAMBE, TENGWA_LAMBE, VOWEL_Y, TENGWA_ORE,
+    ]);
+
+    //  Consonantal initial I.
+    let _iorhael = test_tengwar!(Beleriand, "jorhael" => [
+        TENGWA_ARA, VOWEL_O, TENGWA_ROMEN,
+        TENGWA_HYARMEN, VOWEL_A, VOWEL_E, TENGWA_LAMBE,
+    ]);
+    // test_tengwar!(Beleriand, "iorhael" == iorhael); // TODO
 }
 
 

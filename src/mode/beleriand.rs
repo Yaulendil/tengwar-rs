@@ -55,8 +55,8 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         //  Irregulars.
         ['l']           /**/ => TENGWA_LAMBE,
         ['r']           /**/ => TENGWA_ROMEN,
-        ['l', 'h']      /**/ => TENGWA_ALDA,
-        ['r', 'h']      /**/ => TENGWA_ARDA,
+        // ['l', 'h']      /**/ => TENGWA_ALDA, // NOTE: Only for initials.
+        // ['r', 'h']      /**/ => TENGWA_ARDA,
         ['m', 'h']      /**/ => TENGWA_VALA_HOOKED,
         ['s']           /**/ => TENGWA_SILME,
         ['s', 's']

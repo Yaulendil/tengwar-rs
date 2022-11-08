@@ -23,7 +23,11 @@ macro_rules! test_tengwar {
             input = $input,
         );
 
-        // eprintln!("{received}");
+        // eprintln!(
+        //     "{mode}: {input:?} -> {received}",
+        //     mode = stringify!($mode),
+        //     input = $input,
+        // );
         ($input, received)
     }};
     ($mode:ty, $input:tt == $expected:expr) => {{

@@ -75,6 +75,88 @@ fn test_gondor_words() {
     test_tengwar!(Gondor, "aφadon" == aphadon);
     test_tengwar!(Gondor, "AΦADON" == aphadon);
     test_tengwar!(Gondor, "avadon" != aphadon);
+
+    let telch = test_tengwar!(Gondor, "telch" => [
+        TENGWA_TINCO, // t
+        TENGWA_LAMBE, TEHTA_E.base(), // el
+        TENGWA_HWESTA, // ch
+    ]);
+    test_tengwar!(Gondor, "telkh" == telch);
+
+    let calen = test_tengwar!(Gondor, "calen" => [
+        TENGWA_QESSE, // c
+        TENGWA_LAMBE, TEHTA_A.base(), // al
+        TENGWA_NUMEN, TEHTA_E.base(), // en
+    ]);
+    test_tengwar!(Gondor, "kalen" == calen);
+
+    let _hebin = test_tengwar!(Gondor, "hebin" => [
+        TENGWA_HYARMEN, // h
+        TENGWA_UMBAR, TEHTA_E.base(), // eb
+        TENGWA_NUMEN, TEHTA_I.base(), // in
+    ]);
+    let _grist = test_tengwar!(Gondor, "grist" => [
+        TENGWA_UNGWE, // g
+        TENGWA_ROMEN, // r
+        nuq!(TENGWA_SILME), TEHTA_I.base(), // is
+        TENGWA_TINCO, // t
+    ]);
+    let _acharn = test_tengwar!(Gondor, "acharn" => [
+        TENGWA_HWESTA, TEHTA_A.base(), // ach
+        TENGWA_ROMEN, TEHTA_A.base(), // ar
+        TENGWA_NUMEN, // n
+    ]);
+    let _wethrin = test_tengwar!(Gondor, "wethrin" => [
+        TENGWA_WILYA, // w
+        TENGWA_THULE, TEHTA_E.base(), // eth
+        TENGWA_ROMEN, // r
+        TENGWA_NUMEN, TEHTA_I.base(), // in
+    ]);
+
+    //  Doubled nasals.
+    let _venn = test_tengwar!(Gondor, "venn" => [
+        TENGWA_AMPA, // v
+        TENGWA_NUMEN, MOD_NASAL, TEHTA_E.base(), // enn
+    ]);
+    let _namma = test_tengwar!(Gondor, "namma" => [
+        TENGWA_NUMEN, // n
+        TENGWA_MALTA, MOD_NASAL, TEHTA_A.base(), // amm
+        CARRIER_SHORT, TEHTA_A.base(), // a
+    ]);
+
+    let (test_rhuun, test_lhuug);
+
+    #[cfg(not(any(feature = "long-vowel-double", feature = "long-vowel-unique")))] {
+        test_rhuun = [TENGWA_ARDA, CARRIER_LONG, TEHTA_U.base(), TENGWA_NUMEN];
+        test_lhuug = [TENGWA_ALDA, CARRIER_LONG, TEHTA_U.base(), TENGWA_UNGWE];
+    }
+    #[cfg(all(feature = "long-vowel-double", not(feature = "long-vowel-unique")))] {
+        test_rhuun = [TENGWA_ARDA, TENGWA_NUMEN, TEHTA_U.base(), TEHTA_U.base()];
+        test_lhuug = [TENGWA_ALDA, TENGWA_UNGWE, TEHTA_U.base(), TEHTA_U.base()];
+    }
+    #[cfg(feature = "long-vowel-unique")] {
+        test_rhuun = [TENGWA_ARDA, TENGWA_NUMEN, TEHTA_U.long()];
+        test_lhuug = [TENGWA_ALDA, TENGWA_UNGWE, TEHTA_U.long()];
+    }
+
+    //  Softened sounds.
+    let _rhuun = test_tengwar!(Gondor, "rhûn" => test_rhuun);
+    let _lhuug = test_tengwar!(Gondor, "lhûg" => test_lhuug);
+    let _mhellyn = test_tengwar!(Gondor, "mhellyn" => [
+        TENGWA_MALTA_HOOKED, // mh
+        TENGWA_LAMBE, MOD_LONG_CONS, TEHTA_E.base(), // ell
+        TENGWA_NUMEN, TEHTA_Y.base(), // yn
+    ]);
+
+    //  Consonantal initial I.
+    let _iorhael = test_tengwar!(Gondor, "jorhael" => [
+        TENGWA_YANTA, // i
+        TENGWA_ROMEN, TEHTA_O.base(), // or
+        TENGWA_HYARMEN, // h
+        CARRIER_DIPH_E, TEHTA_A.base(), // ae
+        TENGWA_LAMBE, // l
+    ]);
+    // test_tengwar!(Gondor, "iorhael" == iorhael); // TODO
 }
 
 

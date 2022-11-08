@@ -48,8 +48,8 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
 
         //  Irregulars.
         ['l']           /**/ => TENGWA_LAMBE,
-        ['l', 'h']      /**/ => TENGWA_ALDA,
-        ['r', 'h']      /**/ => TENGWA_ARDA,
+        // ['l', 'h']      /**/ => TENGWA_ALDA, // NOTE: Only for initials.
+        // ['r', 'h']      /**/ => TENGWA_ARDA,
         ['m', 'h']      /**/ => TENGWA_MALTA_HOOKED,
         ['s']           /**/ => TENGWA_SILME,
         ['s', 's']
@@ -171,8 +171,11 @@ impl Gondor {
 
         //  Check for a nasalized consonant.
         if let ['m' | 'n', rest @ ..] = chunk {
-            if let Some(new) = get_consonant(rest) {
-                return Some((new.with_nasal(), chunk.len()));
+            //  ...but NOT for a nasalized H.
+            if chunk != ['m', 'h'] {
+                if let Some(new) = get_consonant(rest) {
+                    return Some((new.with_nasal(), chunk.len()));
+                }
             }
         }
 
