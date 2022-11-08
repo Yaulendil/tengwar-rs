@@ -141,7 +141,7 @@ fn try_run<'s, I, T>(input: I) -> Result<String, clap::Error> where
     let exec: Command = clap::Parser::try_parse_from(args)?;
     let text: String = exec.text.join(" ");
 
-    Ok(exec.convert(text))
+    Ok(exec.runner().convert(text))
 }
 
 fn run<'s>(input: impl AsRef<[&'s str]>) -> String {

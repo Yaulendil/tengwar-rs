@@ -186,6 +186,7 @@ pub struct Transcriber<I: Iterator<Item=Token>> {
     inner: Peekable<I>,
     pub ligate_short: bool,
     pub ligate_zwj: bool,
+    // pub nuquerna: bool,
 }
 
 impl<I: Iterator<Item=Token>> Transcriber<I> {
@@ -194,6 +195,11 @@ impl<I: Iterator<Item=Token>> Transcriber<I> {
         self.ligate_zwj = true;
         self
     }
+
+    // pub const fn with_nuquerna(mut self) -> Self {
+    //     self.nuquerna = true;
+    //     self
+    // }
 }
 
 impl<T: IntoIterator<Item=Token>> From<T> for Transcriber<T::IntoIter> {
@@ -202,6 +208,7 @@ impl<T: IntoIterator<Item=Token>> From<T> for Transcriber<T::IntoIter> {
             inner: iter.into_iter().peekable(),
             ligate_short: false,
             ligate_zwj: false,
+            // nuquerna: false,
         }
     }
 }

@@ -149,13 +149,6 @@ struct Command {
 }
 
 impl Command {
-    fn convert(&self, text: impl AsRef<str>) -> String {
-        let short: bool = self.ligate_all || self.ligate_short;
-        let zwj: bool = self.ligate_all || self.ligate_zwj;
-
-        self.mode().convert(text, short, zwj)
-    }
-
     const fn mode(&self) -> Mode {
         let ModeFlags {
             quenya,
@@ -179,11 +172,23 @@ impl Command {
             Mode::DEFAULT
         }
     }
+
+    const fn runner(&self) -> Runner {
+        let mut runner = Runner::new(self.mode());
+        // runner.alt_a = self.style_flags.alt_a;
+        // runner.alt_rince = self.style_flags.alt_rince;
+        runner.ligate_short = self.ligate_short;
+        runner.ligate_zwj = self.ligate_zwj;
+        // runner.nuquerna = !self.style_flags.no_nuquerna;
+        // runner.vowels = self.style_flags.vowels;
+        runner
+    }
 }
 
 
 fn main() {
     let command: Command = clap::Parser::parse();
+    let runner: Runner = command.runner();
 
     #[cfg(debug_assertions)]
     if command.debug {
@@ -194,14 +199,14 @@ fn main() {
     if command.text.is_empty() {
         for line in stdin().lock().lines() {
             if let Ok(text) = line {
-                let conv: String = command.convert(text);
+                let conv: String = runner.convert(text);
 
                 println!("{}", conv);
             }
         }
     } else {
         let text: String = command.text.join(" ");
-        let conv: String = command.convert(text);
+        let conv: String = runner.convert(text);
 
         print!("{}", conv);
         exit(stdout().write(b"\n").is_err() as i32);
