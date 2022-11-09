@@ -146,7 +146,7 @@ impl TengwarMode for Quenya {
         if let ['\\', _, ..] = chunk {
             ParseAction::Escape
         } else if let Some(current) = &mut self.current {
-            //  A tengwa is currently being constructed. Try to continue it.
+            //  A glyph is currently being constructed. Try to continue it.
 
             match &current.tehta {
                 Some(_) => ParseAction::MatchedNone,
@@ -186,7 +186,7 @@ impl TengwarMode for Quenya {
                 }
             }
         } else {
-            //  Try to find a new tengwa.
+            //  Try to find a new glyph.
 
             //  Check for special cases.
             if let ['x'] = chunk {

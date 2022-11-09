@@ -148,12 +148,12 @@ impl Beleriand {
                     token: Token::Tengwa(_),
                     ..
                 } => {
-                    //  Next token is a tengwa.
+                    //  Next token is a glyph.
                     is_final = false;
                     break;
                 }
                 _ => {
-                    //  Next token is NOT a tengwa.
+                    //  Next token is NOT a glyph.
                     is_final = true;
                     break;
                 }
@@ -194,11 +194,11 @@ impl TengwarMode for Beleriand {
         if let ['\\', _, ..] = chunk {
             ParseAction::Escape
         } else if let Some(current) = &mut self.current {
-            //  A tengwa is currently being constructed. Finish it.
-
+            //  A glyph is currently being constructed, but this mode does not
+            //      have any modifications. Finish it.
             finish!(*current)
         } else {
-            //  Try to find a new tengwa.
+            //  Try to find a new glyph.
 
             //  Check for special cases.
             if let ['x'] = chunk {

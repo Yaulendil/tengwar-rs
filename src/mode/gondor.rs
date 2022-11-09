@@ -139,7 +139,7 @@ impl Gondor {
                     n -= 1;
                 }
                 ParseAction::MatchedPart(_) => {
-                    //  Next token is a tengwa.
+                    //  Next token is a glyph.
                     is_final = false;
                     break;
                 }
@@ -147,12 +147,12 @@ impl Gondor {
                     token: Token::Tengwa(_),
                     ..
                 } => {
-                    //  Next token is a tengwa.
+                    //  Next token is a glyph.
                     is_final = false;
                     break;
                 }
                 _ => {
-                    //  Next token is NOT a tengwa.
+                    //  Next token is NOT a glyph.
                     is_final = true;
                     break;
                 }
