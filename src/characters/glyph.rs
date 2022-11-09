@@ -152,6 +152,19 @@ impl Glyph {
             false
         }
     }
+
+    pub fn replace_tehta(&mut self, old: Tehta, new: Tehta) -> bool {
+        if self.tehta == Some(old) {
+            self.tehta = Some(new);
+            true
+        } else {
+            false
+        }
+    }
+
+    pub fn set_alt_a(&mut self) -> bool {
+        self.replace_tehta(TEHTA_A, TEHTA_YANTA)
+    }
 }
 
 impl Glyph {

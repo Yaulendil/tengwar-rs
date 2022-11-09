@@ -177,21 +177,12 @@ pub const SA_RINCE_FINAL: char = '';
 
 
 /// A diacritical marking resembling a circumflex.
-pub const TEHTA_CIRCUMFLEX: Tehta = Tehta::Single(DC_OVER_CIRCUMFLEX);
+pub const TEHTA_YANTA: Tehta = Tehta::Single(DC_OVER_CIRCUMFLEX);
 
 
-/// The diacritic for an `A` vowel, in its standard three-dot form.
-#[cfg(not(feature = "circumflex"))]
-const _A: char = DC_OVER_DOT_3;
-
-/// The diacritic for an `A` vowel, in its alternate circumflex-like form.
-#[cfg(feature = "circumflex")]
-const _A: char = DC_OVER_CIRCUMFLEX;
-
-
-cfg_if! (if #[cfg(feature = "long-vowel-unique")] {
+cfg_if!(if #[cfg(feature = "long-vowel-unique")] {
     /// A diacritical Tehta used in most systems to represent the `A` vowel.
-    pub const TEHTA_A: Tehta = Tehta::Single(_A);
+    pub const TEHTA_A: Tehta = Tehta::Single(DC_OVER_DOT_3);
     /// A diacritical Tehta used in most systems to represent the `E` vowel.
     pub const TEHTA_E: Tehta = Tehta::Altern(DC_OVER_ACUTE_1, DC_OVER_ACUTE_2);
     /// A diacritical Tehta used in most systems to represent the `I` vowel.
@@ -204,7 +195,7 @@ cfg_if! (if #[cfg(feature = "long-vowel-unique")] {
     pub const TEHTA_Y: Tehta = Tehta::Single(DC_OVER_DOT_2);
 } else if #[cfg(feature = "long-vowel-double")] {
     /// A diacritical Tehta used in most systems to represent the `A` vowel.
-    pub const TEHTA_A: Tehta = Tehta::Single(_A);
+    pub const TEHTA_A: Tehta = Tehta::Single(DC_OVER_DOT_3);
     /// A diacritical Tehta used in most systems to represent the `E` vowel.
     pub const TEHTA_E: Tehta = Tehta::Double(DC_OVER_ACUTE_1);
     /// A diacritical Tehta used in most systems to represent the `I` vowel.
@@ -217,7 +208,7 @@ cfg_if! (if #[cfg(feature = "long-vowel-unique")] {
     pub const TEHTA_Y: Tehta = Tehta::Single(DC_OVER_DOT_2);
 } else {
     /// A diacritical Tehta used in most systems to represent the `A` vowel.
-    pub const TEHTA_A: Tehta = Tehta::Single(_A);
+    pub const TEHTA_A: Tehta = Tehta::Single(DC_OVER_DOT_3);
     /// A diacritical Tehta used in most systems to represent the `E` vowel.
     pub const TEHTA_E: Tehta = Tehta::Single(DC_OVER_ACUTE_1);
     /// A diacritical Tehta used in most systems to represent the `I` vowel.

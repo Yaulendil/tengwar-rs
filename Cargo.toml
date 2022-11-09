@@ -36,8 +36,6 @@ default = ["long-vowel-double"]
 
 # Use alternate Sa-rincë for tengwar that support it.
 alt-rince = []
-# Tri-dot tehta for "A" is replaced with the circumflex-like variant.
-circumflex = []
 # Use standard Unicode characters for dot punctuation.
 dots-standard = []
 long-vowel-double = []

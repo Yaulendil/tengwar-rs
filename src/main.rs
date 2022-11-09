@@ -74,13 +74,13 @@ enum LongVowels {
 
 #[derive(Args, Debug)]
 struct StyleFlags {
-    /*/// Use an alternate "yanta" diacritic for A-vowels.
+    /// Use the alternate "yanta" diacritic for A-vowels.
     ///
     /// The alternate form is simpler and much quicker to write by hand than the
     ///     default tri-dot, and may be preferred when typesetting text intended
     ///     to be handwritten.
     #[arg(long, short = 'a')]
-    alt_a: bool,*/
+    alt_a: bool,
 
     /*/// Use a more ornate "sa-rincë" for final sibilants.
     #[arg(long, short = 'r')]
@@ -175,7 +175,7 @@ impl Command {
 
     const fn runner(&self) -> Runner {
         let mut runner = Runner::new(self.mode());
-        // runner.alt_a = self.style_flags.alt_a;
+        runner.alt_a = self.style_flags.alt_a;
         // runner.alt_rince = self.style_flags.alt_rince;
         runner.ligate_short = self.ligate_short;
         runner.ligate_zwj = self.ligate_zwj;

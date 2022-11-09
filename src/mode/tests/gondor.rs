@@ -3,6 +3,32 @@ use super::*;
 
 
 #[test]
+fn test_gondor_alt_a() {
+    let _adan = test_tengwar!(Gondor, "adan" => [
+        TENGWA_ANDO, TEHTA_A.base(), // ad
+        TENGWA_NUMEN, TEHTA_A.base(), // an
+    ]);
+    let _adan_alt = test_tengwar!(Gondor[alt_a=true], "adan" => [
+        TENGWA_ANDO, TEHTA_YANTA.base(), // ad
+        TENGWA_NUMEN, TEHTA_YANTA.base(), // an
+    ]);
+    // test_tengwar!(adan != adan_alt);
+
+    let _edain = test_tengwar!(Gondor, "edain" => [
+        TENGWA_ANDO, TEHTA_E.base(), // ed
+        CARRIER_DIPH_I, TEHTA_A.base(), // ai
+        TENGWA_NUMEN, // n
+    ]);
+    let _edain_alt = test_tengwar!(Gondor[alt_a=true], "edain" => [
+        TENGWA_ANDO, TEHTA_E.base(), // ed
+        CARRIER_DIPH_I, TEHTA_YANTA.base(), // ai
+        TENGWA_NUMEN, // n
+    ]);
+    // test_tengwar!(edain != edain_alt);
+}
+
+
+#[test]
 fn test_gondor_nuquernar() {
     //  Check Silmë.
     let _estel = test_tengwar!(Gondor, "estel" => [

@@ -28,11 +28,7 @@
 //!
 //! let text: String = Quenya::transcribe("namárië:-");
 //!
-//! if cfg!(feature = "circumflex") {
-//!     assert_eq!(text, "");
-//! } else {
-//!     assert_eq!(text, "");
-//! }
+//! assert_eq!(text, "");
 //! ```
 //!
 //! With the use of the [`ToTengwar`] helper trait, two methods are provided on
@@ -40,20 +36,18 @@
 //!     types implementing [`AsRef<str>`]. The first method is [`transcriber`],
 //!     which constructs a [`Transcriber`] for the text, allowing iteration over
 //!     [`Token`]s.
+//!
+//! The [`Transcriber`] also holds several public fields, which can be changed
+//!     to adjust various aspects of its behavior.
 //! ```
 //! use tengwar::{Quenya, ToTengwar};
 //!
 //! let mut transcriber = "namárië:-".transcriber::<Quenya>();
-//! transcriber.ligate_short = false;
-//! transcriber.ligate_zwj = false;
+//! transcriber.alt_a = true; // Use the alternate form of the A-tehta.
 //!
 //! let text: String = transcriber.collect();
 //!
-//! if cfg!(feature = "circumflex") {
-//!     assert_eq!(text, "");
-//! } else {
-//!     assert_eq!(text, "");
-//! }
+//! assert_eq!(text, "");
 //! ```
 //!
 //! The other method is [`to_tengwar`]. This is mostly a convenience method,
@@ -64,11 +58,7 @@
 //!
 //! let text: String = "namárië:-".to_tengwar::<Quenya, String>();
 //!
-//! if cfg!(feature = "circumflex") {
-//!     assert_eq!(text, "");
-//! } else {
-//!     assert_eq!(text, "");
-//! }
+//! assert_eq!(text, "");
 //! ```
 //!
 //! Also available, and likely the easiest to discover via code completion, is
@@ -81,11 +71,7 @@
 //!
 //! let text: String = transcribe::<Quenya>("namárië:-");
 //!
-//! if cfg!(feature = "circumflex") {
-//!     assert_eq!(text, "");
-//! } else {
-//!     assert_eq!(text, "");
-//! }
+//! assert_eq!(text, "");
 //! ```
 
 #[macro_use]
@@ -184,7 +170,7 @@ impl FromIterator<Token> for String {
 
 pub struct Transcriber<I: Iterator<Item=Token>> {
     inner: Peekable<I>,
-    // pub alt_a: bool,
+    pub alt_a: bool,
     // pub alt_rince: bool,
     pub ligate_short: bool,
     pub ligate_zwj: bool,
@@ -199,6 +185,11 @@ impl<I: Iterator<Item=Token>> Transcriber<I> {
         self
     }
 
+    pub const fn with_alt_a(mut self) -> Self {
+        self.alt_a = true;
+        self
+    }
+
     pub const fn with_nuquerna(mut self) -> Self {
         self.nuquerna = true;
         self
@@ -209,7 +200,7 @@ impl<T: IntoIterator<Item=Token>> From<T> for Transcriber<T::IntoIter> {
     fn from(iter: T) -> Self {
         Self {
             inner: iter.into_iter().peekable(),
-            // alt_a: false,
+            alt_a: false,
             // alt_rince: false,
             ligate_short: false,
             ligate_zwj: false,
@@ -229,6 +220,10 @@ impl<I: Iterator<Item=Token>> Iterator for Transcriber<I> {
             // glyph.rince_alt = self.alt_rince;
             glyph.ligate_zwj = self.ligate_zwj;
             glyph.nuquerna = self.nuquerna;
+
+            if self.alt_a {
+                glyph.set_alt_a();
+            }
 
             match self.inner.peek() {
                 Some(Token::Tengwa(next)) => {

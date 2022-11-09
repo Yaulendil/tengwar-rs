@@ -75,8 +75,6 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
 
 
 const fn get_consonant(slice: &[char]) -> Option<Glyph> {
-    // consonant_char(slice).map(|cons| Glyph::new_cons(cons, false))
-
     match consonant_char(slice) {
         Some(cons) => Some(Glyph::new_cons(cons, false)),
         None => None,
@@ -86,8 +84,8 @@ const fn get_consonant(slice: &[char]) -> Option<Glyph> {
 
 pub const fn get_diphthong(slice: &[char]) -> Option<Glyph> {
     match slice {
-        // ['a', 'e'] => Some(Glyph::new_both(VOWEL_A, TEHTA_CIRCUMFLEX)),
-        // ['o', 'e'] => Some(Glyph::new_both(VOWEL_O, TEHTA_CIRCUMFLEX)),
+        // ['a', 'e'] => Some(Glyph::new_both(VOWEL_A, TEHTA_YANTA)),
+        // ['o', 'e'] => Some(Glyph::new_both(VOWEL_O, TEHTA_YANTA)),
 
         ['a', 'i'] => Some(Glyph::new_both(VOWEL_A, TEHTA_Y)),
         ['e', 'i'] => Some(Glyph::new_both(VOWEL_E, TEHTA_Y)),

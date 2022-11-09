@@ -8,7 +8,7 @@ use tengwar::*;
 pub struct Runner {
     pub mode: Mode,
 
-    // pub alt_a: bool,
+    pub alt_a: bool,
     // pub alt_rince: bool,
     pub ligate_short: bool,
     pub ligate_zwj: bool,
@@ -20,7 +20,7 @@ impl Runner {
     pub const fn new(mode: Mode) -> Self {
         Self {
             mode,
-            // alt_a: false,
+            alt_a: false,
             // alt_rince: false,
             ligate_short: false,
             ligate_zwj: false,
@@ -33,7 +33,7 @@ impl Runner {
         macro_rules! run {
             ($mode:ty, $input:expr) => {{
                 let mut transcriber = $input.transcriber::<$mode>();
-                // transcriber.alt_a = self.alt_a;
+                transcriber.alt_a = self.alt_a;
                 // transcriber.alt_rince = self.alt_rince;
                 transcriber.ligate_short = self.ligate_short;
                 transcriber.ligate_zwj = self.ligate_zwj;

@@ -3,6 +3,22 @@ use super::*;
 
 
 #[test]
+fn test_quenya_alt_a() {
+    let _rauca = test_tengwar!(Quenya, "rauca" => [
+        TENGWA_ROMEN, // r
+        CARRIER_DIPH_U, TEHTA_A.base(), // au
+        TENGWA_CALMA, TEHTA_A.base(), // ca
+    ]);
+    let _rauca_alt = test_tengwar!(Quenya[alt_a=true], "rauca" => [
+        TENGWA_ROMEN, // r
+        CARRIER_DIPH_U, TEHTA_YANTA.base(), // au
+        TENGWA_CALMA, TEHTA_YANTA.base(), // ca
+    ]);
+    // test_tengwar!(rauca != rauca_alt);
+}
+
+
+#[test]
 fn test_quenya_nuquernar() {
     //  Check Silmë.
     let _silme = test_tengwar!(Quenya, "silmë" => [
