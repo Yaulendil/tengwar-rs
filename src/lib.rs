@@ -171,7 +171,7 @@ impl FromIterator<Token> for String {
 pub struct Transcriber<I: Iterator<Item=Token>> {
     inner: Peekable<I>,
     pub alt_a: bool,
-    // pub alt_rince: bool,
+    pub alt_rince: bool,
     pub ligate_short: bool,
     pub ligate_zwj: bool,
     pub nuquerna: bool,
@@ -190,6 +190,11 @@ impl<I: Iterator<Item=Token>> Transcriber<I> {
         self
     }
 
+    pub const fn with_alt_rince(mut self) -> Self {
+        self.alt_rince = true;
+        self
+    }
+
     pub const fn with_nuquerna(mut self) -> Self {
         self.nuquerna = true;
         self
@@ -201,7 +206,7 @@ impl<T: IntoIterator<Item=Token>> From<T> for Transcriber<T::IntoIter> {
         Self {
             inner: iter.into_iter().peekable(),
             alt_a: false,
-            // alt_rince: false,
+            alt_rince: false,
             ligate_short: false,
             ligate_zwj: false,
             nuquerna: false,
@@ -217,7 +222,6 @@ impl<I: Iterator<Item=Token>> Iterator for Transcriber<I> {
         let mut token: Token = self.inner.next()?;
 
         if let Token::Tengwa(glyph) = &mut token {
-            // glyph.rince_alt = self.alt_rince;
             glyph.ligate_zwj = self.ligate_zwj;
             glyph.nuquerna = self.nuquerna;
 
@@ -227,13 +231,13 @@ impl<I: Iterator<Item=Token>> Iterator for Transcriber<I> {
 
             match self.inner.peek() {
                 Some(Token::Tengwa(next)) => {
-                    glyph.rince_alt = false;
+                    glyph.rince_final = false;
                     glyph.ligate_short = self.ligate_short
                         && glyph.is_short_carrier()
                         && next.telco_ligates();
                 }
                 _ => {
-                    glyph.rince_alt = true;
+                    glyph.rince_final = self.alt_rince;
                     glyph.ligate_short = false;
                 }
             }

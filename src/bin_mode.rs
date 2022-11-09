@@ -9,7 +9,7 @@ pub struct Runner {
     pub mode: Mode,
 
     pub alt_a: bool,
-    // pub alt_rince: bool,
+    pub alt_rince: bool,
     pub ligate_short: bool,
     pub ligate_zwj: bool,
     pub nuquerna: bool,
@@ -21,7 +21,7 @@ impl Runner {
         Self {
             mode,
             alt_a: false,
-            // alt_rince: false,
+            alt_rince: false,
             ligate_short: false,
             ligate_zwj: false,
             nuquerna: false,
@@ -34,7 +34,7 @@ impl Runner {
             ($mode:ty, $input:expr) => {{
                 let mut transcriber = $input.transcriber::<$mode>();
                 transcriber.alt_a = self.alt_a;
-                // transcriber.alt_rince = self.alt_rince;
+                transcriber.alt_rince = self.alt_rince;
                 transcriber.ligate_short = self.ligate_short;
                 transcriber.ligate_zwj = self.ligate_zwj;
                 transcriber.nuquerna = self.nuquerna;

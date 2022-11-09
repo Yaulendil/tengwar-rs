@@ -37,6 +37,13 @@ pub struct Tema {
 }
 
 impl Tema {
+    pub const fn contains(&self, c: char) -> bool {
+         c == self.single_dn || c == self.double_dn
+             || c == self.single_up || c == self.double_up
+             || c == self.double_sh || c == self.single_sh
+             || c == self.single_ex || c == self.double_ex
+    }
+
     /// Return the [`TengwaRegular`] in this Téma with the default [`Tyelle`].
     pub const fn new_tengwa(&self) -> TengwaRegular {
         TengwaRegular::new(self)

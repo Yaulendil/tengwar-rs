@@ -47,12 +47,6 @@ pub const fn punctuation(chr: char) -> Option<char> {
 }
 
 
-/// Check whether a tengwa has an inverted variant.
-pub const fn can_be_nuquerna(c: char) -> bool {
-    c == TENGWA_SILME || c == TENGWA_ESSE
-}
-
-
 /// Convert a tengwa to its inverted variant.
 pub const fn nuquerna(c: char) -> char {
     match c {
@@ -60,6 +54,11 @@ pub const fn nuquerna(c: char) -> char {
         TENGWA_ESSE => TENGWA_ESSE_NUQ,
         other => other,
     }
+}
+
+/// Check whether a tengwa has an inverted variant.
+pub const fn nuquerna_valid(c: char) -> bool {
+    c == TENGWA_SILME || c == TENGWA_ESSE
 }
 
 
@@ -87,7 +86,7 @@ pub const fn telco_ligates_with(_base: char) -> bool {
 pub const fn ligature_valid(prev: &Glyph, next: &Glyph) -> bool {
     if matches!(prev.base, Some(TENGWA_SILME) | Some(TENGWA_ESSE)) {
         !(prev.tehta.is_some() && next.tehta.is_some()) && match next.base {
-            Some(con) => can_be_nuquerna(con)
+            Some(con) => nuquerna_valid(con)
                 || (TEMA_TINCO.single_dn <= con && con <= TENGWA_ARDA),
             None => false,
         }
@@ -100,20 +99,38 @@ pub const fn ligature_valid(prev: &Glyph, next: &Glyph) -> bool {
 }
 
 
+/// Choose the appropriate form of sa-rincë for a base tengwa.
+pub const fn rince(base: char, is_final: bool) -> char {
+    if is_final && rince_valid_final(base) {
+        SA_RINCE_FINAL
+    } else {
+        SA_RINCE
+    }
+}
+
 /// Check whether a base tengwa is suitable to receive a sa-rincë. This is to
 ///     some degree based on opinion.
 pub const fn rince_valid(base: char) -> bool {
-    !matches!(base, '' | '' | '' | '' | '' | '')
+    match base {
+        TENGWA_ROMEN | TENGWA_ARDA
+        | TENGWA_SILME | TENGWA_SILME_NUQ
+        | TENGWA_ESSE | TENGWA_ESSE_NUQ => false,
+        _ => true,
+    }
 }
 
-
-/// Choose the appropriate form of sa-rincë for a base tengwa.
-#[cfg_attr(not(feature = "alt-rince"), allow(unused_variables))]
-pub const fn mod_rince(base: char, is_final: bool) -> char {
+/// Check whether a base tengwa is suitable to receive the alternate sa-rincë.
+///     This is to some degree based on opinion.
+pub const fn rince_valid_final(base: char) -> bool {
     match base {
-        #[cfg(feature = "alt-rince")]
-        ''..='' | '' | '' | '' if is_final => SA_RINCE_FINAL,
-        _ => SA_RINCE,
+        TENGWA_LAMBE | TENGWA_ALDA | TENGWA_HYARMEN => true,
+        tengwa if TEMA_TINCO.contains(tengwa) => true,
+        tengwa if TEMA_PARMA.contains(tengwa) => true,
+        //  NOTE: The left-bow Témar CAN support the alternate, but are written
+        //      with the basic form in canonical sources.
+        // tengwa if TEMA_CALMA.contains(tengwa) => true,
+        // tengwa if TEMA_QESSE.contains(tengwa) => true,
+        _ => false,
     }
 }
 

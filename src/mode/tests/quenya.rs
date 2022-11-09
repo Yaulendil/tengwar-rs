@@ -4,17 +4,72 @@ use super::*;
 
 #[test]
 fn test_quenya_alt_a() {
-    let _rauca = test_tengwar!(Quenya, "rauca" => [
+    let rauca = test_tengwar!(Quenya, "rauca" => [
         TENGWA_ROMEN, // r
         CARRIER_DIPH_U, TEHTA_A.base(), // au
         TENGWA_CALMA, TEHTA_A.base(), // ca
     ]);
-    let _rauca_alt = test_tengwar!(Quenya[alt_a=true], "rauca" => [
+    test_tengwar!(Quenya, "rauka" == rauca);
+
+    let rauca_alt = test_tengwar!(Quenya[alt_a=true], "rauca" => [
         TENGWA_ROMEN, // r
         CARRIER_DIPH_U, TEHTA_YANTA.base(), // au
         TENGWA_CALMA, TEHTA_YANTA.base(), // ca
     ]);
-    // test_tengwar!(rauca != rauca_alt);
+    test_tengwar!(Quenya[alt_a=true], "rauka" == rauca_alt);
+}
+
+
+#[test]
+fn test_quenya_alt_rince() {
+    //  Check final basic against final alternate on T.
+    let otso = test_tengwar!(Quenya, "otso" => [
+        CARRIER_SHORT, TEHTA_O.base(), // o
+        TENGWA_TINCO, TEHTA_O.base(), SA_RINCE, // tso
+    ]);
+    let otso_alt = test_tengwar!(Quenya[alt_rince=true], "otso" => [
+        CARRIER_SHORT, TEHTA_O.base(), // o
+        TENGWA_TINCO, TEHTA_O.base(), SA_RINCE_FINAL, // tso
+    ]);
+    test_tengwar!(Quenya, "otzo" == otso);
+    test_tengwar!(Quenya[alt_rince=true], "otzo" == otso_alt);
+
+    //  Check nonfinal basic against nonfinal alternate on T.
+    let otsor = test_tengwar!(Quenya, "otsor" => [
+        CARRIER_SHORT, TEHTA_O.base(), // o
+        TENGWA_TINCO, TEHTA_O.base(), SA_RINCE, // tso
+        TENGWA_ORE, // r
+    ]);
+    test_tengwar!(Quenya, "otzor" == otsor);
+    test_tengwar!(Quenya[alt_rince=true], "otsor" == otsor);
+    test_tengwar!(Quenya[alt_rince=true], "otzor" == otsor);
+
+    //  Check final basic against final alternate on K.
+    let mixa = test_tengwar!(Quenya, "mixa" => [
+        TENGWA_MALTA, TEHTA_I.base(), // mi
+        TENGWA_CALMA, TEHTA_A.base(), SA_RINCE, // xa
+    ]);
+    test_tengwar!(Quenya, "micsa" == mixa);
+    test_tengwar!(Quenya, "miksa" == mixa);
+    test_tengwar!(Quenya, "mikza" == mixa);
+    test_tengwar!(Quenya[alt_rince=true], "mixa" == mixa);
+    test_tengwar!(Quenya[alt_rince=true], "micsa" == mixa);
+    test_tengwar!(Quenya[alt_rince=true], "miksa" == mixa);
+    test_tengwar!(Quenya[alt_rince=true], "mikza" == mixa);
+
+    //  Check nonfinal basic against nonfinal alternate on K.
+    let mixar = test_tengwar!(Quenya, "mixar" => [
+        TENGWA_MALTA, TEHTA_I.base(), // mi
+        TENGWA_CALMA, TEHTA_A.base(), SA_RINCE, // xa
+        TENGWA_ORE, // r
+    ]);
+    test_tengwar!(Quenya, "micsar" == mixar);
+    test_tengwar!(Quenya, "miksar" == mixar);
+    test_tengwar!(Quenya, "mikzar" == mixar);
+    test_tengwar!(Quenya[alt_rince=true], "mixar" == mixar);
+    test_tengwar!(Quenya[alt_rince=true], "micsar" == mixar);
+    test_tengwar!(Quenya[alt_rince=true], "miksar" == mixar);
+    test_tengwar!(Quenya[alt_rince=true], "mikzar" == mixar);
 }
 
 
@@ -102,7 +157,7 @@ fn test_quenya_words() {
         TENGWA_LAMBE, // l
         TENGWA_CALMA, TEHTA_A.base(), // ca
         TENGWA_ROMEN, TEHTA_A.base(), // ra
-        TENGWA_CALMA, TEHTA_E.base(), rince!(), // xë
+        TENGWA_CALMA, TEHTA_E.base(), SA_RINCE, // xë
     ]);
     test_tengwar!(Quenya, "helkarakse" == helcaraxe);
 

@@ -20,7 +20,7 @@ pub struct Glyph {
     /// Indicates whether the glyph has a sa-rincë attached.
     pub rince: bool,
     /// Indicates whether the glyph may use a more ornate rincë.
-    pub rince_alt: bool,
+    pub rince_final: bool,
 
     /// A nasalized consonant is typically represented by an overbar.
     pub nasal: bool,
@@ -55,7 +55,7 @@ impl Glyph {
             tehta_first: false,
 
             rince: false,
-            rince_alt: false,
+            rince_final: false,
 
             nasal: false,
             labial: false,
@@ -178,7 +178,7 @@ impl Glyph {
                 tehta_alt,
                 nuquerna: true,
                 ..
-            } if can_be_nuquerna(base) && !(tehta_alt && tehta.uses_ara()) => {
+            } if nuquerna_valid(base) && !(tehta_alt && tehta.uses_ara()) => {
                 nuquerna(base)
             }
 
@@ -193,6 +193,10 @@ impl Glyph {
                 }
             }
         }
+    }
+
+    pub const fn can_take_rince(&self) -> bool {
+        !self.rince && rince_valid(self.base())
     }
 
     pub const fn ligates_with(&self, other: &Self) -> bool {
@@ -210,7 +214,7 @@ impl Display for Glyph {
 
         let mut long: bool = self.tehta_alt && self.base.is_some();
         let nuquerna_ignored: bool = !cfg!(feature = "nuquernar")
-            && can_be_nuquerna(base);
+            && nuquerna_valid(base);
 
         let tehta_post: Option<&Tehta> = match &self.tehta {
             Some(tehta) if long && self.tehta_first => {
@@ -285,7 +289,7 @@ impl Display for Glyph {
         }
 
         if self.rince {
-            f.write_char(mod_rince(base, self.rince_alt))?;
+            f.write_char(rince(base, self.rince_final))?;
         }
 
         Ok(())

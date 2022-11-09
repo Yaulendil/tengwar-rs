@@ -104,13 +104,3 @@ macro_rules! pre_long {
         $tehta.pre_long()
     };
 }
-
-macro_rules! rince {
-    () => {
-        if cfg!(feature = "alt-rince") {
-            SA_RINCE_FINAL
-        } else {
-            SA_RINCE
-        }
-    };
-}

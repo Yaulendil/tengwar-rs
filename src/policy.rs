@@ -66,7 +66,6 @@ impl Policy for Standard {
         }
     }
 
-    #[cfg_attr(not(feature = "alt-rince"), allow(unused_variables))]
     fn sa_rince(&self, c: char, is_final: bool) -> Option<char> {
         match c {
             TENGWA_ROMEN | TENGWA_ARDA
@@ -74,7 +73,6 @@ impl Policy for Standard {
             | TENGWA_ESSE | TENGWA_ESSE_NUQ
             => None,
 
-            #[cfg(feature = "alt-rince")]
             TENGWA_TINCO..=TENGWA_WILYA
             | TENGWA_LAMBE | TENGWA_ALDA | TENGWA_HYARMEN
             if is_final => Some(SA_RINCE_FINAL),

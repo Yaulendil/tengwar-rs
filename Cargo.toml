@@ -34,11 +34,7 @@ features = ["cargo", "derive", "wrap_help"]
 [features]
 default = ["long-vowel-double"]
 
-# Use alternate Sa-rincë for tengwar that support it.
-alt-rince = []
 # Use standard Unicode characters for dot punctuation.
 dots-standard = []
 long-vowel-double = []
 long-vowel-unique = []
-
-# TODO: Make some of these features into command line switches.

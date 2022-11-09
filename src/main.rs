@@ -82,9 +82,9 @@ struct StyleFlags {
     #[arg(long, short = 'a')]
     alt_a: bool,
 
-    /*/// Use a more ornate "sa-rincë" for final sibilants.
+    /// Use a more ornate "sa-rincë" for final sibilants.
     #[arg(long, short = 'r')]
-    alt_rince: bool,*/
+    alt_rince: bool,
 
     /*/// Set behavior for long vowels.
     #[arg(long, short = 'l', value_name = "STYLE")]
@@ -176,7 +176,7 @@ impl Command {
     const fn runner(&self) -> Runner {
         let mut runner = Runner::new(self.mode());
         runner.alt_a = self.style_flags.alt_a;
-        // runner.alt_rince = self.style_flags.alt_rince;
+        runner.alt_rince = self.style_flags.alt_rince;
         runner.ligate_short = self.ligate_short;
         runner.ligate_zwj = self.ligate_zwj;
         runner.nuquerna = !self.style_flags.no_nuquernar;

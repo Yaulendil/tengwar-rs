@@ -256,7 +256,7 @@ impl TengwarMode for Gondor {
                         current.labial = true;
                         ParseAction::MatchedPart(1)
                     }
-                    ['s'] if !current.rince && rince_valid(base) => {
+                    ['s' | 'z'] if current.can_take_rince() => {
                         current.rince = true;
                         ParseAction::MatchedPart(1)
                     }

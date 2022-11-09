@@ -155,7 +155,7 @@ impl TengwarMode for Quenya {
                         current.palatal = true;
                         ParseAction::MatchedPart(1)
                     }
-                    ['s'] if !current.rince => {
+                    ['s' | 'z'] if current.can_take_rince() => {
                         current.rince = true;
                         ParseAction::MatchedPart(1)
                     }

@@ -129,6 +129,14 @@ fn test_styles() {
     run(["-sz", ARG_Q]);
     run(["-s", "-z", ARG_Q]);
 
+    //  Alternate A-tehta.
+    run(["--alt-a", ARG_Q]);
+    run(["-a", ARG_Q]);
+
+    //  Alternate Sa-Rincë.
+    run(["--alt-rince", ARG_Q]);
+    run(["-r", ARG_Q]);
+
     //  Disable Nuquernar.
     run(["--no-nuquernar", ARG_Q]);
     run(["-n", ARG_Q]);
