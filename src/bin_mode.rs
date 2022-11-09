@@ -2,52 +2,34 @@
 //!     from `main.rs` since it is more code than definition.
 
 use tengwar::*;
-// use super::LongVowels;
 
 
-pub struct Runner {
-    pub mode: Mode,
-
-    pub alt_a: bool,
-    pub alt_rince: bool,
-    pub ligate_short: bool,
-    pub ligate_zwj: bool,
-    pub nuquerna: bool,
-    // pub vowels: LongVowels,
+#[derive(Clone, Copy, Debug, ValueEnum)]
+pub enum LongVowels {
+    /// Always use the extended carrier mark.
+    Separate,
+    /// Where possible, use doubled diacritics.
+    Doubled,
+    /// Where possible, use unique diacritics.
+    Unique,
 }
 
-impl Runner {
-    pub const fn new(mode: Mode) -> Self {
-        Self {
-            mode,
-            alt_a: false,
-            alt_rince: false,
-            ligate_short: false,
-            ligate_zwj: false,
-            nuquerna: false,
-            // vowels: LongVowels::Doubled,
+impl LongVowels {
+    pub const DEFAULT: Self = Self::from_lib(VowelStyle::DEFAULT);
+
+    pub const fn from_lib(style: VowelStyle) -> Self {
+        match style {
+            VowelStyle::Separate => Self::Separate,
+            VowelStyle::Doubled => Self::Doubled,
+            VowelStyle::Unique => Self::Unique,
         }
     }
 
-    pub fn convert<T: FromIterator<Token>>(&self, input: impl ToTengwar) -> T {
-        macro_rules! run {
-            ($mode:ty, $input:expr) => {{
-                let mut transcriber = $input.transcriber::<$mode>();
-                transcriber.alt_a = self.alt_a;
-                transcriber.alt_rince = self.alt_rince;
-                transcriber.ligate_short = self.ligate_short;
-                transcriber.ligate_zwj = self.ligate_zwj;
-                transcriber.nuquerna = self.nuquerna;
-                // transcriber.vowels = self.vowels;
-                transcriber.collect()
-            }};
-        }
-
-        match self.mode {
-            Mode::Quenya => run!(Quenya, input),
-            Mode::Gondor => run!(Gondor, input),
-            Mode::Beleriand => run!(Beleriand, input),
-            /*Mode::English => run!(English, input),*/
+    pub const fn style(&self) -> VowelStyle {
+        match self {
+            Self::Separate => VowelStyle::Separate,
+            Self::Doubled => VowelStyle::Doubled,
+            Self::Unique => VowelStyle::Unique,
         }
     }
 }
@@ -72,4 +54,52 @@ pub enum Mode {
 impl Mode {
     #[allow(dead_code)]
     pub const DEFAULT: Self = Self::Quenya;
+}
+
+
+pub struct Runner {
+    pub mode: Mode,
+
+    pub alt_a: bool,
+    pub alt_rince: bool,
+    pub ligate_short: bool,
+    pub ligate_zwj: bool,
+    pub nuquerna: bool,
+    pub vowels: VowelStyle,
+}
+
+impl Runner {
+    pub const fn new(mode: Mode) -> Self {
+        Self {
+            mode,
+            alt_a: false,
+            alt_rince: false,
+            ligate_short: false,
+            ligate_zwj: false,
+            nuquerna: false,
+            vowels: VowelStyle::DEFAULT,
+        }
+    }
+
+    pub fn convert<T: FromIterator<Token>>(&self, input: impl ToTengwar) -> T {
+        macro_rules! run {
+            ($mode:ty, $input:expr) => {{
+                let mut transcriber = $input.transcriber::<$mode>();
+                transcriber.alt_a = self.alt_a;
+                transcriber.alt_rince = self.alt_rince;
+                transcriber.ligate_short = self.ligate_short;
+                transcriber.ligate_zwj = self.ligate_zwj;
+                transcriber.nuquerna = self.nuquerna;
+                transcriber.vowels = self.vowels;
+                transcriber.collect()
+            }};
+        }
+
+        match self.mode {
+            Mode::Quenya => run!(Quenya, input),
+            Mode::Gondor => run!(Gondor, input),
+            Mode::Beleriand => run!(Beleriand, input),
+            /*Mode::English => run!(English, input),*/
+        }
+    }
 }

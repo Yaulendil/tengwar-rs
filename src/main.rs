@@ -46,29 +46,17 @@ struct ModeFlags {
     beleriand: bool,
 
     /*/// Transliterate in an Orthographic English mode.
-    #[arg(long, short)]
+    #[arg(long, short = 'E')]
     #[arg(group = "mode")]
     english: bool,*/
 
     /// Set a mode by name.
-    #[arg(hide = true)] // NOTE: Unsure whether this option will be kept.
     #[arg(long = "mode", short = 'M', value_name = "MODE")]
     #[arg(group = "mode", value_enum, ignore_case = true)]
     by_name: Option<Mode>,
-    //  TODO: Use as fallback, replacing Mode::DEFAULT, rather than first check?
-    // #[arg(default_value_t = Mode::Quenya)]
+    //  TODO: Use as fallback, rather than first check?
+    // #[arg(default_value_t = Mode::DEFAULT)]
     // by_name: Mode,
-}
-
-
-#[derive(Clone, Copy, Debug, ValueEnum)]
-enum LongVowels {
-    /// Always use the extended carrier mark.
-    Separate,
-    /// Where possible, use doubled diacritics.
-    Doubled,
-    /// Where possible, use unique diacritics.
-    Unique,
 }
 
 
@@ -86,10 +74,12 @@ struct StyleFlags {
     #[arg(long, short = 'r')]
     alt_rince: bool,
 
-    /*/// Set behavior for long vowels.
+    /// Set behavior for long vowels.
+    #[arg(hide = true)]
     #[arg(long, short = 'l', value_name = "STYLE")]
-    #[arg(default_value_t = LongVowels::Doubled, value_enum)]
-    long: LongVowels,*/
+    #[arg(group = "vowels", value_enum, ignore_case = true)]
+    #[arg(default_value_t = LongVowels::DEFAULT)]
+    long: LongVowels,
 
     /// Do not use inverted "nuquerna" variants.
     ///
@@ -180,7 +170,7 @@ impl Command {
         runner.ligate_short = self.ligate_short;
         runner.ligate_zwj = self.ligate_zwj;
         runner.nuquerna = !self.style_flags.no_nuquernar;
-        // runner.vowels = self.style_flags.vowels;
+        runner.vowels = self.style_flags.long.style();
         runner
     }
 }

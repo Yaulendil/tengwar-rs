@@ -15,6 +15,25 @@ pub use tehta::*;
 pub use tema::*;
 
 
+#[derive(Clone, Copy, Debug)]
+pub enum VowelStyle {
+    /// Always use the extended carrier mark.
+    Separate,
+    /// Where possible, use doubled diacritics.
+    Doubled,
+    /// Where possible, use unique diacritics.
+    Unique,
+}
+
+impl VowelStyle {
+    pub const DEFAULT: Self = Self::Doubled;
+}
+
+impl Default for VowelStyle {
+    fn default() -> Self { Self::DEFAULT }
+}
+
+
 /// Convert non-tengwar punctuation marker into one from the tengwar block.
 ///     Where unambiguous replacements are not known, this is chosen, admittedly
 ///     arbitrarily, based on superficial similarity.

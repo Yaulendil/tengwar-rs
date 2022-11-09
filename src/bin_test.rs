@@ -140,6 +140,31 @@ fn test_styles() {
     //  Disable Nuquernar.
     run(["--no-nuquernar", ARG_Q]);
     run(["-n", ARG_Q]);
+
+    //  Vowel options (long).
+    run(["--long", "separate", ARG_Q]);
+    run(["--long", "doubled", ARG_Q]);
+    run(["--long", "unique", ARG_Q]);
+    run(["--long=separate", ARG_Q]);
+    run(["--long=doubled", ARG_Q]);
+    run(["--long=unique", ARG_Q]);
+
+    //  Vowel options (short).
+    run(["-l", "separate", ARG_Q]);
+    run(["-l", "doubled", ARG_Q]);
+    run(["-l", "unique", ARG_Q]);
+    run(["-l=separate", ARG_Q]);
+    run(["-l=doubled", ARG_Q]);
+    run(["-l=unique", ARG_Q]);
+    run(["-lseparate", ARG_Q]);
+    run(["-ldoubled", ARG_Q]);
+    run(["-lunique", ARG_Q]);
+
+    //  Vowel options, with no value.
+    run_err(["--long=", "doubled", ARG_Q]);
+    run_err(["--long", ARG_Q]);
+    run_err(["-l=", "doubled", ARG_Q]);
+    run_err(["-l", ARG_Q]);
 }
 
 

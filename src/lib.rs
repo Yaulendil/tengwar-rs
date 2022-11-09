@@ -81,7 +81,7 @@ pub mod characters;
 pub mod mode;
 mod policy;
 
-pub use characters::{Glyph, Numeral};
+pub use characters::{Glyph, Numeral, VowelStyle};
 pub use mode::{Beleriand, Gondor, Quenya, TengwarMode};
 
 use std::{
@@ -175,7 +175,7 @@ pub struct Transcriber<I: Iterator<Item=Token>> {
     pub ligate_short: bool,
     pub ligate_zwj: bool,
     pub nuquerna: bool,
-    // pub vowels: LongVowels,
+    pub vowels: VowelStyle,
 }
 
 impl<I: Iterator<Item=Token>> Transcriber<I> {
@@ -210,7 +210,7 @@ impl<T: IntoIterator<Item=Token>> From<T> for Transcriber<T::IntoIter> {
             ligate_short: false,
             ligate_zwj: false,
             nuquerna: false,
-            // vowels: LongVowels::Doubled,
+            vowels: VowelStyle::Doubled,
         }
     }
 }

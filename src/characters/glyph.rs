@@ -17,6 +17,8 @@ pub struct Glyph {
     ///     before the glyph.
     pub tehta_first: bool,
 
+    pub vowel_style: VowelStyle,
+
     /// Indicates whether the glyph has a sa-rincë attached.
     pub rince: bool,
     /// Indicates whether the glyph may use a more ornate rincë.
@@ -53,6 +55,7 @@ impl Glyph {
             tehta: None,
             tehta_alt: false,
             tehta_first: false,
+            vowel_style: VowelStyle::DEFAULT,
 
             rince: false,
             rince_final: false,
