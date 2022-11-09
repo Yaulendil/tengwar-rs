@@ -3,6 +3,44 @@ use super::*;
 
 
 #[test]
+fn test_quenya_nuquernar() {
+    //  Check Silmë.
+    let _silme = test_tengwar!(Quenya, "silmë" => [
+        TENGWA_SILME, TEHTA_I.base(), // si
+        TENGWA_LAMBE, // l
+        TENGWA_MALTA, TEHTA_E.base(), // më
+    ]);
+    let _silme_nuq = test_tengwar!(Quenya[nuquerna=true], "silmë" => [
+        TENGWA_SILME_NUQ, TEHTA_I.base(), // si
+        TENGWA_LAMBE, // l
+        TENGWA_MALTA, TEHTA_E.base(), // më
+    ]);
+    // test_tengwar!(silme != silme_nuq);
+
+    //  Check Essë.
+    let esse = test_tengwar!(Quenya, "essë" => [
+        CARRIER_SHORT, TEHTA_E.base(), // e,
+        TENGWA_ESSE, TEHTA_E.base(), // ssë
+    ]);
+    let esse_nuq = test_tengwar!(Quenya[nuquerna=true], "essë" => [
+        CARRIER_SHORT, TEHTA_E.base(), // e,
+        TENGWA_ESSE_NUQ, TEHTA_E.base(), // ssë
+    ]);
+    // test_tengwar!(esse != esse_nuq);
+    test_tengwar!(Quenya, "eze" == esse);
+    test_tengwar!(Quenya[nuquerna=true], "eze" == esse_nuq);
+
+    //  Confirm lack of Nuquerna for a vowel on Ára.
+    let siila = test_tengwar!(Quenya, "síla" => [
+        TENGWA_SILME, // s
+        CARRIER_LONG, TEHTA_I.base(), // í
+        TENGWA_LAMBE, TEHTA_A.base(), // la
+    ]);
+    test_tengwar!(Quenya[nuquerna=true], "síla" == siila);
+}
+
+
+#[test]
 fn test_quenya_words() {
     let eleni_silar = test_tengwar!(Quenya, "eleni sílar" => [
         CARRIER_SHORT, TEHTA_E.base(), // e
@@ -147,18 +185,6 @@ fn test_quenya_words() {
     test_tengwar!(Quenya, "ungwe" == ungwe); // ASCII spelling.
     test_tengwar!(Quenya, "uñwë" != ungwe);
     test_tengwar!(Quenya, "unwë" != ungwe);
-
-    let _silme = test_tengwar!(Quenya, "silmë" => [
-        nuq!(TENGWA_SILME), TEHTA_I.base(), // si
-        TENGWA_LAMBE, // l
-        TENGWA_MALTA, TEHTA_E.base(), // më
-    ]);
-
-    let esse = test_tengwar!(Quenya, "essë" => [
-        CARRIER_SHORT, TEHTA_E.base(), // e,
-        nuq!(TENGWA_ESSE), TEHTA_E.base(), // ssë
-    ]);
-    test_tengwar!(Quenya, "eze" == esse);
 
     test_tengwar!(Quenya, "hrívë" => [
         TENGWA_HALLA, // h

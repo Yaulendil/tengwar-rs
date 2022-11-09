@@ -28,6 +28,8 @@ pub struct Glyph {
     pub labial: bool,
     /// A palatalized vowel is represented by an additional diacritic.
     pub palatal: bool,
+    /// Try to use a "nuquerna" variant of the base character.
+    pub nuquerna: bool,
     /// A lengthened consonant is typically represented by an underbar.
     pub long_cons: bool,
 
@@ -58,6 +60,7 @@ impl Glyph {
             nasal: false,
             labial: false,
             palatal: false,
+            nuquerna: false,
             long_cons: false,
 
             ligate_short: false,
@@ -156,16 +159,17 @@ impl Glyph {
     ///     set, an appropriate "carrier" mark will be returned instead.
     pub const fn base(&self) -> char {
         match self {
-            #[cfg(feature = "nuquernar")]
-            &Glyph { base: Some(base), tehta: Some(tehta), tehta_alt, .. } if {
-                can_be_nuquerna(base) && !(tehta_alt && tehta.uses_ara())
-            } => nuquerna(base),
+            &Glyph {
+                base: Some(base),
+                tehta: Some(tehta),
+                tehta_alt,
+                nuquerna: true,
+                ..
+            } if can_be_nuquerna(base) && !(tehta_alt && tehta.uses_ara()) => {
+                nuquerna(base)
+            }
 
             &Glyph { base: Some(base), .. } => base,
-            /*// &Glyph { tehta_alt: true, .. } => carrier(true),
-            // &Glyph { ligate_short: true, .. } => CARRIER_SHORT_LIG,
-            &Glyph { tehta_alt, .. } => carrier(tehta_alt),*/
-
             &Glyph { tehta_alt, ligate_short, .. } => {
                 if tehta_alt {
                     CARRIER_LONG
@@ -191,7 +195,6 @@ impl Display for Glyph {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let base: char = self.base();
 
-        #[cfg_attr(feature = "nuquernar", allow(unused_mut))]
         let mut long: bool = self.tehta_alt && self.base.is_some();
         let nuquerna_ignored: bool = !cfg!(feature = "nuquernar")
             && can_be_nuquerna(base);

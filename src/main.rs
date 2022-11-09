@@ -91,13 +91,13 @@ struct StyleFlags {
     #[arg(default_value_t = LongVowels::Doubled, value_enum)]
     long: LongVowels,*/
 
-    /*/// Do not use inverted "nuquerna" variants.
+    /// Do not use inverted "nuquerna" variants.
     ///
     /// Some tengwar typically occupy the center space above them, where a vowel
     ///     diacritic would be placed. When one of these tengwar needs to have a
     ///     vowel, it is often inverted to make room; This option prevents that.
     #[arg(long, short = 'n')]
-    no_nuquerna: bool,*/
+    no_nuquernar: bool,
 }
 
 
@@ -179,7 +179,7 @@ impl Command {
         // runner.alt_rince = self.style_flags.alt_rince;
         runner.ligate_short = self.ligate_short;
         runner.ligate_zwj = self.ligate_zwj;
-        // runner.nuquerna = !self.style_flags.no_nuquerna;
+        runner.nuquerna = !self.style_flags.no_nuquernar;
         // runner.vowels = self.style_flags.vowels;
         runner
     }
@@ -188,7 +188,7 @@ impl Command {
 
 fn main() {
     let command: Command = clap::Parser::parse();
-    let runner: Runner = command.runner();
+    let runner = command.runner();
 
     #[cfg(debug_assertions)]
     if command.debug {

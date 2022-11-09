@@ -32,7 +32,7 @@ features = ["cargo", "derive", "wrap_help"]
 
 
 [features]
-default = ["long-vowel-double", "nuquernar"]
+default = ["long-vowel-double"]
 
 # Use alternate Sa-rincë for tengwar that support it.
 alt-rince = []
@@ -42,7 +42,5 @@ circumflex = []
 dots-standard = []
 long-vowel-double = []
 long-vowel-unique = []
-# Silmë and Essë are inverted when they take a tehta.
-nuquernar = []
 
 # TODO: Make some of these features into command line switches.

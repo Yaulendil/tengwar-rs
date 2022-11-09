@@ -12,7 +12,7 @@ pub struct Runner {
     // pub alt_rince: bool,
     pub ligate_short: bool,
     pub ligate_zwj: bool,
-    // pub nuquerna: bool,
+    pub nuquerna: bool,
     // pub vowels: LongVowels,
 }
 
@@ -24,7 +24,7 @@ impl Runner {
             // alt_rince: false,
             ligate_short: false,
             ligate_zwj: false,
-            // nuquerna: false,
+            nuquerna: false,
             // vowels: LongVowels::Doubled,
         }
     }
@@ -37,7 +37,7 @@ impl Runner {
                 // transcriber.alt_rince = self.alt_rince;
                 transcriber.ligate_short = self.ligate_short;
                 transcriber.ligate_zwj = self.ligate_zwj;
-                // transcriber.nuquerna = self.nuquerna;
+                transcriber.nuquerna = self.nuquerna;
                 // transcriber.vowels = self.vowels;
                 transcriber.collect()
             }};

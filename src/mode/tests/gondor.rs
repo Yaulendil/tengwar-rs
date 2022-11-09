@@ -3,6 +3,46 @@ use super::*;
 
 
 #[test]
+fn test_gondor_nuquernar() {
+    //  Check Silmë.
+    let _estel = test_tengwar!(Gondor, "estel" => [
+        TENGWA_SILME, TEHTA_E.base(), // es
+        TENGWA_TINCO, // t
+        TENGWA_LAMBE, TEHTA_E.base(), // el
+    ]);
+    let _estel_nuq = test_tengwar!(Gondor[nuquerna=true], "estel" => [
+        TENGWA_SILME_NUQ, TEHTA_E.base(), // es
+        TENGWA_TINCO, // t
+        TENGWA_LAMBE, TEHTA_E.base(), // el
+    ]);
+    // test_tengwar!(estel != estel_nuq);
+
+    //  Check Essë.
+    let lossen = test_tengwar!(Gondor, "lossen" => [
+        TENGWA_LAMBE, // l
+        TENGWA_ESSE, TEHTA_O.base(), // oss
+        TENGWA_NUMEN, TEHTA_E.base(), // en,
+    ]);
+    let lossen_nuq = test_tengwar!(Gondor[nuquerna=true], "lossen" => [
+        TENGWA_LAMBE, // l
+        TENGWA_ESSE_NUQ, TEHTA_O.base(), // oss
+        TENGWA_NUMEN, TEHTA_E.base(), // en,
+    ]);
+    // test_tengwar!(lossen != lossen_nuq);
+    test_tengwar!(Gondor, "lozen" == lossen);
+    test_tengwar!(Gondor[nuquerna=true], "lozen" == lossen_nuq);
+
+    //  Confirm lack of Nuquerna for a vowel on Ára.
+    let iisa = test_tengwar!(Gondor, "ísa" => [
+        CARRIER_LONG, TEHTA_I.base(), // í
+        TENGWA_SILME, // s
+        CARRIER_SHORT, TEHTA_A.base(), // í
+    ]);
+    test_tengwar!(Gondor[nuquerna=true], "ísa" == iisa);
+}
+
+
+#[test]
 fn test_gondor_words() {
     test_tengwar!(Gondor, "axë" => [
         TENGWA_CALMA, TEHTA_A.base(), SA_RINCE, // ax
@@ -98,7 +138,7 @@ fn test_gondor_words() {
     let _grist = test_tengwar!(Gondor, "grist" => [
         TENGWA_UNGWE, // g
         TENGWA_ROMEN, // r
-        nuq!(TENGWA_SILME), TEHTA_I.base(), // is
+        TENGWA_SILME, TEHTA_I.base(), // is
         TENGWA_TINCO, // t
     ]);
     let _acharn = test_tengwar!(Gondor, "acharn" => [

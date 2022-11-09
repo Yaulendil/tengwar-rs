@@ -128,6 +128,10 @@ fn test_styles() {
     run(["-z", ARG_Q]);
     run(["-sz", ARG_Q]);
     run(["-s", "-z", ARG_Q]);
+
+    //  Disable Nuquernar.
+    run(["--no-nuquernar", ARG_Q]);
+    run(["-n", ARG_Q]);
 }
 
 

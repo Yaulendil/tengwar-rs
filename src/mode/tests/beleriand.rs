@@ -90,9 +90,12 @@ fn test_beleriand_words() {
     let _hebin = test_tengwar!(Beleriand, "hebin" => [
         TENGWA_HYARMEN, VOWEL_E, TENGWA_UMBAR, VOWEL_I, TENGWA_ORE,
     ]);
-    let _grist = test_tengwar!(Beleriand, "grist" => [
+
+    let grist = test_tengwar!(Beleriand, "grist" => [
         TENGWA_ANGA, TENGWA_ROMEN, VOWEL_I, TENGWA_SILME, TENGWA_TINCO,
     ]);
+    test_tengwar!(Beleriand[nuquerna=true], "grist" == grist);
+
     let _acharn = test_tengwar!(Beleriand, "acharn" => [
         VOWEL_A, TENGWA_AHA, VOWEL_A, TENGWA_ROMEN, TENGWA_ORE,
     ]);

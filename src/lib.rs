@@ -184,9 +184,12 @@ impl FromIterator<Token> for String {
 
 pub struct Transcriber<I: Iterator<Item=Token>> {
     inner: Peekable<I>,
+    // pub alt_a: bool,
+    // pub alt_rince: bool,
     pub ligate_short: bool,
     pub ligate_zwj: bool,
-    // pub nuquerna: bool,
+    pub nuquerna: bool,
+    // pub vowels: LongVowels,
 }
 
 impl<I: Iterator<Item=Token>> Transcriber<I> {
@@ -196,19 +199,22 @@ impl<I: Iterator<Item=Token>> Transcriber<I> {
         self
     }
 
-    // pub const fn with_nuquerna(mut self) -> Self {
-    //     self.nuquerna = true;
-    //     self
-    // }
+    pub const fn with_nuquerna(mut self) -> Self {
+        self.nuquerna = true;
+        self
+    }
 }
 
 impl<T: IntoIterator<Item=Token>> From<T> for Transcriber<T::IntoIter> {
     fn from(iter: T) -> Self {
         Self {
             inner: iter.into_iter().peekable(),
+            // alt_a: false,
+            // alt_rince: false,
             ligate_short: false,
             ligate_zwj: false,
-            // nuquerna: false,
+            nuquerna: false,
+            // vowels: LongVowels::Doubled,
         }
     }
 }
@@ -220,7 +226,9 @@ impl<I: Iterator<Item=Token>> Iterator for Transcriber<I> {
         let mut token: Token = self.inner.next()?;
 
         if let Token::Tengwa(glyph) = &mut token {
+            // glyph.rince_alt = self.alt_rince;
             glyph.ligate_zwj = self.ligate_zwj;
+            glyph.nuquerna = self.nuquerna;
 
             match self.inner.peek() {
                 Some(Token::Tengwa(next)) => {
