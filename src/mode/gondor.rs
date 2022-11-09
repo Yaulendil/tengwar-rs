@@ -208,7 +208,7 @@ impl TengwarMode for Gondor {
             glyph.tehta_first = true;
 
             if let Some(Token::Tengwa(_)) = next {
-                glyph.replace_consonant(TENGWA_ORE, TENGWA_ROMEN);
+                glyph.replace_base(TENGWA_ORE, TENGWA_ROMEN);
             }
         }
     }

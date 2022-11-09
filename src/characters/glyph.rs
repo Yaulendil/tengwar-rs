@@ -144,7 +144,7 @@ impl Glyph {
         self.tehta_alt = other.tehta_alt;
     }
 
-    pub fn replace_consonant(&mut self, old: char, new: char) -> bool {
+    pub fn replace_base(&mut self, old: char, new: char) -> bool {
         if self.base == Some(old) {
             self.base = Some(new);
             true

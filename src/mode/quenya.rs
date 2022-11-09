@@ -167,15 +167,15 @@ impl TengwarMode for Quenya {
                         finish!(*current, 0)
                     }
                     ['l' | 'r'] => {
-                        current.replace_consonant(TENGWA_HYARMEN, TENGWA_HALLA);
+                        current.replace_base(TENGWA_HYARMEN, TENGWA_HALLA);
                         finish!(*current, 0)
                     }
                     _ => {
                         if let Some(_) = get_diphthong(chunk) {
-                            current.replace_consonant(TENGWA_ORE, TENGWA_ROMEN);
+                            current.replace_base(TENGWA_ORE, TENGWA_ROMEN);
                             finish!(*current, 0)
                         } else if let Some((vowel, long)) = get_vowel(chunk) {
-                            current.replace_consonant(TENGWA_ORE, TENGWA_ROMEN);
+                            current.replace_base(TENGWA_ORE, TENGWA_ROMEN);
                             current.tehta = Some(vowel);
                             current.tehta_alt = long;
                             finish!(*current, chunk.len())
@@ -211,13 +211,13 @@ impl TengwarMode for Quenya {
                     //      phrases like "etya-ngoldorin".
 
                     //  Initial NG is represented by Ñoldo, not Anga.
-                    new.replace_consonant(TENGWA_ANGA, TENGWA_NOLDO);
+                    new.replace_base(TENGWA_ANGA, TENGWA_NOLDO);
 
                     //  Initial NGW is represented by Ñwalmë, not Ungwë.
-                    new.replace_consonant(TENGWA_UNGWE, TENGWA_NWALME);
+                    new.replace_base(TENGWA_UNGWE, TENGWA_NWALME);
                 } else {
                     //  Medial H is represented by Aha, not Hyarmen.
-                    new.replace_consonant(TENGWA_HYARMEN, TENGWA_AHA);
+                    new.replace_base(TENGWA_HYARMEN, TENGWA_AHA);
                 }
 
                 self.current = Some(new);
