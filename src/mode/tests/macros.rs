@@ -42,11 +42,14 @@ macro_rules! test_tengwar {
             input = $input,
         );
 
-        // eprintln!(
-        //     "{mode}: {input:?} -> {received}",
-        //     mode = stringify!($mode),
-        //     input = $input,
-        // );
+        println!(
+            "[{file}:{line:0>3}] {mode}: {input:?} -> {received}",
+            file = file!(),
+            line = line!(),
+            mode = stringify!($mode),
+            input = $input,
+        );
+
         ($input, received)
     }};
 
