@@ -3,18 +3,37 @@
 
 
 macro_rules! test_tengwar {
-    ($mode:ty, $input:expr => [$($chars:tt)*] as $bind:ident) => {
-        let $bind = test_tengwar!($mode, $input => [$($chars)*]);
+    (#$mode:ty $([$($k:ident=$v:expr),*])?, $input:expr) => {{
+        use $crate::ToTengwar;
+
+        #[allow(unused_mut)]
+        let mut iter = $input.transcriber::<$mode>();
+        $($(iter.$k = $v;)*)?
+        iter.collect()
+    }};
+
+    ($mode:ty $([$($t:tt)*])?, $input:expr => [$($chars:tt)*] as $bind:ident) => {
+        let $bind = test_tengwar!(
+            $mode $([$($t)*])?,
+            $input => [$($chars)*]
+        );
     };
-    ($mode:ty, $input:expr => $expected:expr, as $bind:ident) => {
-        let $bind = test_tengwar!($mode, $input => $expected);
+    ($mode:ty $([$($t:tt)*])?, $input:expr => $expected:expr, as $bind:ident) => {
+        let $bind = test_tengwar!(
+            $mode $([$($t)*])?,
+            $input => $expected
+        );
     };
-    ($mode:ty, $input:expr => [$($chars:tt)*]) => {
-        test_tengwar!($mode, $input => ([$($chars)*]))
+    ($mode:ty $([$($t:tt)*])?, $input:expr => [$($chars:tt)*]) => {
+        test_tengwar!(
+            $mode $([$($t)*])?,
+            $input => ([$($chars)*])
+        )
     };
-    ($mode:ty, $input:expr => $expected:expr) => {{
+
+    ($mode:ty $([$($t:tt)*])?, $input:expr => $expected:expr) => {{
         let expected: String = $expected.into_iter().collect();
-        let received: String = <$mode>::transcribe($input);
+        let received: String = test_tengwar!(#$mode $([$($t)*])?, $input);
 
         assert_eq!(expected, received,
             "Transcription of {input:?} does not match expectation.\
@@ -30,9 +49,10 @@ macro_rules! test_tengwar {
         // );
         ($input, received)
     }};
-    ($mode:ty, $input:tt == $expected:expr) => {{
+
+    ($mode:ty $([$($t:tt)*])?, $input:tt == $expected:expr) => {{
         let (original, expected) = &$expected;
-        let received: String = <$mode>::transcribe($input);
+        let received: String = test_tengwar!(#$mode $([$($t)*])?, $input);
 
         assert_eq!(expected, &received,
             "Transcription of {new:?} does not match that of {old:?}.\
@@ -43,9 +63,9 @@ macro_rules! test_tengwar {
             w = $input.chars().count().max(original.chars().count()),
         );
     }};
-    ($mode:ty, $input:tt != $expected:expr) => {{
+    ($mode:ty $([$($t:tt)*])?, $input:tt != $expected:expr) => {{
         let (original, expected) = &$expected;
-        let received: String = <$mode>::transcribe($input);
+        let received: String = test_tengwar!(#$mode $([$($t)*])?, $input);
 
         assert_ne!(expected, &received,
             "Transcription of {new:?} matches that of {old:?}, but should not.\
@@ -58,16 +78,6 @@ macro_rules! test_tengwar {
     }};
 }
 
-
-macro_rules! nuq {
-    ($tengwa:expr) => {
-        if cfg!(feature = "nuquernar") {
-            nuquerna($tengwa)
-        } else {
-            $tengwa
-        }
-    };
-}
 
 impl crate::characters::Tehta {
     pub const fn pre_long(&self) -> char {

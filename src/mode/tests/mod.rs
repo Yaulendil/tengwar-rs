@@ -9,4 +9,3 @@ mod gondor;
 mod quenya;
 
 use crate::characters::*;
-use super::TengwarMode;
