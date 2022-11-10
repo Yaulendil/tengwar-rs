@@ -97,6 +97,13 @@ The Tilde is left alone so that it can safely pass through and be read by LaTeX.
 
 ---
 
+¹ While ***this program*** does not affect whitespace, it can only work with the discrete arguments provided to it by the environment running it.
+Most environments will split your input at spaces and provide the surrounding words as unconnected values;
+This program cannot distinguish between `tengwar asdf qwert` and `tengwar asdf<TAB>qwert`.
+It is therefore highly recommended to enclose all of your input text in double quotes.
+
+---
+
 ## Features
 
 [Cargo Features](https://doc.rust-lang.org/cargo/reference/features.html#command-line-feature-options) allow very powerful changes to the behavior of a program to be baked in at compile-time.
@@ -106,13 +113,6 @@ The Tilde is left alone so that it can safely pass through and be read by LaTeX.
 Several codepoints defined in the CSUR Tengwar block are punctuation marks composed of dots.
 Since Unicode already defines many dot punctuation characters, it may be preferable to use those wherever possible.
 Compiling this program with `--features "dots-standard"` will cause it to use standard Unicode characters with the same arrangements, instead of the ones in the Tengwar block.
-
----
-
-¹ While ***this program*** does not affect whitespace, it can only work with the discrete arguments provided to it by the environment running it.
-Most environments will split your input at spaces and provide the surrounding words as unconnected values;
-This program cannot distinguish between `tengwar asdf qwert` and `tengwar asdf<TAB>qwert`.
-It is therefore highly recommended to enclose all of your input text in double quotes.
 
 ---
 
