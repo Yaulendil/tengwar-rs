@@ -5,6 +5,8 @@
 [![crates.io]](https://crates.io/crates/tengwar)
 [![docs.rs]](https://docs.rs/tengwar)
 
+[Tengwar Telcontar]: https://freetengwar.sourceforge.net/tengtelc.html
+
 Automated conversion of Latin text into Tengwar codepoints in the Unicode Private Use Area.
 Primarily targets the Classical Quenya mode, with tenuous support for the Sindarin modes of Beleriand and Gondor.
 
@@ -59,7 +61,7 @@ Unlike with zero-width joiners (where lack of font support is unlikely to be a p
 
 In certain typefaces, the [Zero-Width Joiner](https://en.wikipedia.org/wiki/Zero-width_joiner) may be used to form ligatures of Tengwar.
 When invoked with the `--ligate-zwj` (or `-z`) switch on the command line, this program will insert joiners into the output text between certain characters, based on various overly convoluted rules.
-These rules are based on the ligature behavior of [Tengwar Telcontar](https://freetengwar.sourceforge.net/tengtelc.html), as well as some degree of personal taste.
+These rules are based on the ligature behavior of [Tengwar Telcontar], as well as some degree of personal taste.
 
 For typefaces that do not support these ligatures, the presence of the joining characters ***should*** not affect the rendering;
 However, it does increase the number of bytes in the output string by approximately 15%.
@@ -98,20 +100,6 @@ The Tilde is left alone so that it can safely pass through and be read by LaTeX.
 ## Features
 
 [Cargo Features](https://doc.rust-lang.org/cargo/reference/features.html#command-line-feature-options) allow very powerful changes to the behavior of a program to be baked in at compile-time.
-For my current project, I am using a version of this program compiled with `--no-default-features --features "alt-rince long-vowel-double"` as arguments to Cargo.
-
-### `alt-rince`
-
-A consonant which is followed by an /s/ sound is often represented by adding an additional hook, known as a *sa-rincë*, for example turning "" into "".
-If this occurs at the end of a word, a larger version may be used, as seen in "".
-Because in many typefaces it is not well-supported, this alternate version will not be used by default;
-However, it can be enabled by including `--features "alt-rince"` when installing.
-
-### `circumflex`
-
-In some manuscripts, it is not uncommon to replace the three-dot Tehta () with a simpler one resembling a circumflex ().
-This variant may be preferred when transliterating text that is meant to represent a note quickly written by hand.
-This can be enabled with `--features "circumflex"`.
 
 ### Long Vowels
 
@@ -121,16 +109,9 @@ Some may not even support either approach at all.
 
 The default behavior is to double the characters for long vowels, with the feature `long-vowel-double` set by default.
 In order to use the *unique* diacritical characters, run the compilation with `--features "long-vowel-unique"`.
-In order to instead place long vowel marks onto the lengthened *ára* carrier, do so by disabling the doubling behavior with `--no-default-features`².
+In order to instead place long vowel marks onto the lengthened *ára* carrier, do so by disabling the doubling behavior with `--no-default-features`.
 
 Note: Some diacritical vowels will **always** use the *ára* carrier, due to their shape being unsuitable for doubling.
-
-### `nuquernar`
-
-Two of the Tengwar, *Silmë* () and *Essë* (), have inverted *"Nuquerna"* variants.
-These variants are often used when a diacritical vowel is to be added, and this is the default behavior of this program.
-However, in some typefaces, the normal non-inverted versions may look better.
-This behavior can therefore be disabled with `--no-default-features`².
 
 ---
 
@@ -139,6 +120,36 @@ Most environments will split your input at spaces and provide the surrounding wo
 This program cannot distinguish between `tengwar asdf qwert` and `tengwar asdf<TAB>qwert`.
 It is therefore highly recommended to enclose all of your input text in double quotes.
 
-² If you run the compilation with `--no-default-features`, it will disable *both* default features.
-This is a limitation of how Cargo resolves the defaults.
-If you want to, for example, disable the doubled vowels behavior, but retain the *Nuquerna* variants, you may disable both but then reenable the one you want by using `--no-default-features --features "nuquernar"`.
+---
+
+## Usage in LaTeX
+
+The following is a minimum working example using [XeLaTeX](https://xetex.sourceforge.net/).
+It uses the [Tengwar Telcontar] font with the Graphite renderer, and the given command will produce `main.pdf` as its output.
+
+```latex
+% main.tex
+\documentclass[12pt]{article}
+\usepackage{fontspec}
+
+\defaultfontfeatures{Renderer=Graphite}
+\newfontfamily\TengTelc[WordSpace=2]{Tengwar Telcontar}
+
+\newcommand{\Tengwar}[2][]{\input{|tengwar #1 -- '#2'}\unskip}
+\newcommand{\Classical}[2][\TengTelc]{{#1\Tengwar[-Qrsz]{#2}}}
+\newcommand{\Beleriand}[2][\TengTelc]{{#1\Tengwar[-Brsz]{#2}}}
+\newcommand{\Gondor}[2][\TengTelc]{{#1\Tengwar[-Grsz]{#2}}}
+
+\begin{document}
+    % "The king of Doriath, Elu Thingol, was slain by Dwarves from Nogrod."
+    \Classical{i aran Lestanórëo ,}
+    \Beleriand{“Elu Thingol„}
+    \Classical{, nánë nahtana ló Casari Návaróto ::}
+\end{document}
+```
+
+```bash
+xelatex -interaction=nonstopmode --shell-escape main.tex
+```
+
+![Sample text](img/sample.png)
