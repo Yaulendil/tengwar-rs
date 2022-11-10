@@ -65,10 +65,10 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
 
 pub const fn get_consonant(slice: &[char]) -> Option<Glyph> {
     match consonant_char(slice) {
-        Some(cons) => Some(Glyph::new_cons(cons, false)),
+        Some(cons) => Some(Glyph::new_base(cons)),
         None => match slice {
             &[a, b] if a == b => match consonant_char(&[a]) {
-                Some(cons) => Some(Glyph::new_cons(cons, true)),
+                Some(cons) => Some(Glyph::new_base(cons).with_underline()),
                 None => None,
             }
             _ => None,
@@ -190,10 +190,10 @@ impl TengwarMode for Quenya {
 
             //  Check for special cases.
             if let ['x'] = chunk {
-                self.current = Some(Glyph::from(TENGWA_CALMA).with_silme());
+                self.current = Some(Glyph::new_base(TENGWA_CALMA).with_rince());
                 ParseAction::MatchedPart(1)
             } else if let ['y', ..] = chunk {
-                self.current = Some(Glyph::from(TENGWA_ANNA).with_palatal());
+                self.current = Some(Glyph::new_base(TENGWA_ANNA).with_palatal());
                 ParseAction::MatchedPart(1)
             }
 

@@ -76,7 +76,7 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
 
 const fn get_consonant(slice: &[char]) -> Option<Glyph> {
     match consonant_char(slice) {
-        Some(cons) => Some(Glyph::new_cons(cons, false)),
+        Some(cons) => Some(Glyph::new_base(cons)),
         None => None,
     }
 }
@@ -92,7 +92,7 @@ pub const fn get_diphthong(slice: &[char]) -> Option<Glyph> {
         ['u', 'i'] => Some(Glyph::new_both(VOWEL_U, TEHTA_Y)),
 
         ['a', 'u']
-        | ['a', 'w'] => Some(Glyph::new_cons(VOWEL_A, false).with_labial()),
+        | ['a', 'w'] => Some(Glyph::new_base(VOWEL_A).with_labial()),
 
         _ => None,
     }
@@ -101,12 +101,12 @@ pub const fn get_diphthong(slice: &[char]) -> Option<Glyph> {
 
 pub const fn get_vowel(slice: &[char]) -> Option<Glyph> {
     Some(match slice {
-        ['a'] | ['ä'] => Glyph::new_cons(VOWEL_A, false),
-        ['e'] | ['ë'] => Glyph::new_cons(VOWEL_E, false),
-        ['i'] | ['ï'] => Glyph::new_cons(VOWEL_I, false),
-        ['o'] | ['ö'] => Glyph::new_cons(VOWEL_O, false),
-        ['u'] | ['ü'] => Glyph::new_cons(VOWEL_U, false),
-        ['y'] | ['ÿ'] => Glyph::new_cons(VOWEL_Y, false),
+        ['a'] | ['ä'] => Glyph::new_base(VOWEL_A),
+        ['e'] | ['ë'] => Glyph::new_base(VOWEL_E),
+        ['i'] | ['ï'] => Glyph::new_base(VOWEL_I),
+        ['o'] | ['ö'] => Glyph::new_base(VOWEL_O),
+        ['u'] | ['ü'] => Glyph::new_base(VOWEL_U),
+        ['y'] | ['ÿ'] => Glyph::new_base(VOWEL_Y),
 
         ['á'] | ['â'] | ['a', 'a'] => Glyph::new_both(VOWEL_A, TEHTA_LONG),
         ['é'] | ['ê'] | ['e', 'e'] => Glyph::new_both(VOWEL_E, TEHTA_LONG),
@@ -202,20 +202,20 @@ impl TengwarMode for Beleriand {
 
             //  Check for special cases.
             if let ['x'] = chunk {
-                self.current = Some(Glyph::new_cons(TENGWA_SILME, false));
+                self.current = Some(Glyph::new_base(TENGWA_SILME));
                 self.previous = None;
 
                 ParseAction::MatchedToken {
-                    token: Token::Tengwa(Glyph::new_cons(TENGWA_CALMA, false)),
+                    token: Token::Tengwa(Glyph::new_base(TENGWA_CALMA)),
                     len: 1,
                 }
             }
 
             //  Check for voiceless initials.
             else if ['l', 'h'] == chunk && !self.previous.is_some() {
-                finish!(Glyph::new_cons(TENGWA_ALDA, false), 2)
+                finish!(Glyph::new_base(TENGWA_ALDA), 2)
             } else if ['r', 'h'] == chunk && !self.previous.is_some() {
-                finish!(Glyph::new_cons(TENGWA_ARDA, false), 2)
+                finish!(Glyph::new_base(TENGWA_ARDA), 2)
             }
 
             //  Check for F, and decide whether it is final.

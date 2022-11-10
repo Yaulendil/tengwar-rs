@@ -69,10 +69,10 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
 
 const fn get_consonant(slice: &[char]) -> Option<Glyph> {
     match consonant_char(slice) {
-        Some(cons) => Some(Glyph::new_cons(cons, false)),
+        Some(cons) => Some(Glyph::new_base(cons)),
         None => match slice {
             &[a, b] if a == b => match consonant_char(&[a]) {
-                Some(cons) => Some(Glyph::new_cons(cons, true)),
+                Some(cons) => Some(Glyph::new_base(cons).with_underline()),
                 None => None,
             }
             _ => None,
@@ -98,21 +98,21 @@ pub const fn get_diphthong(slice: &[char]) -> Option<Glyph> {
 }
 
 
-pub const fn get_vowel(slice: &[char]) -> Option<(Tehta, bool)> {
+pub const fn get_vowel(slice: &[char]) -> Option<Glyph> {
     match slice {
-        ['a'] | ['ä'] => Some((TEHTA_A, false)),
-        ['e'] | ['ë'] => Some((TEHTA_E, false)),
-        ['i'] | ['ï'] => Some((TEHTA_I, false)),
-        ['o'] | ['ö'] => Some((TEHTA_O, false)),
-        ['u'] | ['ü'] => Some((TEHTA_U, false)),
-        ['y'] | ['ÿ'] => Some((TEHTA_Y, false)),
+        ['a'] | ['ä'] => Some(Glyph::new_tehta(TEHTA_A)),
+        ['e'] | ['ë'] => Some(Glyph::new_tehta(TEHTA_E)),
+        ['i'] | ['ï'] => Some(Glyph::new_tehta(TEHTA_I)),
+        ['o'] | ['ö'] => Some(Glyph::new_tehta(TEHTA_O)),
+        ['u'] | ['ü'] => Some(Glyph::new_tehta(TEHTA_U)),
+        ['y'] | ['ÿ'] => Some(Glyph::new_tehta(TEHTA_Y)),
 
-        ['á'] | ['â'] | ['a', 'a'] => Some((TEHTA_A, true)),
-        ['é'] | ['ê'] | ['e', 'e'] => Some((TEHTA_E, true)),
-        ['í'] | ['î'] | ['i', 'i'] => Some((TEHTA_I, true)),
-        ['ó'] | ['ô'] | ['o', 'o'] => Some((TEHTA_O, true)),
-        ['ú'] | ['û'] | ['u', 'u'] => Some((TEHTA_U, true)),
-        ['ý'] | ['ŷ'] | ['y', 'y'] => Some((TEHTA_Y, true)),
+        ['á'] | ['â'] | ['a', 'a'] => Some(Glyph::new_tehta_alt(TEHTA_A)),
+        ['é'] | ['ê'] | ['e', 'e'] => Some(Glyph::new_tehta_alt(TEHTA_E)),
+        ['í'] | ['î'] | ['i', 'i'] => Some(Glyph::new_tehta_alt(TEHTA_I)),
+        ['ó'] | ['ô'] | ['o', 'o'] => Some(Glyph::new_tehta_alt(TEHTA_O)),
+        ['ú'] | ['û'] | ['u', 'u'] => Some(Glyph::new_tehta_alt(TEHTA_U)),
+        ['ý'] | ['ŷ'] | ['y', 'y'] => Some(Glyph::new_tehta_alt(TEHTA_Y)),
 
         _ => None,
     }
@@ -167,9 +167,9 @@ impl Gondor {
         if initial {
             //  Check for voiceless initials.
             if let ['l', 'h'] = chunk {
-                return Some((Glyph::from(TENGWA_ALDA), 2));
+                return Some((Glyph::new_base(TENGWA_ALDA), 2));
             } else if let ['r', 'h'] = chunk {
-                return Some((Glyph::from(TENGWA_ARDA), 2));
+                return Some((Glyph::new_base(TENGWA_ARDA), 2));
             }
         }
 
@@ -184,7 +184,7 @@ impl Gondor {
         }
 
         if let ['x'] = chunk {
-            Some((Glyph::from(TENGWA_CALMA).with_silme(), 1))
+            Some((Glyph::new_base(TENGWA_CALMA).with_rince(), 1))
         }
 
         //  Check for a final F, which should be spelled with Ampa instead of
@@ -294,8 +294,8 @@ impl TengwarMode for Gondor {
             }
 
             //  Check for a single vowel.
-            else if let Some((vowel, long)) = get_vowel(chunk) {
-                self.current = Some(Glyph::new_vowel(vowel, long));
+            else if let Some(new) = get_vowel(chunk) {
+                self.current = Some(new);
                 ParseAction::MatchedPart(chunk.len())
             } else {
                 if initial {
@@ -308,8 +308,8 @@ impl TengwarMode for Gondor {
                         if let Some(new) = get_diphthong(rest) {
                             self.current = Some(new);
                             return first;
-                        } else if let Some((vowel, long)) = get_vowel(rest) {
-                            self.current = Some(Glyph::new_vowel(vowel, long));
+                        } else if let Some(new) = get_vowel(rest) {
+                            self.current = Some(new);
                             return first;
                         }
                     }

@@ -35,6 +35,9 @@ pub struct Glyph {
     /// A lengthened consonant is typically represented by an underbar.
     pub long_cons: bool,
 
+    pub dot_inner: bool,
+    pub dot_under: bool,
+
     /// Indicates that this glyph should use the [ligating short carrier], if it
     ///     is applicable.
     ///
@@ -66,6 +69,8 @@ impl Glyph {
             nuquerna: false,
             long_cons: false,
 
+            dot_inner: false,
+            dot_under: false,
             ligate_short: false,
             ligate_zwj: false,
         }
@@ -76,12 +81,22 @@ impl Glyph {
         Self { base: Some(base), tehta: Some(tehta), ..Self::new() }
     }
 
-    /// Define a glyph with only a base [`char`]. It may be marked as Long.
-    pub const fn new_cons(base: char, long_cons: bool) -> Self {
-        Self { base: Some(base), long_cons, ..Self::new() }
+    /// Define a glyph with only a base [`char`].
+    pub const fn new_base(base: char) -> Self {
+        Self { base: Some(base), ..Self::new() }
     }
 
-    /// Define a glyph with only a [`Tehta`]. It may be marked as Long.
+    /// Define a glyph with only a [`Tehta`].
+    pub const fn new_tehta(tehta: Tehta) -> Self {
+        Self { tehta: Some(tehta), ..Self::new() }
+    }
+
+    /// Define a glyph with only an alternate [`Tehta`].
+    pub const fn new_tehta_alt(tehta: Tehta) -> Self {
+        Self { tehta: Some(tehta), tehta_alt: true, ..Self::new() }
+    }
+
+    /// Define a glyph with only a [`Tehta`]. It may be marked as Alternate.
     pub const fn new_vowel(tehta: Tehta, alt: bool) -> Self {
         Self { tehta: Some(tehta), tehta_alt: alt, ..Self::new() }
     }
@@ -101,6 +116,17 @@ impl Glyph {
 
     pub const fn with_tehta(mut self, tehta: Tehta) -> Self {
         self.tehta = Some(tehta);
+        self
+    }
+
+    pub const fn with_tehta_alt(mut self) -> Self {
+        self.tehta_alt = true;
+        self
+    }
+
+    /// Mark this glyph as being underlined.
+    pub const fn with_underline(mut self) -> Self {
+        self.long_cons = true;
         self
     }
 
@@ -126,7 +152,7 @@ impl Glyph {
 
     /// Mark this glyph as being followed by a sibilant. It may be rendered with
     ///     a flourish.
-    pub const fn with_silme(mut self) -> Self {
+    pub const fn with_rince(mut self) -> Self {
         self.rince = true;
         self
     }
@@ -216,8 +242,7 @@ impl Display for Glyph {
         let base: char = self.base();
 
         let mut long: bool = self.tehta_alt && self.base.is_some();
-        let nuquerna_ignored: bool = !cfg!(feature = "nuquernar")
-            && nuquerna_valid(base);
+        let nuquerna_ignored: bool = !self.nuquerna && nuquerna_valid(base);
 
         let tehta_post: Option<&Tehta> = match &self.tehta {
             Some(tehta) if long && self.tehta_first => {
@@ -264,6 +289,14 @@ impl Display for Glyph {
             f.write_char(MOD_PALATAL)?;
         }
 
+        if self.dot_inner {
+            f.write_char(DC_INNER_DOT_1)?;
+        }
+
+        if self.dot_under {
+            f.write_char(DC_UNDER_DOT_1)?;
+        }
+
         if let Some(tehta) = tehta_post {
             if long {
                 if tehta.uses_ara() {
@@ -301,12 +334,12 @@ impl Display for Glyph {
 
 impl From<char> for Glyph {
     fn from(cons: char) -> Self {
-        Self::new_cons(cons, false)
+        Self::new_base(cons)
     }
 }
 
 impl From<Tengwa<'_>> for Glyph {
     fn from(tengwa: Tengwa) -> Self {
-        Self::new_cons(*tengwa, false)
+        Self::new_base(*tengwa)
     }
 }
