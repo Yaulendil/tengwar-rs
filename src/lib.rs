@@ -85,7 +85,6 @@ pub use characters::{Glyph, Numeral, VowelStyle};
 pub use mode::{Beleriand, Gondor, Quenya, TengwarMode};
 
 use std::{
-    borrow::Cow,
     fmt::{self, Display, Formatter, Write},
     iter::{FromIterator, Peekable},
 };
@@ -123,14 +122,14 @@ impl<S: AsRef<str>> ToTengwar for S {
 
 /// A small container for either plain text or a [`Glyph`] specification. Serves
 ///     as the top level of throughput for the transliteration process.
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Token {
     /// A single Unicode codepoint.
     Char(char),
     /// A numeric value.
     Number(Numeral<isize>),
-    /// UTF-8 text data.
-    String(Cow<'static, str>),
+    // /// UTF-8 text data.
+    // String(Cow<'static, str>),
     /// A specified base character and any extra tags it requires.
     Tengwa(Glyph),
 }
@@ -140,7 +139,7 @@ impl Display for Token {
         match self {
             &Self::Char(ch) => f.write_char(ch),
             Self::Number(n) => f.write_str(&n.render()),
-            Self::String(s) => f.write_str(s),
+            // Self::String(s) => f.write_str(s),
             Self::Tengwa(t) => t.fmt(f),
         }
     }
