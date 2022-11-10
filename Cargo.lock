@@ -225,7 +225,7 @@ dependencies = [
 
 [[package]]
 name = "tengwar"
-version = "0.9.0-dev"
+version = "0.9.0"
 dependencies = [
  "cfg-if",
  "clap",
