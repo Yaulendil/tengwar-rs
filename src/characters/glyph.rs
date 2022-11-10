@@ -2,6 +2,14 @@ use std::fmt::{Display, Formatter, Write};
 use super::*;
 
 
+enum TehtaChar {
+    OnAraAfter(char),
+    OnAraBefore(char),
+    OnTengwaOnce(char),
+    OnTengwaTwice(char),
+}
+
+
 /// A single base tengwa, and all of its modifications. This includes the tehta
 ///     marking, flags for additional diacritics, flags for consonant and vowel
 ///     length, and an indicator of finality.
@@ -228,8 +236,19 @@ impl Glyph {
         !self.rince && rince_valid(self.base())
     }
 
+    pub const fn ignoring_nuquerna(&self) -> bool {
+        match self.base {
+            Some(base) if !self.nuquerna => nuquerna_valid(base),
+            _ => false,
+        }
+    }
+
     pub const fn ligates_with(&self, other: &Self) -> bool {
         ligature_valid(self, other)
+    }
+
+    pub const fn ligates_with_ara(&self) -> bool {
+        ligates_with_ara(self.base())
     }
 
     pub const fn telco_ligates(&self) -> bool {
@@ -237,95 +256,123 @@ impl Glyph {
     }
 }
 
+impl Glyph {
+    const fn tehta_char(&self) -> Option<TehtaChar> {
+        let Some(tehta) = self.tehta else {
+            //  If there is no tehta, there is nothing to use for it.
+            return None;
+        };
+        let Some(tengwa) = self.base else {
+            //  If there is no tengwa, the base will be a carrier already.
+            return Some(TehtaChar::OnTengwaOnce(tehta.base()));
+        };
+
+        let needs_ara;
+        let is_double;
+        let char;
+
+        match tehta {
+            Tehta::Single(c) => {
+                needs_ara = self.tehta_alt;
+                is_double = false;
+                char = c;
+            }
+            Tehta::Double(c) => {
+                needs_ara = false;
+                is_double = self.tehta_alt;
+                char = c;
+            }
+            Tehta::Altern(c, alt) => {
+                needs_ara = false;
+                is_double = false;
+                char = if self.tehta_alt { alt } else { c };
+            }
+        }
+
+        //  If the base tengwa has a Nuquerna variant, but it is not going to be
+        //      used, the standard form cannot hold a double or alternate tehta.
+        let nuq_ignored = !self.nuquerna && nuquerna_valid(tengwa);
+        let cannot_hold = self.tehta_alt && nuq_ignored;
+
+        if cannot_hold || needs_ara {
+            if self.tehta_first {
+                Some(TehtaChar::OnAraBefore(char))
+            } else {
+                Some(TehtaChar::OnAraAfter(char))
+            }
+        } else {
+            if is_double {
+                Some(TehtaChar::OnTengwaTwice(char))
+            } else {
+                Some(TehtaChar::OnTengwaOnce(char))
+            }
+        }
+    }
+
+    fn write_mods(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        if self.nasal { f.write_char(MOD_NASAL)?; }
+        if self.long_cons { f.write_char(MOD_LONG_CONS)?; }
+        if self.labial { f.write_char(MOD_LABIAL)?; }
+        if self.palatal { f.write_char(MOD_PALATAL)?; }
+        if self.dot_inner { f.write_char(DC_INNER_DOT_1)?; }
+        if self.dot_under { f.write_char(DC_UNDER_DOT_1)?; }
+        Ok(())
+    }
+
+    fn write_rince(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        if self.rince {
+            f.write_char(rince(self.base(), self.rince_final))
+        } else {
+            Ok(())
+        }
+    }
+}
+
 impl Display for Glyph {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let base: char = self.base();
 
-        let mut long: bool = self.tehta_alt && self.base.is_some();
-        let nuquerna_ignored: bool = !self.nuquerna && nuquerna_valid(base);
+        match self.tehta_char() {
+            Some(TehtaChar::OnAraAfter(tehta)) => {
+                f.write_char(base)?;
+                self.write_mods(f)?;
+                self.write_rince(f)?;
 
-        let tehta_post: Option<&Tehta> = match &self.tehta {
-            Some(tehta) if long && self.tehta_first => {
-                //  This tehta is a long vowel, and represents the preceding
-                //      vowel.
-                if tehta.uses_ara() {
-                    //  This tehta will go on a long carrier. It therefore needs
-                    //      to be written before the base.
-                    tehta.write(f, true)?;
-                    None
-                } else if nuquerna_ignored {
-                    //  This tengwa will not be be Nuquerna, but it could have
-                    //      been. This means that it cannot host a lengthened
-                    //      tehta, and so the vowel should be pushed onto a
-                    //      preceding long carrier.
-                    f.write_char(carrier(true))?;
-                    tehta.write(f, false)?;
-                    None
-                } else {
-                    //  This tehta will be displayed on the tengwa, and so must
-                    //      still be written after the base character.
-                    Some(tehta)
+                if self.ligate_zwj && ligates_with_ara(base) {
+                    f.write_char(ZWJ)?;
                 }
+
+                f.write_char(CARRIER_LONG)?;
+                f.write_char(tehta)?;
             }
-            Some(tehta) => Some(tehta),
-            None => None,
-        };
+            Some(TehtaChar::OnAraBefore(tehta)) => {
+                f.write_char(CARRIER_LONG)?;
+                f.write_char(tehta)?;
 
-        f.write_char(base)?;
-
-        if self.nasal {
-            f.write_char(MOD_NASAL)?;
-        }
-
-        if self.long_cons {
-            f.write_char(MOD_LONG_CONS)?;
-        }
-
-        if self.labial {
-            f.write_char(MOD_LABIAL)?;
-        }
-
-        if self.palatal {
-            f.write_char(MOD_PALATAL)?;
-        }
-
-        if self.dot_inner {
-            f.write_char(DC_INNER_DOT_1)?;
-        }
-
-        if self.dot_under {
-            f.write_char(DC_UNDER_DOT_1)?;
-        }
-
-        if let Some(tehta) = tehta_post {
-            if long {
-                if tehta.uses_ara() {
-                    //  The vowel tehta will be placed on a following Ára
-                    //      carrier. If the base should ligate with Ára, write
-                    //      the joiner now.
-                    if self.ligate_zwj && ligates_with_ara(base) {
-                        f.write_char(ZWJ)?;
-                    }
-                } else if nuquerna_ignored {
-                    //  This tengwa has a Nuquerna variant, but it will not be
-                    //      used. However, it also has a long vowel attached,
-                    //      which, without intervention, will use a more complex
-                    //      diacritic. The long vowel should be put on an Ára
-                    //      carrier instead to decrease visual chaos.
-                    if self.ligate_zwj && ligates_with_ara(base) {
-                        f.write_char(ZWJ)?;
-                    }
-
-                    f.write_char(carrier(true))?;
-                    long = false;
-                }
+                f.write_char(base)?;
+                self.write_mods(f)?;
+                self.write_rince(f)?;
             }
+            Some(TehtaChar::OnTengwaOnce(tehta)) => {
+                f.write_char(base)?;
+                self.write_mods(f)?;
 
-            tehta.write(f, long)?;
-        }
+                f.write_char(tehta)?;
+                self.write_rince(f)?;
+            }
+            Some(TehtaChar::OnTengwaTwice(tehta)) => {
+                f.write_char(base)?;
+                self.write_mods(f)?;
 
-        if self.rince {
-            f.write_char(rince(base, self.rince_final))?;
+                f.write_char(tehta)?;
+                f.write_char(tehta)?;
+                self.write_rince(f)?;
+            }
+            None => {
+                f.write_char(base)?;
+                self.write_mods(f)?;
+                self.write_rince(f)?;
+            }
         }
 
         Ok(())
