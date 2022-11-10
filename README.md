@@ -101,17 +101,11 @@ The Tilde is left alone so that it can safely pass through and be read by LaTeX.
 
 [Cargo Features](https://doc.rust-lang.org/cargo/reference/features.html#command-line-feature-options) allow very powerful changes to the behavior of a program to be baked in at compile-time.
 
-### Long Vowels
+### `dots-standard`
 
-Multiple Cargo features are available to provide alternative treatment of "long" vowels;
-Some typefaces lack the correct ligatures to properly display doubled diacritics, while others lack forms for the dedicated codepoints.
-Some may not even support either approach at all.
-
-The default behavior is to double the characters for long vowels, with the feature `long-vowel-double` set by default.
-In order to use the *unique* diacritical characters, run the compilation with `--features "long-vowel-unique"`.
-In order to instead place long vowel marks onto the lengthened *ára* carrier, do so by disabling the doubling behavior with `--no-default-features`.
-
-Note: Some diacritical vowels will **always** use the *ára* carrier, due to their shape being unsuitable for doubling.
+Several codepoints defined in the CSUR Tengwar block are punctuation marks composed of dots.
+Since Unicode already defines many dot punctuation characters, it may be preferable to use those wherever possible.
+Compiling this program with `--features "dots-standard"` will cause it to use standard Unicode characters with the same arrangements, instead of the ones in the Tengwar block.
 
 ---
 
