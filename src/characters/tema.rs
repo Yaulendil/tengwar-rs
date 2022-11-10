@@ -1,3 +1,12 @@
+//! There are four "series" of regular tengwar, called the Témar. Each Téma is
+//!     divided into eight "grades" or "orders", called the Tyeller. Together,
+//!     the Témar and the Tyeller form a neat table of 32 regular tengwar. This
+//!     module defines the types needed to represent this table in detail.
+//!
+//! NOTE: Canonical names are used throughout this project, but especially here,
+//!     in order to prevent ambiguity; The term "series" may be taken to refer
+//!     to a sequence of tengwar or tokens, but a "Téma" can only be a Téma.
+
 use std::ops::Index;
 use super::Tengwa;
 
@@ -9,34 +18,26 @@ use super::Tengwa;
 /// Only the first six Tyeller are used in Quenya.
 #[derive(Clone, Copy, Debug)]
 pub struct Tema {
-    /// A hanging Telco, and one Lúva.
-    ///     Typically represents a voiceless plosive.
+    /// A descending stem with one bow.
     pub single_dn: char,
-    /// A hanging Telco, and two Lúvar.
-    ///     Typically represents a voiced plosive.
+    /// A descending stem with two bows.
     pub double_dn: char,
-    /// A raised Telco, and one Lúva.
-    ///     Typically represents a voiceless fricative.
+    /// An ascending stem with one bow.
     pub single_up: char,
-    /// A raised Telco, and two Lúvar.
-    ///     Typically represents either a voiced fricative or a nasalized
-    ///     voiceless plosive.
+    /// An ascending stem with two bows.
     pub double_up: char,
-    /// A short Telco, and two Lúvar.
-    ///     Typically represents a nasal long.
+    /// A short stem with two bows.
     pub double_sh: char,
-    /// A short Telco, and one Lúva.
-    ///     Typically represents a nasal short.
+    /// A short stem with one bow.
     pub single_sh: char,
-    /// An extended Telco, and one Lúva.
-    ///     Not used in canonical sources.
+    /// An extended stem with one bow.
     pub single_ex: char,
-    /// An extended Telco, and two Lúvar.
-    ///     Not used in canonical sources.
+    /// An extended stem with two bows.
     pub double_ex: char,
 }
 
 impl Tema {
+    /// Determine whether a [`char`] is part of this Téma.
     pub const fn contains(&self, c: char) -> bool {
          c == self.single_dn || c == self.double_dn
              || c == self.single_up || c == self.double_up
@@ -70,6 +71,7 @@ impl Tema {
         }
     }
 
+    /// Find the [`Tyelle`] of a given [`char`] in this Téma.
     pub const fn find_tyelle(&self, c: char) -> Option<Tyelle> {
         let tyelle: Tyelle = if c == self.single_dn {
             Tyelle::new().single().descending()
@@ -110,10 +112,13 @@ pub struct TengwaRegular<'t> {
 }
 
 impl<'t> TengwaRegular<'t> {
+    /// Define a new tengwa that is part of a given [`Tema`].
     pub const fn new(tema: &'t Tema) -> Self {
         Self { tema, tyelle: Tyelle::new() }
     }
 
+    /// Try to find the tengwa corresponding to a given [`char`] within the four
+    ///     primary Témar.
     pub const fn find(char: char) -> Option<Self> {
         if let Some(tyelle) = Tema::TINCO.find_tyelle(char) {
             Some(Tema::TINCO.get_tengwa(tyelle))
@@ -128,10 +133,13 @@ impl<'t> TengwaRegular<'t> {
         }
     }
 
+    /// Return the true [`char`] represented by this tengwa.
     pub const fn as_char(&self) -> &char {
         self.tema.get_char(self.tyelle)
     }
 
+    /// Wrap this regular tengwa in a [`Tengwa`] enum, allowing interoperation
+    ///     with irregulars.
     pub const fn wrapped(self) -> Tengwa<'t> {
         Tengwa::Regular(self)
     }
@@ -185,6 +193,7 @@ pub struct Tyelle {
 }
 
 impl Tyelle {
+    /// Define a new [`Tyelle`], starting at the first order.
     pub const fn new() -> Self {
         Self {
             stem_dn: true,
@@ -198,6 +207,7 @@ impl Tyelle {
     pub const fn is_short(&self) -> bool { !self.stem_up && !self.stem_dn }
     pub const fn is_extended(&self) -> bool { self.stem_up && self.stem_dn }
 
+    /// Return the [`TengwaRegular`] found at this Tyellë on a given [`Tema`].
     pub const fn on_tema<'t>(&self, tema: &'t Tema) -> TengwaRegular<'t> {
         TengwaRegular { tema, tyelle: *self }
     }

@@ -26,11 +26,17 @@ enum IterStep {
 }
 
 
+/// An iterator that yields [`Token`]s from a sequence of [`char`]s, according
+///     to the rules defined by the methods of a [`TengwarMode`].
+///
+/// This is a lower-level construct, and performs only minimal post-processing
+///     of the `Token`s, as defined by [`TengwarMode::finalize`]. For a higher
+///     level iterator with more powerful rules, see [`crate::Tokenizer`].
 #[derive(Debug)]
 pub struct Tokenizer<M: TengwarMode> {
     /// The original data, with case intact.
     chars: Vec<char>,
-    /// Data vec, converted to ASCII lowercase.
+    /// Data vec, converted to lowercase for processing.
     lower: Vec<char>,
 
     /// Current position within the data vec.
@@ -38,16 +44,17 @@ pub struct Tokenizer<M: TengwarMode> {
     /// Width of the current working window.
     size: usize,
     /// Number of [`char`]s that will be passed through unchanged, starting at
-    ///     `data[head]`.
+    ///     `chars[head]`.
     skip: usize,
 
-    /// The operating Mode, which determines the actual transcription rules.
+    /// The operating Mode, which determines the actual tokenization rules.
     pub mode: M,
     next: Option<Token>,
 }
 
 /// Public functionality.
 impl<M: TengwarMode> Tokenizer<M> {
+    /// Set up a new Tokenizer over a sequence of [`char`]s.
     pub fn new(chars: Vec<char>) -> Self {
         let size: usize = chars.len().min(M::MAX_CHUNK);
         let mut lower = chars.clone();
@@ -67,23 +74,25 @@ impl<M: TengwarMode> Tokenizer<M> {
         }
     }
 
+    /// Set up a new Tokenizer over UTF-8 text.
     pub fn from_str(s: impl AsRef<str>) -> Self {
+        //  TODO: Normalize combining diacritics into single `char`s.
         Self::new(s.as_ref().chars().collect())
     }
 
-    pub fn current(&self) -> &char {
-        &self.chars[self.head]
-    }
+    /// Wrap this [`Tokenizer`] in a [`Transcriber`] that can apply higher-level
+    ///     rules.
+    pub fn into_transcriber(self) -> Transcriber<Self> { self.into() }
 
-    pub fn into_transcriber(self) -> Transcriber<Self> {
-        self.into()
-    }
-
+    /// Return the slice of original [`char`]s, corresponding to the ones that
+    ///     will be processed in the next step.
     pub fn window(&self) -> &[char] {
         let end: usize = self.chars.len().min(self.head + self.size);
         &self.chars[self.head..end]
     }
 
+    /// Return the slice of lowercase [`char`]s that will be processed in the
+    ///     next step.
     pub fn window_lower(&self) -> &[char] {
         let end: usize = self.lower.len().min(self.head + self.size);
         &self.lower[self.head..end]
@@ -92,24 +101,29 @@ impl<M: TengwarMode> Tokenizer<M> {
 
 /// Internal functionality.
 impl<M: TengwarMode> Tokenizer<M> {
+    /// Move the read head forward and reset the window width.
     fn advance_head(&mut self, n: usize) {
         self.head += n;
         self.size = self.chars.len().min(M::MAX_CHUNK);
     }
 
+    /// Pass along one [`char`], exactly as it is in the input.
     fn skip_one(&mut self) -> char {
-        let here: char = *self.current();
+        let here: char = self.chars[self.head];
         self.advance_head(1);
         here
     }
 
+    /// Perform a single step of parsing. This will result in at most one call
+    ///     to [`TengwarMode::process`], and does not guarantee that a [`Token`]
+    ///     will be complete by the end. Each `Token` may require several steps.
     fn step(&mut self) -> IterStep {
         let &mut Self {
             chars: _,
             lower: ref data,
             head, size, skip,
             ref mut mode,
-            next: _
+            next: _,
         } = self;
         let len: usize = data.len();
 
@@ -159,8 +173,8 @@ impl<M: TengwarMode> Tokenizer<M> {
                 }
             }
 
-            //  Nothing more can be added. If a tengwa is currently being
-            //      constructed, finalize and return it.
+            //  Nothing more can be added. If a token is currently being
+            //      constructed, finish and return it.
             else if let Some(token) = mode.finish_current() {
                 self.advance_head(0);
                 IterStep::Success(token)
@@ -183,8 +197,8 @@ impl<M: TengwarMode> Tokenizer<M> {
                 IterStep::Success(Token::Char(self.skip_one()))
             }
         } else { // len <= head
-            //  The read head is at the end of the data. If a tengwa is
-            //      currently being constructed, finalize and return it.
+            //  The read head is at the end of the data. If a token is
+            //      currently being constructed, finish and return it.
             match mode.finish_current() {
                 Some(token) => IterStep::Success(token),
                 None => IterStep::Empty,

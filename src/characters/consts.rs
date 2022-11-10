@@ -1,3 +1,7 @@
+//! This module defines all mappings to Unicode codepoints used for output. Any
+//!     use of a [`char`] from the tengwar block, that hath not its uttermost
+//!     source in this module, is an error.
+
 use super::{tehta::Tehta, tema::Tema};
 
 

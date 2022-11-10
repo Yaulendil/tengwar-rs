@@ -12,7 +12,7 @@ enum TehtaChar {
 
 /// A single base tengwa, and all of its modifications. This includes the tehta
 ///     marking, flags for additional diacritics, flags for consonant and vowel
-///     length, and an indicator of finality.
+///     length, and information on vowel and ligature behavior.
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Glyph {
     /// A base character.
@@ -25,11 +25,13 @@ pub struct Glyph {
     ///     before the glyph.
     pub tehta_first: bool,
 
+    /// The pattern of behavior followed by the tehta, if there is one.
     pub vowels: VowelStyle,
 
     /// Indicates whether the glyph has a sa-rincë attached.
     pub rince: bool,
-    /// Indicates whether the glyph may use a more ornate rincë.
+    /// Indicates whether the glyph may use a more ornate rincë. This will have
+    ///     no effect if `rince` is not `true`.
     pub rince_final: bool,
 
     /// A nasalized consonant is typically represented by an overbar.
@@ -43,7 +45,13 @@ pub struct Glyph {
     /// A lengthened consonant is typically represented by an underbar.
     pub long_cons: bool,
 
+    /// Indicates whether a dot should be placed inside the base character. This
+    ///     is occasionally used, when vowel tehtar may be elided, to indicate
+    ///     the explicit lack of a vowel.
     pub dot_inner: bool,
+
+    /// Indicates whether a dot should be placed below the base character. This
+    ///     is used in many English modes to indicate a "silent" E.
     pub dot_under: bool,
 
     /// Indicates that this glyph should use the [ligating short carrier], if it
@@ -107,14 +115,6 @@ impl Glyph {
     /// Define a glyph with only a [`Tehta`]. It may be marked as Alternate.
     pub const fn new_vowel(tehta: Tehta, alt: bool) -> Self {
         Self { tehta: Some(tehta), tehta_alt: alt, ..Self::new() }
-    }
-
-    pub const fn is_short_carrier(&self) -> bool {
-        match self {
-            Self { base: None, tehta: None, .. } => true,
-            Self { base: None, tehta_alt: false, .. } => true,
-            Self { .. } => false,
-        }
     }
 
     pub const fn with_tengwa(mut self, tengwa: char) -> Self {
@@ -181,6 +181,7 @@ impl Glyph {
         self.tehta_alt = other.tehta_alt;
     }
 
+    /// If the base [`char`] matches a specific value, change it to another.
     pub fn replace_base(&mut self, old: char, new: char) -> bool {
         if self.base == Some(old) {
             self.base = Some(new);
@@ -190,6 +191,7 @@ impl Glyph {
         }
     }
 
+    /// If the [`Tehta`] matches a specific value, change it to another.
     pub fn replace_tehta(&mut self, old: Tehta, new: Tehta) -> bool {
         if self.tehta == Some(old) {
             self.tehta = Some(new);
@@ -199,6 +201,7 @@ impl Glyph {
         }
     }
 
+    /// Switch the [A-tehta](TEHTA_A) to its [alternate form](TEHTA_YANTA).
     pub fn set_alt_a(&mut self) -> bool {
         self.replace_tehta(TEHTA_A, TEHTA_YANTA)
     }
@@ -232,10 +235,14 @@ impl Glyph {
         }
     }
 
+    /// Determine whether a rincë may be added to this glyph. Returns `false` if
+    ///     a rincë is already set.
     pub const fn can_take_rince(&self) -> bool {
         !self.rince && rince_valid(self.base())
     }
 
+    /// Determine whether the base character has a nuquerna variant, but is set
+    ///     to not use it.
     pub const fn ignoring_nuquerna(&self) -> bool {
         match self.base {
             Some(base) if !self.nuquerna => nuquerna_valid(base),
@@ -243,20 +250,36 @@ impl Glyph {
         }
     }
 
+    /// Determine whether this glyph will use [Telco](TENGWA_TELCO) as its base.
+    pub const fn is_short_carrier(&self) -> bool {
+        match self {
+            Self { base: None, tehta: None, .. } => true,
+            Self { base: None, tehta_alt: false, .. } => true,
+            Self { .. } => false,
+        }
+    }
+
+    /// Determine whether the base [`char`] of this glyph is permitted to ligate
+    ///     with another glyph using a zero-width joiner.
     pub const fn ligates_with(&self, other: &Self) -> bool {
         ligature_valid(self, other)
     }
 
+    /// Determine whether the base [`char`] of this glyph is permitted to ligate
+    ///     with [Ára](TENGWA_ARA) using a zero-width joiner.
     pub const fn ligates_with_ara(&self) -> bool {
         ligates_with_ara(self.base())
     }
 
+    /// Determine whether [Telco](TENGWA_TELCO) is permitted to ligate with the
+    ///     base [`char`] of this glyph using a zero-width joiner.
     pub const fn telco_ligates(&self) -> bool {
         telco_ligates_with(self.base())
     }
 }
 
 impl Glyph {
+    /// Resolve the position and identity of the tehta.
     const fn tehta_char(&self) -> Option<TehtaChar> {
         let Some(tehta) = self.tehta else {
             //  If there is no tehta, there is nothing to use for it.
@@ -272,7 +295,7 @@ impl Glyph {
         let char;
 
         match (self.vowels, tehta) {
-            (VowelStyle::Doubled, Tehta { base, is_double: true, .. }) => {
+            (VowelStyle::Doubled, Tehta { base, can_double: true, .. }) => {
                 needs_ara = false;
                 is_double = self.tehta_alt;
                 char = base;
@@ -400,5 +423,11 @@ impl From<char> for Glyph {
 impl From<Tengwa<'_>> for Glyph {
     fn from(tengwa: Tengwa) -> Self {
         Self::new_base(*tengwa)
+    }
+}
+
+impl From<Tehta> for Glyph {
+    fn from(tehta: Tehta) -> Self {
+        Self::new_tehta(tehta)
     }
 }

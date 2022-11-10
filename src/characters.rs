@@ -15,7 +15,9 @@ pub use tehta::*;
 pub use tema::*;
 
 
-#[derive(Clone, Copy, Debug)]
+/// The type of behavior to be followed in the rendering of tehtar representing
+///     "long" vowels.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum VowelStyle {
     /// Always use the extended carrier mark.
     Separate,
@@ -26,6 +28,8 @@ pub enum VowelStyle {
 }
 
 impl VowelStyle {
+    /// The default behavior. Everything should use this, if not otherwise
+    ///     specified.
     pub const DEFAULT: Self = Self::Doubled;
 }
 

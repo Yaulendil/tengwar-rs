@@ -167,6 +167,12 @@ impl FromIterator<Token> for String {
 }
 
 
+/// An iterator over a sequence of [`Token`]s which applies various rules. This
+///     is the top level construct of the transcription process.
+///
+/// This iterator is intended to work with a [`Tokenizer`], but is able to wrap
+///     any type that iterates over `Token`s. Whether this would be useful is
+///     not yet clear, but it is likely a good capability to have, just in case.
 pub struct Transcriber<I: Iterator<Item=Token>> {
     inner: Peekable<I>,
     last: Option<Token>,
