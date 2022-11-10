@@ -104,9 +104,21 @@ pub const fn ligates_with_ara(base: char) -> bool {
 
 /// Check whether a base tengwa is suitable for ligation with the short carrier
 ///     mark. This is to some degree based on opinion.
-pub const fn telco_ligates_with(_base: char) -> bool {
-    //  TODO
-    true
+pub const fn telco_ligates_with(base: char) -> bool {
+    match Tengwa::either_from(base) {
+        Tengwa::Regular(tengwa) => tengwa.tema.left || !tengwa.tyelle.stem_up,
+        Tengwa::Irregular(char) => match char {
+            TENGWA_ROMEN..=TENGWA_ESSE_NUQ => true,
+            // TENGWA_HWESTA_SINDARINWA | TENGWA_URE => true,
+            TENGWA_ARA | TENGWA_TELCO => true,
+
+            TENGWA_ANNA_OPEN => true,
+            TENGWA_MALTA_HOOKED => true,
+            TENGWA_VALA_HOOKED => true,
+            // TENGWA_WAIA => true,
+            _ => false,
+        }
+    }
 }
 
 

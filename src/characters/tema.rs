@@ -18,6 +18,11 @@ use super::Tengwa;
 /// Only the first six Tyeller are used in Quenya.
 #[derive(Clone, Copy, Debug)]
 pub struct Tema {
+    /// Whether the bows of these characters face left.
+    pub left: bool,
+    /// Whether the bows of these characters are open.
+    pub open: bool,
+
     /// A descending stem with one bow.
     pub single_dn: char,
     /// A descending stem with two bows.

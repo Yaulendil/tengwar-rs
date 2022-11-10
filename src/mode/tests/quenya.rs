@@ -100,6 +100,100 @@ fn ligatures() {
         ZWJ, TENGWA_TINCO, TEHTA_A.base, // ta
         ZWJ, TENGWA_ORE, // r
     ]);
+
+    //  Test short ligatures thoroughly against regular tengwar.
+    {
+        {
+            test_tengwar!(Quenya[ligate_short=true], "etë" => [
+                CARRIER_SHORT_LIG, TEHTA_E.base,
+                TENGWA_TINCO, TEHTA_E.base,
+            ]);
+            test_tengwar!(Quenya[ligate_short=true], "epë" => [
+                CARRIER_SHORT_LIG, TEHTA_E.base,
+                TENGWA_PARMA, TEHTA_E.base,
+            ]);
+            test_tengwar!(Quenya[ligate_short=true], "ecë" => [
+                CARRIER_SHORT_LIG, TEHTA_E.base,
+                TENGWA_CALMA, TEHTA_E.base,
+            ]);
+            test_tengwar!(Quenya[ligate_short=true], "eqë" => [
+                CARRIER_SHORT_LIG, TEHTA_E.base,
+                TENGWA_QESSE, TEHTA_E.base,
+            ]);
+        }
+        {
+            test_tengwar!(Quenya[ligate_short=true], "endë" => [
+                CARRIER_SHORT_LIG, TEHTA_E.base,
+                TENGWA_ANDO, TEHTA_E.base,
+            ]);
+            test_tengwar!(Quenya[ligate_short=true], "embë" => [
+                CARRIER_SHORT_LIG, TEHTA_E.base,
+                TENGWA_UMBAR, TEHTA_E.base,
+            ]);
+            test_tengwar!(Quenya[ligate_short=true], "engë" => [
+                CARRIER_SHORT_LIG, TEHTA_E.base,
+                TENGWA_ANGA, TEHTA_E.base,
+            ]);
+            test_tengwar!(Quenya[ligate_short=true], "engwë" => [
+                CARRIER_SHORT_LIG, TEHTA_E.base,
+                TENGWA_UNGWE, TEHTA_E.base,
+            ]);
+        }
+        {
+            test_tengwar!(Quenya[ligate_short=true], "eþë" => [
+                CARRIER_SHORT, TEHTA_E.base,
+                TENGWA_THULE, TEHTA_E.base,
+            ]);
+            test_tengwar!(Quenya[ligate_short=true], "efë" => [
+                CARRIER_SHORT, TEHTA_E.base,
+                TENGWA_FORMEN, TEHTA_E.base,
+            ]);
+            test_tengwar!(Quenya[ligate_short=true], "ehë" => [
+                CARRIER_SHORT_LIG, TEHTA_E.base,
+                TENGWA_AHA, TEHTA_E.base,
+            ]);
+            test_tengwar!(Quenya[ligate_short=true], "ehwë" => [
+                CARRIER_SHORT_LIG, TEHTA_E.base,
+                TENGWA_HWESTA, TEHTA_E.base,
+            ]);
+        }
+        {
+            test_tengwar!(Quenya[ligate_short=true], "entë" => [
+                CARRIER_SHORT, TEHTA_E.base,
+                TENGWA_ANTO, TEHTA_E.base,
+            ]);
+            test_tengwar!(Quenya[ligate_short=true], "empë" => [
+                CARRIER_SHORT, TEHTA_E.base,
+                TENGWA_AMPA, TEHTA_E.base,
+            ]);
+            test_tengwar!(Quenya[ligate_short=true], "encë" => [
+                CARRIER_SHORT_LIG, TEHTA_E.base,
+                TENGWA_ANCA, TEHTA_E.base,
+            ]);
+            test_tengwar!(Quenya[ligate_short=true], "enqë" => [
+                CARRIER_SHORT_LIG, TEHTA_E.base,
+                TENGWA_UNQUE, TEHTA_E.base,
+            ]);
+        }
+        {
+            test_tengwar!(Quenya[ligate_short=true], "enë" => [
+                CARRIER_SHORT_LIG, TEHTA_E.base,
+                TENGWA_NUMEN, TEHTA_E.base,
+            ]);
+            test_tengwar!(Quenya[ligate_short=true], "emë" => [
+                CARRIER_SHORT_LIG, TEHTA_E.base,
+                TENGWA_MALTA, TEHTA_E.base,
+            ]);
+            test_tengwar!(Quenya[ligate_short=true], "eñë" => [
+                CARRIER_SHORT_LIG, TEHTA_E.base,
+                TENGWA_NOLDO, TEHTA_E.base,
+            ]);
+            test_tengwar!(Quenya[ligate_short=true], "eñwë" => [
+                CARRIER_SHORT_LIG, TEHTA_E.base,
+                TENGWA_NWALME, TEHTA_E.base,
+            ]);
+        }
+    }
 }
 
 

@@ -199,6 +199,9 @@ pub const TEHTA_Y: Tehta = Tehta::single(DC_OVER_DOT_2);
 
 /// The T-series, with an open bow to the right.
 pub const TEMA_TINCO: Tema = Tema {
+    left: false,
+    open: true,
+
     single_dn: '', // Tinco
     double_dn: '', // Ando
     single_up: '', // Thúlë
@@ -210,6 +213,9 @@ pub const TEMA_TINCO: Tema = Tema {
 };
 /// The P-series, with a closed bow to the right.
 pub const TEMA_PARMA: Tema = Tema {
+    left: false,
+    open: false,
+
     single_dn: '', // Parma
     double_dn: '', // Umbar
     single_up: '', // Formen
@@ -221,6 +227,9 @@ pub const TEMA_PARMA: Tema = Tema {
 };
 /// The C-series, with an open bow to the left.
 pub const TEMA_CALMA: Tema = Tema {
+    left: true,
+    open: true,
+
     single_dn: '', // Calma
     double_dn: '', // Anga
     single_up: '', // Aha
@@ -232,6 +241,9 @@ pub const TEMA_CALMA: Tema = Tema {
 };
 /// The Q-series, with a closed bow to the left.
 pub const TEMA_QESSE: Tema = Tema {
+    left: true,
+    open: false,
+
     single_dn: '', // Qessë
     double_dn: '', // Ungwë
     single_up: '', // Hwesta
