@@ -326,6 +326,14 @@ impl Glyph {
             Ok(())
         }
     }
+
+    fn write_rince_nonfinal(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        if self.rince {
+            f.write_char(SA_RINCE)
+        } else {
+            Ok(())
+        }
+    }
 }
 
 impl Display for Glyph {
@@ -336,7 +344,7 @@ impl Display for Glyph {
             Some(TehtaChar::OnAraAfter(tehta)) => {
                 f.write_char(base)?;
                 self.write_mods(f)?;
-                self.write_rince(f)?;
+                self.write_rince_nonfinal(f)?;
 
                 if self.ligate_zwj && ligates_with_ara(base) {
                     f.write_char(ZWJ)?;
@@ -359,6 +367,10 @@ impl Display for Glyph {
 
                 f.write_char(tehta)?;
                 self.write_rince(f)?;
+                //  TODO: If there will be a nonfinal rincë in this position,
+                //      print it BEFORE the tehta. Discovered an issue with the
+                //      base rincë, when placed after the tehta, not combining
+                //      properly with the unique long forms.
             }
             Some(TehtaChar::OnTengwaTwice(tehta)) => {
                 f.write_char(base)?;
