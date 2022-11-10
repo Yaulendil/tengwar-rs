@@ -169,6 +169,8 @@ impl FromIterator<Token> for String {
 
 pub struct Transcriber<I: Iterator<Item=Token>> {
     inner: Peekable<I>,
+    last: Option<Token>,
+
     pub alt_a: bool,
     pub alt_rince: bool,
     pub ligate_short: bool,
@@ -178,6 +180,20 @@ pub struct Transcriber<I: Iterator<Item=Token>> {
 }
 
 impl<I: Iterator<Item=Token>> Transcriber<I> {
+    pub fn new(iter: I) -> Self {
+        Self {
+            inner: iter.peekable(),
+            last: None,
+
+            alt_a: false,
+            alt_rince: false,
+            ligate_short: false,
+            ligate_zwj: false,
+            nuquerna: false,
+            vowels: VowelStyle::DEFAULT,
+        }
+    }
+
     pub const fn with_alt_a(mut self, enabled: bool) -> Self {
         self.alt_a = enabled;
         self
@@ -207,20 +223,14 @@ impl<I: Iterator<Item=Token>> Transcriber<I> {
         self.vowels = vowels;
         self
     }
+
+    pub fn last(&self) -> Option<&Token> { self.last.as_ref() }
+
+    pub fn peek(&mut self) -> Option<&Token> { self.inner.peek() }
 }
 
 impl<T: IntoIterator<Item=Token>> From<T> for Transcriber<T::IntoIter> {
-    fn from(iter: T) -> Self {
-        Self {
-            inner: iter.into_iter().peekable(),
-            alt_a: false,
-            alt_rince: false,
-            ligate_short: false,
-            ligate_zwj: false,
-            nuquerna: false,
-            vowels: VowelStyle::Doubled,
-        }
-    }
+    fn from(iter: T) -> Self { Self::new(iter.into_iter()) }
 }
 
 impl<I: Iterator<Item=Token>> Iterator for Transcriber<I> {
@@ -242,7 +252,7 @@ impl<I: Iterator<Item=Token>> Iterator for Transcriber<I> {
                 Some(Token::Tengwa(next)) => {
                     glyph.rince_final = false;
                     glyph.ligate_short = self.ligate_short
-                        && glyph.is_short_carrier()
+                        // && glyph.is_short_carrier()
                         && next.telco_ligates();
                 }
                 _ => {
@@ -252,6 +262,7 @@ impl<I: Iterator<Item=Token>> Iterator for Transcriber<I> {
             }
         }
 
-        Some(token)
+        self.last = Some(token);
+        self.last
     }
 }
