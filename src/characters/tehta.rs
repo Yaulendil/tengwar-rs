@@ -33,11 +33,6 @@ impl Tehta {
         self.alternate.is_some()
     }
 
-    /// Return the basic mark, used for short vowels.
-    pub const fn base(&self) -> char {
-        self.base
-    }
-
     /// Returns `true` if the long variant of this tehta must be written with
     ///     the extended carrier.
     pub const fn needs_ara(&self) -> bool {

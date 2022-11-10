@@ -2,7 +2,7 @@ use crate::mode::beleriand::*;
 use super::*;
 
 
-const LONG: char = ANDAITH.base();
+const LONG: char = ANDAITH.base;
 
 
 #[test]
@@ -25,7 +25,7 @@ fn test_beleriand_words() {
 
     let andaith = test_tengwar!(Beleriand, "andaith" => [
         VOWEL_A, TENGWA_ANDO, DC_OVER_LINE, // and
-        VOWEL_A, TEHTA_Y.base(), // ai
+        VOWEL_A, TEHTA_Y.base, // ai
         TENGWA_THULE, // th
     ]);
     test_tengwar!(Beleriand, "andaiθ" == andaith);
@@ -142,9 +142,9 @@ fn test_beleriand_vowels() {
     //  Test all diphthongs.
     test_tengwar!(Beleriand, "ae" => [VOWEL_A, VOWEL_E]);
     test_tengwar!(Beleriand, "oe" => [VOWEL_O, VOWEL_E]);
-    test_tengwar!(Beleriand, "ai" => [VOWEL_A, TEHTA_Y.base()]);
-    test_tengwar!(Beleriand, "ei" => [VOWEL_E, TEHTA_Y.base()]);
-    test_tengwar!(Beleriand, "ui" => [VOWEL_U, TEHTA_Y.base()]);
+    test_tengwar!(Beleriand, "ai" => [VOWEL_A, TEHTA_Y.base]);
+    test_tengwar!(Beleriand, "ei" => [VOWEL_E, TEHTA_Y.base]);
+    test_tengwar!(Beleriand, "ui" => [VOWEL_U, TEHTA_Y.base]);
     test_tengwar!(Beleriand, "au" => [VOWEL_A, MOD_LABIAL] as au);
     test_tengwar!(Beleriand, "aw" == au);
 

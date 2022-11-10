@@ -264,7 +264,7 @@ impl Glyph {
         };
         let Some(tengwa) = self.base else {
             //  If there is no tengwa, the base will be a carrier already.
-            return Some(TehtaChar::OnTengwaOnce(tehta.base()));
+            return Some(TehtaChar::OnTengwaOnce(tehta.base));
         };
 
         let needs_ara;
