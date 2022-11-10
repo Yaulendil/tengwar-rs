@@ -21,7 +21,7 @@ struct ModeFlags {
     #[arg(group = "mode")]
     quenya: bool,
 
-    /// Transliterate in the Mode of Gondor (experimental).
+    /// Transliterate in the Mode of Gondor.
     ///
     /// Independent Tengwar represent consonant sounds, with vowels being
     ///     represented by a Tehta placed above either the following consonant
@@ -33,7 +33,7 @@ struct ModeFlags {
     #[arg(group = "mode")]
     gondor: bool,
 
-    /// Transliterate in the Mode of Beleriand (experimental).
+    /// Transliterate in the Mode of Beleriand.
     ///
     /// Independent Tengwar are used for both consonants and vowels. Tehtar are
     ///     used only to mark diphthongs and long vowels. This is also referred
@@ -54,9 +54,6 @@ struct ModeFlags {
     #[arg(long = "mode", short = 'M', value_name = "MODE")]
     #[arg(group = "mode", value_enum, ignore_case = true)]
     by_name: Option<Mode>,
-    //  TODO: Use as fallback, rather than first check?
-    // #[arg(default_value_t = Mode::DEFAULT)]
-    // by_name: Mode,
 }
 
 
