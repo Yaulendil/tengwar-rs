@@ -6,7 +6,7 @@ const LONG: char = ANDAITH.base;
 
 
 #[test]
-fn test_beleriand_words() {
+fn words() {
     test_tengwar!(Beleriand, "axë" => [
         VOWEL_A, TENGWA_CALMA, TENGWA_SILME, VOWEL_E,
     ]);
@@ -138,7 +138,7 @@ fn test_beleriand_words() {
 
 
 #[test]
-fn test_beleriand_vowels() {
+fn vowels() {
     //  Test all diphthongs.
     test_tengwar!(Beleriand, "ae" => [VOWEL_A, VOWEL_E]);
     test_tengwar!(Beleriand, "oe" => [VOWEL_O, VOWEL_E]);

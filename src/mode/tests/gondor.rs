@@ -3,7 +3,7 @@ use super::*;
 
 
 #[test]
-fn test_gondor_alt_a() {
+fn alt_a() {
     let _adan = test_tengwar!(Gondor, "adan" => [
         TENGWA_ANDO, TEHTA_A.base, // ad
         TENGWA_NUMEN, TEHTA_A.base, // an
@@ -29,7 +29,7 @@ fn test_gondor_alt_a() {
 
 
 #[test]
-fn test_gondor_nuquernar() {
+fn nuquernar() {
     //  Check Silmë.
     let _estel = test_tengwar!(Gondor, "estel" => [
         TENGWA_SILME, TEHTA_E.base, // es
@@ -69,7 +69,7 @@ fn test_gondor_nuquernar() {
 
 
 #[test]
-fn test_gondor_words() {
+fn words() {
     test_tengwar!(Gondor, "axë" => [
         TENGWA_CALMA, TEHTA_A.base, SA_RINCE, // ax
         CARRIER_SHORT, TEHTA_E.base, // ë
@@ -226,7 +226,7 @@ fn test_gondor_words() {
 
 
 #[test]
-fn test_gondor_vowels() {
+fn vowels() {
     //  Test all diphthongs.
     test_tengwar!(Gondor, "ae" => [CARRIER_DIPH_E, TEHTA_A.base]);
     test_tengwar!(Gondor, "oe" => [CARRIER_DIPH_E, TEHTA_O.base]);

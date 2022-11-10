@@ -3,7 +3,7 @@ use super::*;
 
 
 #[test]
-fn test_quenya_alt_a() {
+fn alt_a() {
     let rauca = test_tengwar!(Quenya, "rauca" => [
         TENGWA_ROMEN, // r
         CARRIER_DIPH_U, TEHTA_A.base, // au
@@ -21,7 +21,7 @@ fn test_quenya_alt_a() {
 
 
 #[test]
-fn test_quenya_alt_rince() {
+fn alt_rince() {
     //  Check final basic against final alternate on T.
     let otso = test_tengwar!(Quenya, "otso" => [
         CARRIER_SHORT, TEHTA_O.base, // o
@@ -74,7 +74,7 @@ fn test_quenya_alt_rince() {
 
 
 #[test]
-fn test_quenya_nuquernar() {
+fn nuquernar() {
     //  Check Silmë.
     let _silme = test_tengwar!(Quenya, "silmë" => [
         TENGWA_SILME, TEHTA_I.base, // si
@@ -112,7 +112,7 @@ fn test_quenya_nuquernar() {
 
 
 #[test]
-fn test_quenya_words() {
+fn words() {
     let eleni_silar = test_tengwar!(Quenya, "eleni sílar" => [
         CARRIER_SHORT, TEHTA_E.base, // e
         TENGWA_LAMBE, TEHTA_E.base, // le
@@ -271,7 +271,7 @@ fn test_quenya_words() {
 
 
 #[test]
-fn test_quenya_vowels() {
+fn vowels() {
     //  Test all diphthongs.
     test_tengwar!(Quenya, "ai" => [CARRIER_DIPH_I, TEHTA_A.base]);
     test_tengwar!(Quenya, "oi" => [CARRIER_DIPH_I, TEHTA_O.base]);
