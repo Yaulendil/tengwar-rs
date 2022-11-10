@@ -199,6 +199,11 @@ impl<I: Iterator<Item=Token>> Transcriber<I> {
         self.nuquerna = true;
         self
     }
+
+    pub const fn with_vowels(mut self, vowels: VowelStyle) -> Self {
+        self.vowels = vowels;
+        self
+    }
 }
 
 impl<T: IntoIterator<Item=Token>> From<T> for Transcriber<T::IntoIter> {
@@ -224,6 +229,7 @@ impl<I: Iterator<Item=Token>> Iterator for Transcriber<I> {
         if let Token::Tengwa(glyph) = &mut token {
             glyph.ligate_zwj = self.ligate_zwj;
             glyph.nuquerna = self.nuquerna;
+            glyph.vowels = self.vowels;
 
             if self.alt_a {
                 glyph.set_alt_a();

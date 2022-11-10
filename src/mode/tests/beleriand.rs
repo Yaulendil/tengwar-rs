@@ -2,7 +2,7 @@ use crate::mode::beleriand::*;
 use super::*;
 
 
-const LONG: char = TEHTA_LONG.base();
+const LONG: char = ANDAITH.base();
 
 
 #[test]

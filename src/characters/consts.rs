@@ -177,49 +177,20 @@ pub const SA_RINCE_FINAL: char = '';
 
 
 /// A diacritical marking resembling a circumflex.
-pub const TEHTA_YANTA: Tehta = Tehta::Single(DC_OVER_CIRCUMFLEX);
+pub const TEHTA_YANTA: Tehta = Tehta::single(DC_OVER_CIRCUMFLEX);
 
-
-cfg_if!(if #[cfg(feature = "long-vowel-unique")] {
-    /// A diacritical Tehta used in most systems to represent the `A` vowel.
-    pub const TEHTA_A: Tehta = Tehta::Single(DC_OVER_DOT_3);
-    /// A diacritical Tehta used in most systems to represent the `E` vowel.
-    pub const TEHTA_E: Tehta = Tehta::Altern(DC_OVER_ACUTE_1, DC_OVER_ACUTE_2);
-    /// A diacritical Tehta used in most systems to represent the `I` vowel.
-    pub const TEHTA_I: Tehta = Tehta::Single(DC_OVER_DOT_1);
-    /// A diacritical Tehta used in most systems to represent the `O` vowel.
-    pub const TEHTA_O: Tehta = Tehta::Altern(DC_OVER_HOOK_R_1, DC_OVER_HOOK_R_2);
-    /// A diacritical Tehta used in most systems to represent the `U` vowel.
-    pub const TEHTA_U: Tehta = Tehta::Altern(DC_OVER_HOOK_L_1, DC_OVER_HOOK_L_2);
-    /// A diacritical Tehta used in the Sindarin modes to represent the `Y` vowel.
-    pub const TEHTA_Y: Tehta = Tehta::Single(DC_OVER_DOT_2);
-} else if #[cfg(feature = "long-vowel-double")] {
-    /// A diacritical Tehta used in most systems to represent the `A` vowel.
-    pub const TEHTA_A: Tehta = Tehta::Single(DC_OVER_DOT_3);
-    /// A diacritical Tehta used in most systems to represent the `E` vowel.
-    pub const TEHTA_E: Tehta = Tehta::Double(DC_OVER_ACUTE_1);
-    /// A diacritical Tehta used in most systems to represent the `I` vowel.
-    pub const TEHTA_I: Tehta = Tehta::Single(DC_OVER_DOT_1);
-    /// A diacritical Tehta used in most systems to represent the `O` vowel.
-    pub const TEHTA_O: Tehta = Tehta::Double(DC_OVER_HOOK_R_1);
-    /// A diacritical Tehta used in most systems to represent the `U` vowel.
-    pub const TEHTA_U: Tehta = Tehta::Double(DC_OVER_HOOK_L_1);
-    /// A diacritical Tehta used in the Sindarin modes to represent the `Y` vowel.
-    pub const TEHTA_Y: Tehta = Tehta::Single(DC_OVER_DOT_2);
-} else {
-    /// A diacritical Tehta used in most systems to represent the `A` vowel.
-    pub const TEHTA_A: Tehta = Tehta::Single(DC_OVER_DOT_3);
-    /// A diacritical Tehta used in most systems to represent the `E` vowel.
-    pub const TEHTA_E: Tehta = Tehta::Single(DC_OVER_ACUTE_1);
-    /// A diacritical Tehta used in most systems to represent the `I` vowel.
-    pub const TEHTA_I: Tehta = Tehta::Single(DC_OVER_DOT_1);
-    /// A diacritical Tehta used in most systems to represent the `O` vowel.
-    pub const TEHTA_O: Tehta = Tehta::Single(DC_OVER_HOOK_R_1);
-    /// A diacritical Tehta used in most systems to represent the `U` vowel.
-    pub const TEHTA_U: Tehta = Tehta::Single(DC_OVER_HOOK_L_1);
-    /// A diacritical Tehta used in the Sindarin modes to represent the `Y` vowel.
-    pub const TEHTA_Y: Tehta = Tehta::Single(DC_OVER_DOT_2);
-});
+/// A diacritical Tehta used in most systems to represent the `A` vowel.
+pub const TEHTA_A: Tehta = Tehta::single(DC_OVER_DOT_3);
+/// A diacritical Tehta used in most systems to represent the `E` vowel.
+pub const TEHTA_E: Tehta = Tehta::altern(DC_OVER_ACUTE_1, DC_OVER_ACUTE_2);
+/// A diacritical Tehta used in most systems to represent the `I` vowel.
+pub const TEHTA_I: Tehta = Tehta::single(DC_OVER_DOT_1);
+/// A diacritical Tehta used in most systems to represent the `O` vowel.
+pub const TEHTA_O: Tehta = Tehta::altern(DC_OVER_HOOK_R_1, DC_OVER_HOOK_R_2);
+/// A diacritical Tehta used in most systems to represent the `U` vowel.
+pub const TEHTA_U: Tehta = Tehta::altern(DC_OVER_HOOK_L_1, DC_OVER_HOOK_L_2);
+/// A diacritical Tehta used in the Sindarin modes to represent the `Y` vowel.
+pub const TEHTA_Y: Tehta = Tehta::single(DC_OVER_DOT_2);
 
 
 /// The T-series, with an open bow to the right.

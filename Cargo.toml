@@ -32,9 +32,7 @@ features = ["cargo", "derive", "wrap_help"]
 
 
 [features]
-default = ["long-vowel-double"]
+default = []
 
 # Use standard Unicode characters for dot punctuation.
 dots-standard = []
-long-vowel-double = []
-long-vowel-unique = []

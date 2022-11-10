@@ -25,7 +25,7 @@ pub struct Glyph {
     ///     before the glyph.
     pub tehta_first: bool,
 
-    pub vowel_style: VowelStyle,
+    pub vowels: VowelStyle,
 
     /// Indicates whether the glyph has a sa-rincë attached.
     pub rince: bool,
@@ -66,7 +66,7 @@ impl Glyph {
             tehta: None,
             tehta_alt: false,
             tehta_first: false,
-            vowel_style: VowelStyle::DEFAULT,
+            vowels: VowelStyle::DEFAULT,
 
             rince: false,
             rince_final: false,
@@ -215,7 +215,7 @@ impl Glyph {
                 tehta_alt,
                 nuquerna: true,
                 ..
-            } if nuquerna_valid(base) && !(tehta_alt && tehta.uses_ara()) => {
+            } if nuquerna_valid(base) && !(tehta_alt && tehta.needs_ara()) => {
                 nuquerna(base)
             }
 
@@ -271,21 +271,21 @@ impl Glyph {
         let is_double;
         let char;
 
-        match tehta {
-            Tehta::Single(c) => {
-                needs_ara = self.tehta_alt;
-                is_double = false;
-                char = c;
-            }
-            Tehta::Double(c) => {
+        match (self.vowels, tehta) {
+            (VowelStyle::Doubled, Tehta { base, is_double: true, .. }) => {
                 needs_ara = false;
                 is_double = self.tehta_alt;
-                char = c;
+                char = base;
             }
-            Tehta::Altern(c, alt) => {
+            (VowelStyle::Unique, Tehta { base, alternate: Some(alt), .. }) => {
                 needs_ara = false;
                 is_double = false;
-                char = if self.tehta_alt { alt } else { c };
+                char = if self.tehta_alt { alt } else { base };
+            }
+            (_, Tehta { base, .. }) => {
+                needs_ara = self.tehta_alt;
+                is_double = false;
+                char = base;
             }
         }
 

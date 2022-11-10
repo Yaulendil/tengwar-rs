@@ -190,24 +190,15 @@ fn test_gondor_words() {
         CARRIER_SHORT, TEHTA_A.base(), // a
     ]);
 
-    let (test_rhuun, test_lhuug);
-
-    #[cfg(not(any(feature = "long-vowel-double", feature = "long-vowel-unique")))] {
-        test_rhuun = [TENGWA_ARDA, CARRIER_LONG, TEHTA_U.base(), TENGWA_NUMEN];
-        test_lhuug = [TENGWA_ALDA, CARRIER_LONG, TEHTA_U.base(), TENGWA_UNGWE];
-    }
-    #[cfg(all(feature = "long-vowel-double", not(feature = "long-vowel-unique")))] {
-        test_rhuun = [TENGWA_ARDA, TENGWA_NUMEN, TEHTA_U.base(), TEHTA_U.base()];
-        test_lhuug = [TENGWA_ALDA, TENGWA_UNGWE, TEHTA_U.base(), TEHTA_U.base()];
-    }
-    #[cfg(feature = "long-vowel-unique")] {
-        test_rhuun = [TENGWA_ARDA, TENGWA_NUMEN, TEHTA_U.long()];
-        test_lhuug = [TENGWA_ALDA, TENGWA_UNGWE, TEHTA_U.long()];
-    }
-
     //  Softened sounds.
-    let _rhuun = test_tengwar!(Gondor, "rhûn" => test_rhuun);
-    let _lhuug = test_tengwar!(Gondor, "lhûg" => test_lhuug);
+    let _rhuun = test_tengwar!(Gondor, "rhûn" => [
+        TENGWA_ARDA, // rh
+        TENGWA_NUMEN, TEHTA_U.base(), TEHTA_U.base(), // ûn
+    ]);
+    let _lhuug = test_tengwar!(Gondor, "lhûg" => [
+        TENGWA_ALDA, // lh
+        TENGWA_UNGWE, TEHTA_U.base(), TEHTA_U.base(), // ûg
+    ]);
     let _mhellyn = test_tengwar!(Gondor, "mhellyn" => [
         TENGWA_MALTA_HOOKED, // mh
         TENGWA_LAMBE, MOD_LONG_CONS, TEHTA_E.base(), // ell
@@ -271,59 +262,48 @@ fn test_gondor_vowels() {
     test_tengwar!(Gondor, "uu" == uu);
     test_tengwar!(Gondor, "yy" == yy);
 
-    //  Test all vowels, after consonants.
-    test_tengwar!(Gondor, "ath" => [TENGWA_THULE, TEHTA_A.base()]);
-    test_tengwar!(Gondor, "eth" => [TENGWA_THULE, TEHTA_E.base()]);
-    test_tengwar!(Gondor, "ith" => [TENGWA_THULE, TEHTA_I.base()]);
-    test_tengwar!(Gondor, "oth" => [TENGWA_THULE, TEHTA_O.base()]);
-    test_tengwar!(Gondor, "uth" => [TENGWA_THULE, TEHTA_U.base()]);
-    test_tengwar!(Gondor, "yth" => [TENGWA_THULE, TEHTA_Y.base()]);
-
-    let (test_aath, test_eeth, test_iith, test_ooth, test_uuth, test_yyth);
-
-    #[cfg(not(any(feature = "long-vowel-double", feature = "long-vowel-unique")))] {
-        test_aath = [CARRIER_LONG, TEHTA_A.base(), TENGWA_THULE];
-        test_eeth = [CARRIER_LONG, TEHTA_E.base(), TENGWA_THULE];
-        test_iith = [CARRIER_LONG, TEHTA_I.base(), TENGWA_THULE];
-        test_ooth = [CARRIER_LONG, TEHTA_O.base(), TENGWA_THULE];
-        test_uuth = [CARRIER_LONG, TEHTA_U.base(), TENGWA_THULE];
-        test_yyth = [CARRIER_LONG, TEHTA_Y.base(), TENGWA_THULE];
-    }
-    #[cfg(all(feature = "long-vowel-double", not(feature = "long-vowel-unique")))] {
-        test_aath = [CARRIER_LONG, TEHTA_A.base(), TENGWA_THULE];
-        test_eeth = [TENGWA_THULE, TEHTA_E.base(), TEHTA_E.base()];
-        test_iith = [CARRIER_LONG, TEHTA_I.base(), TENGWA_THULE];
-        test_ooth = [TENGWA_THULE, TEHTA_O.base(), TEHTA_O.base()];
-        test_uuth = [TENGWA_THULE, TEHTA_U.base(), TEHTA_U.base()];
-        test_yyth = [CARRIER_LONG, TEHTA_Y.base(), TENGWA_THULE];
-    }
-    #[cfg(feature = "long-vowel-unique")] {
-        test_aath = [CARRIER_LONG, TEHTA_A.base(), TENGWA_THULE];
-        test_eeth = [TENGWA_THULE, TEHTA_E.long()];
-        test_iith = [CARRIER_LONG, TEHTA_I.base(), TENGWA_THULE];
-        test_ooth = [TENGWA_THULE, TEHTA_O.long()];
-        test_uuth = [TENGWA_THULE, TEHTA_U.long()];
-        test_yyth = [CARRIER_LONG, TEHTA_Y.base(), TENGWA_THULE];
-    }
-
-    test_tengwar!(Gondor, "áth" => test_aath, as aath);
-    test_tengwar!(Gondor, "éth" => test_eeth, as eeth);
-    test_tengwar!(Gondor, "íth" => test_iith, as iith);
-    test_tengwar!(Gondor, "óth" => test_ooth, as ooth);
-    test_tengwar!(Gondor, "úth" => test_uuth, as uuth);
-    test_tengwar!(Gondor, "ýth" => test_yyth, as yyth);
-
+    //  Test all vowels, before consonants.
+    test_tengwar!(Gondor, "ath" => [TENGWA_THULE, TEHTA_A.base]);
+    test_tengwar!(Gondor, "eth" => [TENGWA_THULE, TEHTA_E.base]);
+    test_tengwar!(Gondor, "ith" => [TENGWA_THULE, TEHTA_I.base]);
+    test_tengwar!(Gondor, "oth" => [TENGWA_THULE, TEHTA_O.base]);
+    test_tengwar!(Gondor, "uth" => [TENGWA_THULE, TEHTA_U.base]);
+    test_tengwar!(Gondor, "yth" => [TENGWA_THULE, TEHTA_Y.base]);
+    test_tengwar!(Gondor, "áth" => [CARRIER_LONG, TEHTA_A.base, TENGWA_THULE], as aath);
+    test_tengwar!(Gondor, "éth" => [TENGWA_THULE, TEHTA_E.base, TEHTA_E.base], as eeth);
+    test_tengwar!(Gondor, "íth" => [CARRIER_LONG, TEHTA_I.base, TENGWA_THULE], as iith);
+    test_tengwar!(Gondor, "óth" => [TENGWA_THULE, TEHTA_O.base, TEHTA_O.base], as ooth);
+    test_tengwar!(Gondor, "úth" => [TENGWA_THULE, TEHTA_U.base, TEHTA_U.base], as uuth);
+    test_tengwar!(Gondor, "ýth" => [CARRIER_LONG, TEHTA_Y.base, TENGWA_THULE], as yyth);
     test_tengwar!(Gondor, "âth" == aath);
     test_tengwar!(Gondor, "êth" == eeth);
     test_tengwar!(Gondor, "îth" == iith);
     test_tengwar!(Gondor, "ôth" == ooth);
     test_tengwar!(Gondor, "ûth" == uuth);
     test_tengwar!(Gondor, "ŷth" == yyth);
-
     test_tengwar!(Gondor, "aath" == aath);
     test_tengwar!(Gondor, "eeth" == eeth);
     test_tengwar!(Gondor, "iith" == iith);
     test_tengwar!(Gondor, "ooth" == ooth);
     test_tengwar!(Gondor, "uuth" == uuth);
     test_tengwar!(Gondor, "yyth" == yyth);
+
+    //  Test alternate styles of long vowels.
+    test_tengwar!(Gondor[vowels=Separate], "áth" => [CARRIER_LONG, TEHTA_A.base, TENGWA_THULE]);
+    test_tengwar!(Gondor[vowels=Separate], "éth" => [CARRIER_LONG, TEHTA_E.base, TENGWA_THULE]);
+    test_tengwar!(Gondor[vowels=Separate], "íth" => [CARRIER_LONG, TEHTA_I.base, TENGWA_THULE]);
+    test_tengwar!(Gondor[vowels=Separate], "óth" => [CARRIER_LONG, TEHTA_O.base, TENGWA_THULE]);
+    test_tengwar!(Gondor[vowels=Separate], "úth" => [CARRIER_LONG, TEHTA_U.base, TENGWA_THULE]);
+
+    test_tengwar!(Gondor[vowels=Doubled], "áth" => [CARRIER_LONG, TEHTA_A.base, TENGWA_THULE]);
+    test_tengwar!(Gondor[vowels=Doubled], "éth" => [TENGWA_THULE, TEHTA_E.base, TEHTA_E.base]);
+    test_tengwar!(Gondor[vowels=Doubled], "íth" => [CARRIER_LONG, TEHTA_I.base, TENGWA_THULE]);
+    test_tengwar!(Gondor[vowels=Doubled], "óth" => [TENGWA_THULE, TEHTA_O.base, TEHTA_O.base]);
+    test_tengwar!(Gondor[vowels=Doubled], "úth" => [TENGWA_THULE, TEHTA_U.base, TEHTA_U.base]);
+
+    test_tengwar!(Gondor[vowels=Unique], "áth" => [CARRIER_LONG, TEHTA_A.base, TENGWA_THULE]);
+    test_tengwar!(Gondor[vowels=Unique], "éth" => [TENGWA_THULE, TEHTA_E.alternate.unwrap()]);
+    test_tengwar!(Gondor[vowels=Unique], "íth" => [CARRIER_LONG, TEHTA_I.base, TENGWA_THULE]);
+    test_tengwar!(Gondor[vowels=Unique], "óth" => [TENGWA_THULE, TEHTA_O.alternate.unwrap()]);
+    test_tengwar!(Gondor[vowels=Unique], "úth" => [TENGWA_THULE, TEHTA_U.alternate.unwrap()]);
 }

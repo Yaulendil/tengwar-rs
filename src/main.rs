@@ -75,7 +75,6 @@ struct StyleFlags {
     alt_rince: bool,
 
     /// Set behavior for long vowels.
-    #[arg(hide = true)]
     #[arg(long, short = 'l', value_name = "STYLE")]
     #[arg(group = "vowels", value_enum, ignore_case = true)]
     #[arg(default_value_t = LongVowels::DEFAULT)]

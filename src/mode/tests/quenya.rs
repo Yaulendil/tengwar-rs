@@ -119,7 +119,7 @@ fn test_quenya_words() {
         TENGWA_NUMEN, TEHTA_I.base(), // ni
         ' ',
         TENGWA_SILME, // s
-        CARRIER_LONG, TEHTA_I.long(), // í
+        CARRIER_LONG, TEHTA_I.base(), // í
         TENGWA_LAMBE, TEHTA_A.base(), // la
         TENGWA_ORE, // r
     ]);
@@ -135,10 +135,10 @@ fn test_quenya_words() {
         TENGWA_NUMEN, // n
         ' ',
         TENGWA_SILME, // s
-        CARRIER_LONG, TEHTA_I.long(), // í
+        CARRIER_LONG, TEHTA_I.base(), // í
         TENGWA_LAMBE, TEHTA_A.base(), // la
         ' ',
-        TENGWA_LAMBE, pre_long!(TEHTA_U), TEHTA_U.long(), // lú
+        TENGWA_LAMBE, TEHTA_U.base(), TEHTA_U.base(), // lú
         TENGWA_MALTA, TEHTA_E.base(), // me
         TENGWA_NUMEN, DC_UNDER_LINE_H, // nn
         PUNCT_DOT_1, // '
@@ -190,14 +190,14 @@ fn test_quenya_words() {
     ]);
 
     let ara = test_tengwar!(Quenya, "ára" => [
-        CARRIER_LONG, TEHTA_A.long(), // á
+        CARRIER_LONG, TEHTA_A.base(), // á
         TENGWA_ROMEN, TEHTA_A.base(), // ra
     ]);
     test_tengwar!(Quenya, "aara" == ara); // ASCII spelling.
 
     //  Archaic TH (> S).
     let thuule = test_tengwar!(Quenya, "þúlë" => [
-        TENGWA_THULE, pre_long!(TEHTA_U), TEHTA_U.long(), // þú
+        TENGWA_THULE, TEHTA_U.base(), TEHTA_U.base(), // þú
         TENGWA_LAMBE, TEHTA_E.base(), // lë
     ]);
     test_tengwar!(Quenya, "thuule" == thuule); // ASCII spelling.
@@ -215,7 +215,7 @@ fn test_quenya_words() {
 
     //  Initial and final N.
     let nuumen = test_tengwar!(Quenya, "númen" => [
-        TENGWA_NUMEN, pre_long!(TEHTA_U), TEHTA_U.long(), // nú
+        TENGWA_NUMEN, TEHTA_U.base(), TEHTA_U.base(), // nú
         TENGWA_MALTA, TEHTA_E.base(), // me
         TENGWA_NUMEN, // n
     ]);
@@ -259,12 +259,12 @@ fn test_quenya_words() {
 
     test_tengwar!(Quenya, "hrívë" => [
         TENGWA_HALLA, // h
-        TENGWA_ROMEN, pre_long!(TEHTA_I), TEHTA_I.long(), // rí
+        TENGWA_ROMEN, CARRIER_LONG, TEHTA_I.base(), // rí
         TENGWA_VALA, TEHTA_E.base(), // vë
     ]);
     test_tengwar!(Quenya, "hlócë" => [
         TENGWA_HALLA, // h
-        TENGWA_LAMBE, pre_long!(TEHTA_O), TEHTA_O.long(), // ló
+        TENGWA_LAMBE, TEHTA_O.base(), TEHTA_O.base(), // ló
         TENGWA_CALMA, TEHTA_E.base(), // cë
     ]);
 }
@@ -298,19 +298,37 @@ fn test_quenya_vowels() {
     test_tengwar!(Quenya, "uu" == uu);
 
     //  Test all vowels, after consonants.
-    test_tengwar!(Quenya, "la" => [TENGWA_LAMBE, TEHTA_A.base()]);
-    test_tengwar!(Quenya, "le" => [TENGWA_LAMBE, TEHTA_E.base()]);
-    test_tengwar!(Quenya, "li" => [TENGWA_LAMBE, TEHTA_I.base()]);
-    test_tengwar!(Quenya, "lo" => [TENGWA_LAMBE, TEHTA_O.base()]);
-    test_tengwar!(Quenya, "lu" => [TENGWA_LAMBE, TEHTA_U.base()]);
-    test_tengwar!(Quenya, "lá" => [TENGWA_LAMBE, pre_long!(TEHTA_A), TEHTA_A.long()] as laa);
-    test_tengwar!(Quenya, "lé" => [TENGWA_LAMBE, pre_long!(TEHTA_E), TEHTA_E.long()] as lee);
-    test_tengwar!(Quenya, "lí" => [TENGWA_LAMBE, pre_long!(TEHTA_I), TEHTA_I.long()] as lii);
-    test_tengwar!(Quenya, "ló" => [TENGWA_LAMBE, pre_long!(TEHTA_O), TEHTA_O.long()] as loo);
-    test_tengwar!(Quenya, "lú" => [TENGWA_LAMBE, pre_long!(TEHTA_U), TEHTA_U.long()] as luu);
+    test_tengwar!(Quenya, "la" => [TENGWA_LAMBE, TEHTA_A.base]);
+    test_tengwar!(Quenya, "le" => [TENGWA_LAMBE, TEHTA_E.base]);
+    test_tengwar!(Quenya, "li" => [TENGWA_LAMBE, TEHTA_I.base]);
+    test_tengwar!(Quenya, "lo" => [TENGWA_LAMBE, TEHTA_O.base]);
+    test_tengwar!(Quenya, "lu" => [TENGWA_LAMBE, TEHTA_U.base]);
+    test_tengwar!(Quenya, "lá" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_A.base] as laa);
+    test_tengwar!(Quenya, "lé" => [TENGWA_LAMBE, TEHTA_E.base, TEHTA_E.base] as lee);
+    test_tengwar!(Quenya, "lí" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_I.base] as lii);
+    test_tengwar!(Quenya, "ló" => [TENGWA_LAMBE, TEHTA_O.base, TEHTA_O.base] as loo);
+    test_tengwar!(Quenya, "lú" => [TENGWA_LAMBE, TEHTA_U.base, TEHTA_U.base] as luu);
     test_tengwar!(Quenya, "laa" == laa);
     test_tengwar!(Quenya, "lee" == lee);
     test_tengwar!(Quenya, "lii" == lii);
     test_tengwar!(Quenya, "loo" == loo);
     test_tengwar!(Quenya, "luu" == luu);
+
+    test_tengwar!(Quenya[vowels=Separate], "lá" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_A.base]);
+    test_tengwar!(Quenya[vowels=Separate], "lé" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_E.base]);
+    test_tengwar!(Quenya[vowels=Separate], "lí" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_I.base]);
+    test_tengwar!(Quenya[vowels=Separate], "ló" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_O.base]);
+    test_tengwar!(Quenya[vowels=Separate], "lú" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_U.base]);
+
+    test_tengwar!(Quenya[vowels=Doubled], "lá" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_A.base]);
+    test_tengwar!(Quenya[vowels=Doubled], "lé" => [TENGWA_LAMBE, TEHTA_E.base, TEHTA_E.base]);
+    test_tengwar!(Quenya[vowels=Doubled], "lí" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_I.base]);
+    test_tengwar!(Quenya[vowels=Doubled], "ló" => [TENGWA_LAMBE, TEHTA_O.base, TEHTA_O.base]);
+    test_tengwar!(Quenya[vowels=Doubled], "lú" => [TENGWA_LAMBE, TEHTA_U.base, TEHTA_U.base]);
+
+    test_tengwar!(Quenya[vowels=Unique], "lá" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_A.base]);
+    test_tengwar!(Quenya[vowels=Unique], "lé" => [TENGWA_LAMBE, TEHTA_E.alternate.unwrap()]);
+    test_tengwar!(Quenya[vowels=Unique], "lí" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_I.base]);
+    test_tengwar!(Quenya[vowels=Unique], "ló" => [TENGWA_LAMBE, TEHTA_O.alternate.unwrap()]);
+    test_tengwar!(Quenya[vowels=Unique], "lú" => [TENGWA_LAMBE, TEHTA_U.alternate.unwrap()]);
 }

@@ -6,7 +6,7 @@ use super::{ParseAction, TengwarMode};
 pub const CONSONANT_I: char = TENGWA_ARA;
 
 /// Tehta indicating a long vowel.
-pub const TEHTA_LONG: Tehta = Tehta::Double(DC_OVER_ACUTE_1);
+pub const ANDAITH: Tehta = Tehta::single(DC_OVER_ACUTE_1);
 
 pub const VOWEL_A: char = TENGWA_OSSE;
 pub const VOWEL_E: char = TENGWA_YANTA;
@@ -108,12 +108,12 @@ pub const fn get_vowel(slice: &[char]) -> Option<Glyph> {
         ['u'] | ['ü'] => Glyph::new_base(VOWEL_U),
         ['y'] | ['ÿ'] => Glyph::new_base(VOWEL_Y),
 
-        ['á'] | ['â'] | ['a', 'a'] => Glyph::new_both(VOWEL_A, TEHTA_LONG),
-        ['é'] | ['ê'] | ['e', 'e'] => Glyph::new_both(VOWEL_E, TEHTA_LONG),
-        ['í'] | ['î'] | ['i', 'i'] => Glyph::new_both(VOWEL_I, TEHTA_LONG),
-        ['ó'] | ['ô'] | ['o', 'o'] => Glyph::new_both(VOWEL_O, TEHTA_LONG),
-        ['ú'] | ['û'] | ['u', 'u'] => Glyph::new_both(VOWEL_U, TEHTA_LONG),
-        ['ý'] | ['ŷ'] | ['y', 'y'] => Glyph::new_both(VOWEL_Y, TEHTA_LONG),
+        ['á'] | ['â'] | ['a', 'a'] => Glyph::new_both(VOWEL_A, ANDAITH),
+        ['é'] | ['ê'] | ['e', 'e'] => Glyph::new_both(VOWEL_E, ANDAITH),
+        ['í'] | ['î'] | ['i', 'i'] => Glyph::new_both(VOWEL_I, ANDAITH),
+        ['ó'] | ['ô'] | ['o', 'o'] => Glyph::new_both(VOWEL_O, ANDAITH),
+        ['ú'] | ['û'] | ['u', 'u'] => Glyph::new_both(VOWEL_U, ANDAITH),
+        ['ý'] | ['ŷ'] | ['y', 'y'] => Glyph::new_both(VOWEL_Y, ANDAITH),
 
         _ => { return None; }
     })

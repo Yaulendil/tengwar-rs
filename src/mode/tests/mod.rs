@@ -9,3 +9,4 @@ mod gondor;
 mod quenya;
 
 use crate::characters::*;
+use VowelStyle::*;
