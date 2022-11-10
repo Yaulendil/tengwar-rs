@@ -178,24 +178,28 @@ pub struct Transcriber<I: Iterator<Item=Token>> {
 }
 
 impl<I: Iterator<Item=Token>> Transcriber<I> {
-    pub const fn ligated(mut self) -> Self {
-        self.ligate_short = true;
-        self.ligate_zwj = true;
+    pub const fn with_alt_a(mut self, enabled: bool) -> Self {
+        self.alt_a = enabled;
         self
     }
 
-    pub const fn with_alt_a(mut self) -> Self {
-        self.alt_a = true;
+    pub const fn with_alt_rince(mut self, enabled: bool) -> Self {
+        self.alt_rince = enabled;
         self
     }
 
-    pub const fn with_alt_rince(mut self) -> Self {
-        self.alt_rince = true;
+    pub const fn with_ligatures_short(mut self, enabled: bool) -> Self {
+        self.ligate_short = enabled;
         self
     }
 
-    pub const fn with_nuquerna(mut self) -> Self {
-        self.nuquerna = true;
+    pub const fn with_ligatures_zwj(mut self, enabled: bool) -> Self {
+        self.ligate_zwj = enabled;
+        self
+    }
+
+    pub const fn with_nuquerna(mut self, enabled: bool) -> Self {
+        self.nuquerna = enabled;
         self
     }
 
