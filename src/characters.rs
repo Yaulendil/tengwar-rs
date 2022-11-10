@@ -88,10 +88,17 @@ pub const fn nuquerna_valid(c: char) -> bool {
 /// Check whether a base tengwa is suitable for ligation with the extended
 ///     carrier mark. This is to some degree based on opinion.
 pub const fn ligates_with_ara(base: char) -> bool {
-    TEMA_TINCO.single_dn <= base && base <= TENGWA_HWESTA_SINDARINWA
-        && base != TENGWA_SILME_NUQ
-        && base != TENGWA_ESSE_NUQ
-        && base != TENGWA_ESSE
+    match base {
+        TENGWA_TINCO..=TENGWA_ALDA => true,
+
+        TENGWA_SILME => true,
+        // TENGWA_ESSE => true,
+
+        TENGWA_HYARMEN..=TENGWA_URE => true,
+        TENGWA_OSSE_REV..=TENGWA_OSSE => true,
+        TENGWA_ANNA_OPEN..=TENGWA_WAIA => true,
+        _ => false,
+    }
 }
 
 
