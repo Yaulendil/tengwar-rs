@@ -12,13 +12,13 @@ pub use beleriand::Beleriand;
 // pub use general::General;
 pub use gondor::Gondor;
 pub use quenya::Quenya;
-pub use iter::ModeIter;
+pub use iter::Tokenizer;
 
 use crate::{Numeral, Token};
 
 
 /// The result of a call to [`TengwarMode::process`]. This specifies the next
-///     action that will be taken by a [`ModeIter`].
+///     action that will be taken by a [`Tokenizer`].
 #[derive(Clone, Debug)]
 pub enum ParseAction {
     /// Nothing could be done with the input.
@@ -55,7 +55,7 @@ pub trait TengwarMode: Default + Sized {
     ///
     /// [`Transcriber`]: crate::Transcriber
     fn transcribe<T: FromIterator<Token>>(input: impl AsRef<str>) -> T {
-        ModeIter::<Self>::from_str(input).into_transcriber().collect()
+        Tokenizer::<Self>::from_str(input).into_transcriber().collect()
     }
 
     /// Perform any last-minute modifications to a [`Token`] that may be needed
@@ -79,7 +79,7 @@ pub trait TengwarMode: Default + Sized {
     ///     clear it from the internal state, preparing to begin a new tengwa.
     ///
     /// Ideally, this method should be cheap to call, because it will be called
-    ///     whenever [`next`] is called on a [`ModeIter`] which has reached the
+    ///     whenever [`next`] is called on a [`Tokenizer`] which has reached the
     ///     end of its data.
     ///
     /// [`next`]: Iterator::next
@@ -88,7 +88,7 @@ pub trait TengwarMode: Default + Sized {
     /// Process a slice of [`char`]s, and return a [`ParseAction`] indicating
     ///     the new state of the conversion in progress.
     ///
-    /// Assuming this method is called by a [`ModeIter`], the input slice will
+    /// Assuming this method is called by a [`Tokenizer`], the input slice will
     ///     be no more than [`MAX_CHUNK`] in length, but it may be shorter.
     ///
     /// [`MAX_CHUNK`]: Self::MAX_CHUNK

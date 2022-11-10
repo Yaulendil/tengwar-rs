@@ -13,13 +13,13 @@ const fn to_lower(c: char) -> char {
 }
 
 
-/// The result of a single "step" of a [`ModeIter`]. Multiple steps can be
+/// The result of a single "step" of a [`Tokenizer`]. Multiple steps can be
 ///     performed for each iteration.
 #[derive(Clone, Debug)]
 enum IterStep {
     /// The iteration is not complete. Another step should be run immediately.
     Again,
-    /// The [`ModeIter`] is exhausted. The iteration can safely return [`None`].
+    /// The [`Tokenizer`] is exhausted. The iterator can safely return [`None`].
     Empty,
     /// The iteration is complete. The [`Token`] should now be returned.
     Success(Token),
@@ -27,7 +27,7 @@ enum IterStep {
 
 
 #[derive(Debug)]
-pub struct ModeIter<M: TengwarMode> {
+pub struct Tokenizer<M: TengwarMode> {
     /// The original data, with case intact.
     chars: Vec<char>,
     /// Data vec, converted to ASCII lowercase.
@@ -47,7 +47,7 @@ pub struct ModeIter<M: TengwarMode> {
 }
 
 /// Public functionality.
-impl<M: TengwarMode> ModeIter<M> {
+impl<M: TengwarMode> Tokenizer<M> {
     pub fn new(chars: Vec<char>) -> Self {
         let size: usize = chars.len().min(M::MAX_CHUNK);
         let mut lower = chars.clone();
@@ -91,7 +91,7 @@ impl<M: TengwarMode> ModeIter<M> {
 }
 
 /// Internal functionality.
-impl<M: TengwarMode> ModeIter<M> {
+impl<M: TengwarMode> Tokenizer<M> {
     fn advance_head(&mut self, n: usize) {
         self.head += n;
         self.size = self.chars.len().min(M::MAX_CHUNK);
@@ -205,7 +205,7 @@ impl<M: TengwarMode> ModeIter<M> {
     }
 }
 
-impl<M: TengwarMode> Iterator for ModeIter<M> {
+impl<M: TengwarMode> Iterator for Tokenizer<M> {
     type Item = Token;
 
     fn next(&mut self) -> Option<Self::Item> {

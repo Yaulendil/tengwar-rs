@@ -88,7 +88,7 @@ use std::{
     fmt::{self, Display, Formatter, Write},
     iter::{FromIterator, Peekable},
 };
-use mode::ModeIter;
+use mode::Tokenizer;
 
 
 /// Convert a compatible object (typically text) into the Tengwar.
@@ -105,7 +105,7 @@ pub fn transcribe<M: TengwarMode>(text: impl ToTengwar) -> String {
 pub trait ToTengwar {
     /// Create a [`Transcriber`] to iteratively transcribe this text into the
     ///     Tengwar. The returned iterator will yield [`Token`]s.
-    fn transcriber<M: TengwarMode>(&self) -> Transcriber<ModeIter<M>>;
+    fn transcriber<M: TengwarMode>(&self) -> Transcriber<Tokenizer<M>>;
 
     /// Transcribe this object into the Tengwar.
     fn to_tengwar<M: TengwarMode, T: FromIterator<Token>>(&self) -> T {
@@ -114,8 +114,8 @@ pub trait ToTengwar {
 }
 
 impl<S: AsRef<str>> ToTengwar for S {
-    fn transcriber<M: TengwarMode>(&self) -> Transcriber<ModeIter<M>> {
-        ModeIter::from_str(self).into_transcriber()
+    fn transcriber<M: TengwarMode>(&self) -> Transcriber<Tokenizer<M>> {
+        Tokenizer::from_str(self).into_transcriber()
     }
 }
 
