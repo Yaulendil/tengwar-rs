@@ -90,11 +90,11 @@ fn nuquernar() {
 
     //  Check Essë.
     let esse = test_tengwar!(Quenya, "essë" => [
-        CARRIER_SHORT, TEHTA_E.base, // e,
+        CARRIER_SHORT, TEHTA_E.base, // e
         TENGWA_ESSE, TEHTA_E.base, // ssë
     ]);
     let esse_nuq = test_tengwar!(Quenya[nuquerna=true], "essë" => [
-        CARRIER_SHORT, TEHTA_E.base, // e,
+        CARRIER_SHORT, TEHTA_E.base, // e
         TENGWA_ESSE_NUQ, TEHTA_E.base, // ssë
     ]);
     // test_tengwar!(esse != esse_nuq);

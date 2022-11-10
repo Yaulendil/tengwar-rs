@@ -47,12 +47,12 @@ fn nuquernar() {
     let lossen = test_tengwar!(Gondor, "lossen" => [
         TENGWA_LAMBE, // l
         TENGWA_ESSE, TEHTA_O.base, // oss
-        TENGWA_NUMEN, TEHTA_E.base, // en,
+        TENGWA_NUMEN, TEHTA_E.base, // en
     ]);
     let lossen_nuq = test_tengwar!(Gondor[nuquerna=true], "lossen" => [
         TENGWA_LAMBE, // l
         TENGWA_ESSE_NUQ, TEHTA_O.base, // oss
-        TENGWA_NUMEN, TEHTA_E.base, // en,
+        TENGWA_NUMEN, TEHTA_E.base, // en
     ]);
     // test_tengwar!(lossen != lossen_nuq);
     test_tengwar!(Gondor, "lozen" == lossen);
