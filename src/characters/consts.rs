@@ -98,19 +98,19 @@ pub const MOD_NASAL: char = DC_OVER_LINE;
 /// Marking to denote a sound that leads into a "y" sound.
 pub const MOD_PALATAL: char = DC_UNDER_DOT_2;
 
-pub const NUM_0: char = '';
-pub const NUM_1: char = '';
-pub const NUM_2: char = '';
-pub const NUM_3: char = '';
-pub const NUM_4: char = '';
-pub const NUM_5: char = '';
-pub const NUM_6: char = '';
-pub const NUM_7: char = '';
-pub const NUM_8: char = '';
-pub const NUM_9: char = '';
-pub const NUM_A: char = '';
-pub const NUM_B: char = '';
-pub const NUM_C: char = '';
+pub const NUM_0: char = ''; // Munta
+pub const NUM_1: char = ''; // Min
+pub const NUM_2: char = ''; // Atta
+pub const NUM_3: char = ''; // Neldë
+pub const NUM_4: char = ''; // Canta
+pub const NUM_5: char = ''; // Lempë
+pub const NUM_6: char = ''; // Enquë
+pub const NUM_7: char = ''; // Otso
+pub const NUM_8: char = ''; // Toldo
+pub const NUM_9: char = ''; // Nertë
+pub const NUM_A: char = ''; // Quain
+pub const NUM_B: char = ''; // Minquë
+pub const NUM_C: char = ''; // Yunquë
 
 /// Index in this array corresponds to the numerical value of the digit.
 pub const NUMERAL: [char; 13] = [
