@@ -25,6 +25,7 @@ panic = "abort"
 [dependencies]
 cfg-if = "1.0.0"
 itertools = "0.10.0"
+unicode-normalization = "0.1.22"
 
 [dependencies.clap]
 version = "4.0.18"

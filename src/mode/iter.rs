@@ -1,3 +1,4 @@
+use unicode_normalization::UnicodeNormalization;
 use crate::{characters::punctuation, Token, Transcriber};
 use super::{ParseAction, TengwarMode};
 
@@ -76,8 +77,7 @@ impl<M: TengwarMode> Tokenizer<M> {
 
     /// Set up a new Tokenizer over UTF-8 text.
     pub fn from_str(s: impl AsRef<str>) -> Self {
-        //  TODO: Normalize combining diacritics into single `char`s.
-        Self::new(s.as_ref().chars().collect())
+        Self::new(s.as_ref().nfc().collect())
     }
 
     /// Wrap this [`Tokenizer`] in a [`Transcriber`] that can apply higher-level

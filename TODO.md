@@ -5,7 +5,7 @@
 
 ### CLI
 ### Input
-- [ ] Normalize diacritics in input
+- [x] Normalize diacritics in input
 - [ ] Support (duo)decimal points OR drop generic in `Numeral`
 ### Library
 - [ ] Redo ZWJ ligature cases
