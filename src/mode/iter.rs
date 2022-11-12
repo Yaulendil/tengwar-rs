@@ -32,7 +32,7 @@ enum IterStep {
 ///
 /// This is a lower-level construct, and performs only minimal post-processing
 ///     of the `Token`s, as defined by [`TengwarMode::finalize`]. For a higher
-///     level iterator with more powerful rules, see [`crate::Tokenizer`].
+///     level iterator with more powerful rules, see [`crate::Transcriber`].
 #[derive(Debug)]
 pub struct Tokenizer<M: TengwarMode> {
     /// The original data, with case intact.
