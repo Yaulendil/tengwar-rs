@@ -13,6 +13,7 @@
 - [ ] Write nonfinal rincë **before** tehtar
 ### Tests
 - [ ] Write iterator-focused test suite in `tests/`
+- [ ] Write numeral-focused tests
 
 ---
 ## Whenever
@@ -26,3 +27,5 @@
 - [ ] Flesh out `Policy` to make ligature/rincë rules extensible
 ### Output
 ### Tests
+- [ ] Benchmark executable, if possible
+- [ ] Test executable outputs
