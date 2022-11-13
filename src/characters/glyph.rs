@@ -14,6 +14,7 @@ enum TehtaChar {
 ///     marking, flags for additional diacritics, flags for consonant and vowel
 ///     length, and information on vowel and ligature behavior.
 #[derive(Clone, Copy, Debug, Default)]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct Glyph {
     /// A base character.
     pub base: Option<char>,

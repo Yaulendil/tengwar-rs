@@ -62,6 +62,7 @@ impl Digits {
 
 
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct Numeral {
     /// Numeric value.
     pub value: isize,

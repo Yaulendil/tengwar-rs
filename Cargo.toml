@@ -31,6 +31,11 @@ unicode-normalization = "0.1.22"
 version = "4.0.18"
 features = ["cargo", "derive", "wrap_help"]
 
+[dependencies.serde]
+version = "1.0.147"
+features = ["derive"]
+optional = true
+
 
 [features]
 default = []

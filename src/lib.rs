@@ -77,6 +77,10 @@
 #[macro_use]
 extern crate cfg_if;
 
+#[macro_use]
+#[cfg(feature = "serde")]
+extern crate serde;
+
 pub mod characters;
 pub mod mode;
 mod policy;
@@ -123,6 +127,7 @@ impl<S: AsRef<str>> ToTengwar for S {
 /// A small container for either plain text or a [`Glyph`] specification. Serves
 ///     as the top level of throughput for the transliteration process.
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub enum Token {
     /// A single Unicode codepoint.
     Char(char),

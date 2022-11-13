@@ -17,6 +17,7 @@ use super::Tengwa;
 ///
 /// Only the first six Tyeller are used in Quenya.
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct Tema {
     /// Whether the bows of these characters face left.
     pub left: bool,
@@ -191,6 +192,7 @@ impl<'t> From<TengwaRegular<'t>> for char {
 
 /// A small type to represent the specific shape of a regular Tengwa.
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct Tyelle {
     pub stem_dn: bool,
     pub stem_up: bool,

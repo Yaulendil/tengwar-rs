@@ -18,6 +18,7 @@ pub use tema::*;
 /// The type of behavior to be followed in the rendering of tehtar representing
 ///     "long" vowels.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub enum VowelStyle {
     /// Always use the extended carrier mark.
     Separate,

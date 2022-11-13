@@ -1,5 +1,6 @@
 /// A diacritical vowel marker that may be rendered in an alternate "long" form.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct Tehta {
     /// The primary form taken by this tehta.
     pub base: char,
