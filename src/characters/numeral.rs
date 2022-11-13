@@ -7,10 +7,15 @@ const PREF_B10_IN: char = '#';
 /// Suffix expected to be found on input numbers that are meant to be ordinal.
 const SUFF_ORD_IN: char = '@';
 
+//  NOTE: The maximum value of this type determines the maximum supported base
+//      of the number system. It is somewhat hard to imagine any new Tolkien
+//      notes being discovered that introduce a system beyond Base-256.
+type Digit = u8;
+
 
 struct Digits {
     negative: bool,
-    digits: Vec<usize>,
+    digits: Vec<Digit>,
 }
 
 impl Digits {
@@ -21,7 +26,7 @@ impl Digits {
         }
     }
 
-    fn get(n: isize, base: usize) -> Self {
+    fn get(n: isize, base: Digit) -> Self {
         if n == 0 {
             Self::zero()
         } else {
@@ -34,8 +39,8 @@ impl Digits {
             let mut digits = Vec::new();
 
             while n != 0 {
-                digits.push(n % base);
-                n /= base;
+                digits.push((n % base as usize) as _);
+                n /= base as usize;
             }
 
             Self { negative, digits }
@@ -210,11 +215,11 @@ impl Display for Numeral {
                 text.push(base_marker);
             }*/
             [digit] => {
-                text.push(NUMERAL[*digit]);
+                text.push(NUMERAL[*digit as usize]);
                 text.push(base_marker);
             }
             [first, digits @ ..] => {
-                text.push(NUMERAL[*first]);
+                text.push(NUMERAL[*first as usize]);
                 text.push(DC_UNDER_RING);
 
                 if mark_ones {
@@ -222,7 +227,7 @@ impl Display for Numeral {
                 }
 
                 for digit in digits {
-                    text.push(NUMERAL[*digit]);
+                    text.push(NUMERAL[*digit as usize]);
                     text.push(base_marker);
                 }
             }
