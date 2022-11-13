@@ -75,6 +75,8 @@ pub struct Numeral {
 impl Numeral {
     /// Prefix to be prepended to the output form of a negative number.
     pub const PREF_NEG_OUT: char = '-';
+    /// Prefix to be prepended to the output form of a positive number.
+    pub const PREF_POS_OUT: char = '+';
     /// Suffix to be appended to the output form of an ordinal number.
     pub const SUFF_ORD_OUT: char = TEMA_TINCO.single_ex; // 
 
@@ -163,7 +165,7 @@ impl Display for Numeral {
         let base_marker: char;
         let mark_ones: bool;
 
-        if self.base_10 {
+        if self.base_10 ^ f.alternate() {
             //  Base-10 number.
             value = Digits::decimal(self.value);
             size = value.size() + 3;
@@ -190,9 +192,14 @@ impl Display for Numeral {
         }
 
         let mut text = String::with_capacity(size + self.ordinal as usize * 3);
+        // let mut width: usize = value.digits.len();
 
         if value.negative {
             text.push(Self::PREF_NEG_OUT);
+            // width += 1;
+        } else if f.sign_plus() {
+            text.push(Self::PREF_POS_OUT);
+            // width += 1;
         }
 
         match value.digits.as_slice() {
@@ -223,7 +230,37 @@ impl Display for Numeral {
 
         if self.ordinal {
             text.push(Self::SUFF_ORD_OUT);
+            // width += 1;
         }
+
+        //  TODO: Wait for tests before enabling this mess.
+        /*let fill = f.fill();
+        match f.width() {
+            None => f.write_str(&text)?,
+            Some(min) if min <= width => f.write_str(&text)?,
+            Some(min) => match f.align() {
+                None => f.write_str(&text)?,
+                Some(Alignment::Center) => {
+                    let fills = min - width;
+                    let fills_l = fills / 2;
+                    let fills_r = fills - fills_l;
+
+                    for _ in 0..fills_l { f.write_char(fill)?; }
+                    f.write_str(&text)?;
+                    for _ in 0..fills_r { f.write_char(fill)?; }
+                }
+                Some(Alignment::Left) => {
+                    f.write_str(&text)?;
+                    for _ in 0..min - width { f.write_char(fill)?; }
+                }
+                Some(Alignment::Right) => {
+                    for _ in 0..min - width { f.write_char(fill)?; }
+                    f.write_str(&text)?;
+                }
+            }
+        }
+
+        Ok(())*/
 
         Display::fmt(text.as_str(), f)
     }

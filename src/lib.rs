@@ -139,7 +139,6 @@ impl Display for Token {
         match self {
             &Self::Char(ch) => f.write_char(ch),
             Self::Number(n) => n.fmt(f),
-            // Self::Number(n) => f.write_str(&n.render()),
             // Self::String(s) => f.write_str(s),
             Self::Tengwa(t) => t.fmt(f),
         }
