@@ -1,3 +1,4 @@
+use std::fmt::{Debug, Display, Formatter};
 use super::consts::*;
 
 
@@ -151,7 +152,11 @@ impl Numeral {
         }
     }
 
-    pub fn render(&self) -> String {
+    // pub fn render(&self) -> String { self.to_string() }
+}
+
+impl Display for Numeral {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let value: Digits;
         let size: usize;
 
@@ -220,7 +225,7 @@ impl Numeral {
             text.push(Self::SUFF_ORD_OUT);
         }
 
-        text
+        Display::fmt(text.as_str(), f)
     }
 }
 
