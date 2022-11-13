@@ -7,20 +7,51 @@ const PREF_B10_IN: char = '#';
 const SUFF_ORD_IN: char = '@';
 
 
-fn int(mut n: isize, base: isize) -> (bool, Vec<usize>) {
-    if n == 0 {
-        return (false, vec![0]);
+struct Digits {
+    negative: bool,
+    digits: Vec<usize>,
+}
+
+impl Digits {
+    fn zero() -> Self {
+        Self {
+            negative: false,
+            digits: vec![0],
+        }
     }
 
-    let mut digits = Vec::new();
-    let neg = n.is_negative();
+    fn get(n: isize, base: usize) -> Self {
+        if n == 0 {
+            Self::zero()
+        } else {
+            let negative: bool = n.is_negative();
+            let mut n: usize = n.unsigned_abs();
 
-    while n != 0 {
-        digits.push((n % base).unsigned_abs());
-        n /= base;
+            //  TODO: https://github.com/rust-lang/rust/issues/70887
+            // let len: usize = n.checked_ilog10().unwrap_or(0) as usize + 1;
+            // let mut digits = Vec::with_capacity(len);
+            let mut digits = Vec::new();
+
+            while n != 0 {
+                digits.push(n % base);
+                n /= base;
+            }
+
+            Self { negative, digits }
+        }
     }
 
-    (neg, digits)
+    fn decimal(value: isize) -> Self {
+        Self::get(value, 10)
+    }
+
+    fn duodecimal(value: isize) -> Self {
+        Self::get(value, 12)
+    }
+
+    fn size(&self) -> usize {
+        self.negative as usize + self.digits.len() * 6
+    }
 }
 
 
@@ -120,10 +151,8 @@ impl Numeral {
         }
     }
 
-    //noinspection RsBorrowChecker
     pub fn render(&self) -> String {
-        let negative: bool;
-        let digits: Vec<usize>;
+        let value: Digits;
         let size: usize;
 
         let base_marker: char;
@@ -131,8 +160,8 @@ impl Numeral {
 
         if self.base_10 {
             //  Base-10 number.
-            (negative, digits) = int(self.value, 10);
-            size = negative as usize + digits.len() * 6 + 3;
+            value = Digits::decimal(self.value);
+            size = value.size() + 3;
 
             if self.lines {
                 base_marker = DC_OVER_LINE;
@@ -143,8 +172,8 @@ impl Numeral {
             }
         } else {
             //  Base-12 number.
-            (negative, digits) = int(self.value, 12);
-            size = negative as usize + digits.len() * 6;
+            value = Digits::duodecimal(self.value);
+            size = value.size();
 
             if self.lines {
                 base_marker = DC_UNDER_LINE_H;
@@ -157,11 +186,11 @@ impl Numeral {
 
         let mut text = String::with_capacity(size + self.ordinal as usize * 3);
 
-        if negative {
+        if value.negative {
             text.push(Self::PREF_NEG_OUT);
         }
 
-        match digits.as_slice() {
+        match value.digits.as_slice() {
             [] => {}
             /*[0, 1] if !self.base_10 => {
                 //  TODO
