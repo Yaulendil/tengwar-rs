@@ -150,6 +150,14 @@ pub const fn rince(base: char, is_final: bool) -> char {
     }
 }
 
+pub const fn rince_final(base: char) -> Option<char> {
+    if rince_valid_final(base) {
+        Some(SA_RINCE_FINAL)
+    } else {
+        None
+    }
+}
+
 /// Check whether a base tengwa is suitable to receive a sa-rincë. This is to
 ///     some degree based on opinion.
 pub const fn rince_valid(base: char) -> bool {
