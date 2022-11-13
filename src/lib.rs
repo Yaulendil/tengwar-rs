@@ -127,7 +127,7 @@ pub enum Token {
     /// A single Unicode codepoint.
     Char(char),
     /// A numeric value.
-    Number(Numeral<isize>),
+    Number(Numeral),
     // /// UTF-8 text data.
     // String(Cow<'static, str>),
     /// A specified base character and any extra tags it requires.

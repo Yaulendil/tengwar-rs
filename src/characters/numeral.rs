@@ -1,6 +1,12 @@
 use super::consts::*;
 
 
+/// Prefix expected to be found on input numbers meant to be shown as Base-10.
+const PREF_B10_IN: char = '#';
+/// Suffix expected to be found on input numbers that are meant to be ordinal.
+const SUFF_ORD_IN: char = '@';
+
+
 fn int(mut n: isize, base: isize) -> (bool, Vec<usize>) {
     if n == 0 {
         return (false, vec![0]);
@@ -18,15 +24,14 @@ fn int(mut n: isize, base: isize) -> (bool, Vec<usize>) {
 }
 
 
-//  TODO: Either figure out what to do about floats or drop the generic.
 #[derive(Clone, Copy, Debug)]
-pub struct Numeral<N = isize> {
+pub struct Numeral {
     /// Numeric value.
-    pub value: N,
+    pub value: isize,
 
     /// Whether the number will be displayed in Decimal, base 10, rather than in
     ///     Duodecimal, base 12.
-    pub decimal: bool,
+    pub base_10: bool,
     /// Whether the number is ordinal ("first"), rather than cardinal ("one").
     pub ordinal: bool,
 
@@ -35,28 +40,31 @@ pub struct Numeral<N = isize> {
     pub lines: bool,
 }
 
-impl<N> Numeral<N> {
-    pub const PREFIX_NEGATIVE: char = '-';
+impl Numeral {
+    /// Prefix to be prepended to the output form of a negative number.
+    pub const PREF_NEG_OUT: char = '-';
+    /// Suffix to be appended to the output form of an ordinal number.
+    pub const SUFF_ORD_OUT: char = TEMA_TINCO.single_ex; // 
 
-    pub const fn new(value: N, decimal: bool) -> Self {
+    pub const fn new(value: isize, base_10: bool) -> Self {
         Self {
             value,
-            decimal,
+            base_10,
             ordinal: false,
             lines: false,
         }
     }
 
-    pub const fn decimal(value: N) -> Self {
+    pub const fn decimal(value: isize) -> Self {
         Self::new(value, true)
     }
 
-    pub const fn duodecimal(value: N) -> Self {
+    pub const fn duodecimal(value: isize) -> Self {
         Self::new(value, false)
     }
 
     pub const fn with_decimal(mut self, decimal: bool) -> Self {
-        self.decimal = decimal;
+        self.base_10 = decimal;
         self
     }
 
@@ -71,51 +79,42 @@ impl<N> Numeral<N> {
     }
 }
 
-impl Numeral<isize> {
+impl Numeral {
     pub fn parse(mut slice: &[char]) -> Option<(Self, usize)> {
         //  Idea for this notation borrowed from Tecendil. There is most likely
         //      a better way to do it, given the vastly different style of
         //      interface.
-        let decimal: bool = match slice {
-            ['#', after @ ..] => {
+        let base_10: bool = match slice {
+            [PREF_B10_IN, after @ ..] => {
                 slice = after;
                 true
             }
             _ => false,
         };
 
-        let negative: bool = matches!(slice, ['-', ..]);
-        let end: usize = negative as usize
-            + slice[negative as usize..].iter()
+        let neg: bool = 0 < slice.len() && slice[0] == '-';
+        let end: usize = neg as usize
+            + slice.iter()
+            .skip(neg as usize)
             .take_while(|&&n| '0' <= n && n <= '9')
             .count();
 
-        if end > negative as usize {
-            let value: isize = slice[..end].iter()
+        if end > neg as usize {
+            let value: isize = slice.iter()
+                .take(end)
                 .collect::<String>()
                 .parse()
                 .ok()?;
 
-            //  TODO: Decide on a language-agnostic ordinal suffix. Also, decide
-            //      whether this is even the right place to check for it. Would
-            //      it be better to look for it as a completely separate Tengwa?
-            //      That would make it easier to add modifiers to it.
-            /*let ord_suf = match value.abs() % 100 {
-                10..=19 => ['t', 'h'],
-                n => match n % 10 {
-                    1 => ['s', 't'],
-                    2 => ['n', 'd'],
-                    3 => ['r', 'd'],
-                    _ => ['t', 'h'],
-                }
-            };
-            let ordinal: bool = slice[end..].starts_with(&ord_suf);*/
+            //  TODO: Maybe move the Ordinal check up to the Tengwa level.
+            let ordinal = end < slice.len() && slice[end] == SUFF_ORD_IN;
+            let numeral = Self::new(value, base_10).with_ordinal(ordinal);
+            let chars = end
+                + base_10 as usize // +1 if Base-10.
+                + ordinal as usize // +1 if Ordinal.
+                ;
 
-            Some((
-                Self::new(value, decimal)/*.with_ordinal(ordinal)*/,
-                end + decimal as usize/*
-                    + ordinal as usize * 2*/,
-            ))
+            Some((numeral, chars))
         } else {
             None
         }
@@ -130,7 +129,7 @@ impl Numeral<isize> {
         let base_marker: char;
         let mark_ones: bool;
 
-        if self.decimal {
+        if self.base_10 {
             //  Base-10 number.
             (negative, digits) = int(self.value, 10);
             size = negative as usize + digits.len() * 6 + 3;
@@ -156,15 +155,15 @@ impl Numeral<isize> {
             }
         }
 
-        let mut text = String::with_capacity(size);
+        let mut text = String::with_capacity(size + self.ordinal as usize * 3);
 
         if negative {
-            text.push(Self::PREFIX_NEGATIVE);
+            text.push(Self::PREF_NEG_OUT);
         }
 
         match digits.as_slice() {
             [] => {}
-            /*[0, 1] if !self.decimal => {
+            /*[0, 1] if !self.base_10 => {
                 //  TODO
                 text.push(NUMERAL[12]);
                 text.push(base_marker);
@@ -189,15 +188,15 @@ impl Numeral<isize> {
         }
 
         if self.ordinal {
-            text.push(TEMA_TINCO.single_ex);
+            text.push(Self::SUFF_ORD_OUT);
         }
 
         text
     }
 }
 
-impl<N> From<N> for Numeral<N> {
+impl<N: Into<isize>> From<N> for Numeral {
     fn from(value: N) -> Self {
-        Self::new(value, false)
+        Self::new(value.into(), false)
     }
 }
