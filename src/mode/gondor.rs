@@ -244,7 +244,6 @@ impl TengwarMode for Gondor {
             if let Some(base) = current.base {
                 //  Current glyph already has a base tengwa. Look for something
                 //      that would modify it.
-
                 match chunk {
                     ['w'] if !current.labial
                         && (base == TENGWA_ANDO || base == TENGWA_UNGWE)
@@ -270,7 +269,7 @@ impl TengwarMode for Gondor {
                     _ => ParseAction::MatchedNone,
                 }
             } else {
-                //  Current tengwa does NOT have a consonant. Try to find one.
+                //  Current glyph does NOT have a base tengwa. Try to find one.
                 if let Some((new, len)) = Self::find_consonant(chunk, false) {
                     current.integrate_consonant(new);
                     ParseAction::MatchedPart(len)
