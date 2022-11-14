@@ -220,6 +220,12 @@ impl Glyph {
                 nuquerna: true,
                 ..
             } if nuquerna_valid(base) && !(tehta_alt && tehta.needs_ara()) => {
+                //  In this case, ALL of the following are true:
+                //    - The glyph has both a tengwa and a tehta.
+                //    - The base tengwa has a Nuquerna variant.
+                //    - The glyph is set to use the Nuquerna variant.
+                //    - The tehta will be displayed on the tengwa.
+                //  The Nuquerna variant of the base will therefore be returned.
                 nuquerna(base)
             }
 
@@ -249,6 +255,11 @@ impl Glyph {
             Some(base) if !self.nuquerna => nuquerna_valid(base),
             _ => false,
         }
+    }
+
+    /// Determine whether is glyph has no basic forms at all.
+    pub const fn is_empty(&self) -> bool {
+        self.base.is_none() && self.tehta.is_none()
     }
 
     /// Determine whether this glyph will use [Telco](TENGWA_TELCO) as its base.
