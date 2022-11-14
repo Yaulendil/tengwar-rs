@@ -144,7 +144,7 @@ impl Gondor {
                     break;
                 }
                 ParseAction::MatchedToken {
-                    token: Token::Tengwa(_),
+                    token: Token::Glyph(_),
                     ..
                 } => {
                     //  Next token is a glyph.
@@ -204,10 +204,10 @@ impl Gondor {
 
 impl TengwarMode for Gondor {
     fn finalize(&self, token: &mut Token, next: Option<&Token>) {
-        if let Token::Tengwa(glyph) = token {
+        if let Token::Glyph(glyph) = token {
             glyph.tehta_first = true;
 
-            if let Some(Token::Tengwa(_)) = next {
+            if let Some(Token::Glyph(_)) = next {
                 glyph.replace_base(TENGWA_ORE, TENGWA_ROMEN);
             }
         }
@@ -215,7 +215,7 @@ impl TengwarMode for Gondor {
 
     fn finish_current(&mut self) -> Option<Token> {
         self.previous = self.current.take();
-        self.previous.map(Token::Tengwa)
+        self.previous.map(Token::Glyph)
     }
 
     fn process(&mut self, chunk: &[char]) -> ParseAction {
@@ -228,7 +228,7 @@ impl TengwarMode for Gondor {
                 self.previous = Some(glyph);
 
                 ParseAction::MatchedToken {
-                    token: Token::Tengwa(glyph),
+                    token: Token::Glyph(glyph),
                     len: $len,
                 }
             }};
@@ -300,7 +300,7 @@ impl TengwarMode for Gondor {
                 if initial {
                     if let ['i', rest @ ..] = chunk {
                         let first = ParseAction::MatchedToken {
-                            token: Token::Tengwa(CONSONANT_I.into()),
+                            token: Token::Glyph(CONSONANT_I.into()),
                             len: chunk.len(),
                         };
 

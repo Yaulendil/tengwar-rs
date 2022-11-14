@@ -145,7 +145,7 @@ impl Beleriand {
                     break;
                 }
                 ParseAction::MatchedToken {
-                    token: Token::Tengwa(_),
+                    token: Token::Glyph(_),
                     ..
                 } => {
                     //  Next token is a glyph.
@@ -168,7 +168,7 @@ impl Beleriand {
 impl TengwarMode for Beleriand {
     fn finish_current(&mut self) -> Option<Token> {
         self.previous = self.current.take();
-        self.previous.map(Token::Tengwa)
+        self.previous.map(Token::Glyph)
     }
 
     //  TODO: Completely review this code; A significant mistake was found. It
@@ -183,7 +183,7 @@ impl TengwarMode for Beleriand {
                 self.previous = Some(glyph);
 
                 ParseAction::MatchedToken {
-                    token: Token::Tengwa(glyph),
+                    token: Token::Glyph(glyph),
                     len: $len,
                 }
             }};
@@ -206,7 +206,7 @@ impl TengwarMode for Beleriand {
                 self.previous = None;
 
                 ParseAction::MatchedToken {
-                    token: Token::Tengwa(Glyph::new_base(TENGWA_CALMA)),
+                    token: Token::Glyph(Glyph::new_base(TENGWA_CALMA)),
                     len: 1,
                 }
             }
@@ -246,7 +246,7 @@ impl TengwarMode for Beleriand {
                     if initial {
                         if let ['i', rest @ ..] = chunk {
                             let first = ParseAction::MatchedToken {
-                                token: Token::Tengwa(CONSONANT_I.into()),
+                                token: Token::Glyph(CONSONANT_I.into()),
                                 len: chunk.len(),
                             };
 

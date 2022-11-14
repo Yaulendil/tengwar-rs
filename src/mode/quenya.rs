@@ -122,7 +122,7 @@ pub struct Quenya {
 impl TengwarMode for Quenya {
     fn finish_current(&mut self) -> Option<Token> {
         self.previous = self.current.take();
-        self.previous.map(Token::Tengwa)
+        self.previous.map(Token::Glyph)
     }
 
     fn process(&mut self, chunk: &[char]) -> ParseAction {
@@ -135,7 +135,7 @@ impl TengwarMode for Quenya {
                 self.previous = Some(glyph);
 
                 ParseAction::MatchedToken {
-                    token: Token::Tengwa(glyph),
+                    token: Token::Glyph(glyph),
                     len: $len,
                 }
             }};

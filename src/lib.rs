@@ -131,21 +131,21 @@ impl<S: AsRef<str>> ToTengwar for S {
 pub enum Token {
     /// A single Unicode codepoint.
     Char(char),
+    /// A specified base character and any extra tags it requires.
+    Glyph(Glyph),
     /// A numeric value.
     Number(Numeral),
     // /// UTF-8 text data.
     // String(Cow<'static, str>),
-    /// A specified base character and any extra tags it requires.
-    Tengwa(Glyph),
 }
 
 impl Display for Token {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             &Self::Char(ch) => f.write_char(ch),
+            Self::Glyph(t) => t.fmt(f),
             Self::Number(n) => n.fmt(f),
             // Self::String(s) => f.write_str(s),
-            Self::Tengwa(t) => t.fmt(f),
         }
     }
 }
@@ -158,8 +158,8 @@ impl FromIterator<Token> for String {
         while let Some(token) = iter.next() {
             write!(buf, "{token}").expect("Error writing String");
 
-            if let Token::Tengwa(current) = token {
-                if let Some(Token::Tengwa(next)) = iter.peek() {
+            if let Token::Glyph(current) = token {
+                if let Some(Token::Glyph(next)) = iter.peek() {
                     if current.ligate_zwj && current.ligates_with(next) {
                         buf.push(characters::ZWJ);
                     }
@@ -272,7 +272,7 @@ impl<I: Iterator<Item=Token>> Iterator for Transcriber<I> {
     fn next(&mut self) -> Option<Self::Item> {
         let mut token: Token = self.inner.next()?;
 
-        if let Token::Tengwa(glyph) = &mut token {
+        if let Token::Glyph(glyph) = &mut token {
             glyph.ligate_zwj = self.ligate_zwj;
             glyph.nuquerna = self.nuquerna;
             glyph.vowels = self.vowels;
@@ -282,7 +282,7 @@ impl<I: Iterator<Item=Token>> Iterator for Transcriber<I> {
             }
 
             match self.inner.peek() {
-                Some(Token::Tengwa(next)) => {
+                Some(Token::Glyph(next)) => {
                     glyph.rince_final = false;
                     glyph.ligate_short = self.ligate_short
                         // && glyph.is_short_carrier()
