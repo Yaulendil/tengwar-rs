@@ -1,11 +1,11 @@
-use std::fmt::{Debug, Display, Formatter};
+use std::fmt::{Display, Formatter};
 use super::consts::*;
 
 
 /// Prefix expected to be found on input numbers meant to be shown as Base-10.
-const PREF_B10_IN: char = '#';
+pub const PREF_B10_IN: char = '#';
 /// Suffix expected to be found on input numbers that are meant to be ordinal.
-const SUFF_ORD_IN: char = '@';
+pub const SUFF_ORD_IN: char = '@';
 
 //  NOTE: The maximum value of this type determines the maximum supported base
 //      of the number system. It is somewhat hard to imagine any new Tolkien
@@ -61,6 +61,7 @@ impl Digits {
 }
 
 
+/// A numeric value, paired with formatting information.
 #[derive(Clone, Copy, Debug)]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct Numeral {
@@ -86,6 +87,7 @@ impl Numeral {
     /// Suffix to be appended to the output form of an ordinal number.
     pub const SUFF_ORD_OUT: char = TEMA_TINCO.single_ex; // 
 
+    /// Define a value in either Base-10 or Base-12.
     pub const fn new(value: isize, base_10: bool) -> Self {
         Self {
             value,
@@ -95,10 +97,12 @@ impl Numeral {
         }
     }
 
+    /// Define a Base-10 decimal value.
     pub const fn decimal(value: isize) -> Self {
         Self::new(value, true)
     }
 
+    /// Define a Base-12 duodecimal, or dozenal, value.
     pub const fn duodecimal(value: isize) -> Self {
         Self::new(value, false)
     }
@@ -120,6 +124,9 @@ impl Numeral {
 }
 
 impl Numeral {
+    /// Try to extract a numeric value from a slice of [`char`]s. If successful,
+    ///     returns a new `Numeral`, along with the number of `char`s that were
+    ///     processed in order to find it.
     pub fn parse(mut slice: &[char]) -> Option<(Self, usize)> {
         //  Idea for this notation borrowed from Tecendil. There is most likely
         //      a better way to do it, given the vastly different style of

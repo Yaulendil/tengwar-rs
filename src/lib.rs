@@ -89,7 +89,7 @@ pub use characters::{Glyph, Numeral, VowelStyle};
 pub use mode::{Beleriand, Gondor, Quenya, TengwarMode};
 
 use std::{
-    fmt::{self, Display, Formatter, Write},
+    fmt::{Display, Formatter, Write},
     iter::{FromIterator, Peekable},
 };
 use mode::Tokenizer;
@@ -140,7 +140,7 @@ pub enum Token {
 }
 
 impl Display for Token {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             &Self::Char(ch) => f.write_char(ch),
             Self::Number(n) => n.fmt(f),
@@ -182,15 +182,35 @@ pub struct Transcriber<I: Iterator<Item=Token>> {
     inner: Peekable<I>,
     last: Option<Token>,
 
+    /// If this is `true`, the [A-tehta](characters::TEHTA_A) will be replaced
+    ///     with its [alternate form](characters::TEHTA_YANTA).
     pub alt_a: bool,
+
+    /// If this is `true`, [Sa-Rinci](characters::SA_RINCE) at the ends of words
+    ///     will use the [alternate form](characters::SA_RINCE_FINAL) where
+    ///     appropriate.
     pub alt_rince: bool,
+
+    /// If this is `true`, the [short carrier](characters::CARRIER_SHORT) will
+    ///     be replaced by its [ligating variant](characters::CARRIER_SHORT_LIG)
+    ///     where appropriate.
     pub ligate_short: bool,
+
+    /// If this is `true`, [zero-width joiners](characters::ZWJ) will be placed
+    ///     between glyphs to form font ligatures where appropriate.
     pub ligate_zwj: bool,
+
+    /// If this is `true`, the characters [Silmë](characters::TENGWA_SILME) and
+    ///     [Essë](characters::TENGWA_ESSE) will use their inverted Nuquerna
+    ///     variants when holding a tehta.
     pub nuquerna: bool,
+
+    /// This defines the treatment of "long" vowels.
     pub vowels: VowelStyle,
 }
 
 impl<I: Iterator<Item=Token>> Transcriber<I> {
+    /// Construct a Transcriber around an Iterator of [`Token`]s.
     pub fn new(iter: I) -> Self {
         Self {
             inner: iter.peekable(),
@@ -204,6 +224,12 @@ impl<I: Iterator<Item=Token>> Transcriber<I> {
             vowels: VowelStyle::DEFAULT,
         }
     }
+
+    /// Return a reference to the previous Token.
+    pub fn last(&self) -> Option<&Token> { self.last.as_ref() }
+
+    /// Return a reference to the next Token, without advancing the Iterator.
+    pub fn peek(&mut self) -> Option<&Token> { self.inner.peek() }
 
     pub const fn with_alt_a(mut self, enabled: bool) -> Self {
         self.alt_a = enabled;
@@ -234,10 +260,6 @@ impl<I: Iterator<Item=Token>> Transcriber<I> {
         self.vowels = vowels;
         self
     }
-
-    pub fn last(&self) -> Option<&Token> { self.last.as_ref() }
-
-    pub fn peek(&mut self) -> Option<&Token> { self.inner.peek() }
 }
 
 impl<T: IntoIterator<Item=Token>> From<T> for Transcriber<T::IntoIter> {
