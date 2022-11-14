@@ -29,6 +29,21 @@ fn alt_a() {
 
 
 #[test]
+fn normalization() {
+    //  Standard codepoints.
+    let anduunie = test_tengwar!(Gondor, "andûnië" => [
+        TENGWA_ANDO, DC_OVER_LINE, TEHTA_A.base, // and
+        TENGWA_NUMEN, TEHTA_U.base, TEHTA_U.base, // ûn
+        CARRIER_SHORT, TEHTA_I.base, // i
+        CARRIER_SHORT, TEHTA_E.base, // ë
+    ]);
+    //  Combining diacritic equivalents.
+    test_tengwar!(Gondor, "andûnië" == anduunie);
+    test_tengwar!(Gondor, "ANDÛNIË" == anduunie);
+}
+
+
+#[test]
 fn nuquernar() {
     //  Check Silmë.
     let _estel = test_tengwar!(Gondor, "estel" => [
