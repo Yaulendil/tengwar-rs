@@ -7,7 +7,7 @@
 //!     in order to prevent ambiguity; The term "series" may be taken to refer
 //!     to a sequence of tengwar or tokens, but a "Téma" can only be a Téma.
 
-use std::ops::Index;
+use std::ops::{/*Deref, DerefMut,*/ Index};
 use super::Tengwa;
 
 
@@ -150,13 +150,13 @@ impl<'t> TengwaRegular<'t> {
         Tengwa::Regular(self)
     }
 
-    pub const fn double(mut self) -> Self {
-        self.tyelle = self.tyelle.double();
+    pub const fn single(mut self) -> Self {
+        self.tyelle = self.tyelle.single();
         self
     }
 
-    pub const fn single(mut self) -> Self {
-        self.tyelle = self.tyelle.single();
+    pub const fn double(mut self) -> Self {
+        self.tyelle = self.tyelle.double();
         self
     }
 
@@ -170,13 +170,13 @@ impl<'t> TengwaRegular<'t> {
         self
     }
 
-    pub const fn short(mut self) -> Self {
-        self.tyelle = self.tyelle.short();
+    pub const fn extended(mut self) -> Self {
+        self.tyelle = self.tyelle.extended();
         self
     }
 
-    pub const fn extended(mut self) -> Self {
-        self.tyelle = self.tyelle.extended();
+    pub const fn short(mut self) -> Self {
+        self.tyelle = self.tyelle.short();
         self
     }
 }
@@ -184,6 +184,15 @@ impl<'t> TengwaRegular<'t> {
 impl<'t> AsRef<char> for TengwaRegular<'t> {
     fn as_ref(&self) -> &char { self.as_char() }
 }
+
+/*impl<'t> Deref for TengwaRegular<'t> {
+    type Target = Tyelle;
+    fn deref(&self) -> &Self::Target { &self.tyelle }
+}
+
+impl<'t> DerefMut for TengwaRegular<'t> {
+    fn deref_mut(&mut self) -> &mut Self::Target { &mut self.tyelle }
+}*/
 
 impl<'t> From<TengwaRegular<'t>> for char {
     fn from(tengwa: TengwaRegular<'t>) -> Self { *tengwa.as_char() }
@@ -209,10 +218,11 @@ impl Tyelle {
         }
     }
 
+    pub const fn is_double(&self) -> bool { self.doubled }
     pub const fn is_ascending(&self) -> bool { self.stem_up && !self.stem_dn }
     pub const fn is_descending(&self) -> bool { !self.stem_up && self.stem_dn }
-    pub const fn is_short(&self) -> bool { !self.stem_up && !self.stem_dn }
     pub const fn is_extended(&self) -> bool { self.stem_up && self.stem_dn }
+    pub const fn is_short(&self) -> bool { !self.stem_up && !self.stem_dn }
 
     /// Return the [`TengwaRegular`] found at this Tyellë on a given [`Tema`].
     pub const fn on_tema<'t>(&self, tema: &'t Tema) -> TengwaRegular<'t> {
@@ -230,13 +240,13 @@ impl Tyelle {
             | self.doubled as u8 * 0b100
     }*/
 
-    pub const fn double(mut self) -> Self {
-        self.doubled = true;
+    pub const fn single(mut self) -> Self {
+        self.doubled = false;
         self
     }
 
-    pub const fn single(mut self) -> Self {
-        self.doubled = false;
+    pub const fn double(mut self) -> Self {
+        self.doubled = true;
         self
     }
 
@@ -252,24 +262,24 @@ impl Tyelle {
         self
     }
 
-    pub const fn short(mut self) -> Self {
-        self.stem_dn = false;
-        self.stem_up = false;
-        self
-    }
-
     pub const fn extended(mut self) -> Self {
         self.stem_dn = true;
         self.stem_up = true;
         self
     }
 
-    pub fn make_double(&mut self) {
-        *self = self.double();
+    pub const fn short(mut self) -> Self {
+        self.stem_dn = false;
+        self.stem_up = false;
+        self
     }
 
     pub fn make_single(&mut self) {
         *self = self.single();
+    }
+
+    pub fn make_double(&mut self) {
+        *self = self.double();
     }
 
     pub fn make_ascending(&mut self) {
@@ -280,15 +290,80 @@ impl Tyelle {
         *self = self.descending();
     }
 
-    pub fn make_short(&mut self) {
-        *self = self.short();
-    }
-
     pub fn make_extended(&mut self) {
         *self = self.extended();
+    }
+
+    pub fn make_short(&mut self) {
+        *self = self.short();
     }
 }
 
 impl Default for Tyelle {
     fn default() -> Self { Self::new() }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_tyeller() {
+        let as_1 = Tyelle::new().ascending().single();
+        assert!(!as_1.is_double());
+        assert!(as_1.is_ascending());
+        assert!(!as_1.is_descending());
+        assert!(!as_1.is_extended());
+        assert!(!as_1.is_short());
+
+        let as_2 = Tyelle::new().ascending().double();
+        assert!(as_2.is_double());
+        assert!(as_2.is_ascending());
+        assert!(!as_2.is_descending());
+        assert!(!as_2.is_extended());
+        assert!(!as_2.is_short());
+
+        let de_1 = Tyelle::new().descending().single();
+        assert!(!de_1.is_double());
+        assert!(!de_1.is_ascending());
+        assert!(de_1.is_descending());
+        assert!(!de_1.is_extended());
+        assert!(!de_1.is_short());
+
+        let de_2 = Tyelle::new().descending().double();
+        assert!(de_2.is_double());
+        assert!(!de_2.is_ascending());
+        assert!(de_2.is_descending());
+        assert!(!de_2.is_extended());
+        assert!(!de_2.is_short());
+
+        let ex_1 = Tyelle::new().extended().single();
+        assert!(!ex_1.is_double());
+        assert!(!ex_1.is_ascending());
+        assert!(!ex_1.is_descending());
+        assert!(ex_1.is_extended());
+        assert!(!ex_1.is_short());
+
+        let ex_2 = Tyelle::new().extended().double();
+        assert!(ex_2.is_double());
+        assert!(!ex_2.is_ascending());
+        assert!(!ex_2.is_descending());
+        assert!(ex_2.is_extended());
+        assert!(!ex_2.is_short());
+
+        let sh_1 = Tyelle::new().short().single();
+        assert!(!sh_1.is_double());
+        assert!(!sh_1.is_ascending());
+        assert!(!sh_1.is_descending());
+        assert!(!sh_1.is_extended());
+        assert!(sh_1.is_short());
+
+        let sh_2 = Tyelle::new().short().double();
+        assert!(sh_2.is_double());
+        assert!(!sh_2.is_ascending());
+        assert!(!sh_2.is_descending());
+        assert!(!sh_2.is_extended());
+        assert!(sh_2.is_short());
+    }
 }
