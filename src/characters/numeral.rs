@@ -149,7 +149,7 @@ impl Numeral {
         let end: usize = neg as usize
             + slice.iter()
             .skip(neg as usize)
-            .take_while(|&&n| '0' <= n && n <= '9')
+            .take_while(|n| n.is_ascii_digit())
             .count();
 
         if end > neg as usize {
