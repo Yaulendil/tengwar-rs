@@ -211,14 +211,14 @@ fn normalization() {
     test_tengwar!(Quenya, "ÑÁVËA" == ngaavea);
 
     //  Standard codepoints.
-    let noole = test_tengwar!(Quenya, "ñólë" => [
+    let ngoole = test_tengwar!(Quenya, "ñólë" => [
         TENGWA_NOLDO, TEHTA_O.base, TEHTA_O.base, // ñó
         TENGWA_LAMBE, TEHTA_E.base, // lë
     ]);
     //  Combining diacritic equivalents.
-    test_tengwar!(Quenya, "ñólë" == noole); // Acute accent (U+0301).
-    test_tengwar!(Quenya, "ñólë" == noole); // Acute tone mark (U+0341).
-    test_tengwar!(Quenya, "ÑÓLË" == noole);
+    test_tengwar!(Quenya, "ñólë" == ngoole); // Acute accent (U+0301).
+    test_tengwar!(Quenya, "ñólë" == ngoole); // Acute tone mark (U+0341).
+    test_tengwar!(Quenya, "ÑÓLË" == ngoole);
 }
 
 
