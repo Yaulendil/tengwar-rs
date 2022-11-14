@@ -77,6 +77,11 @@ pub struct Numeral {
     /// Whether the base of the number will be denoted with lines, rather than
     ///     with dots.
     pub lines: bool,
+
+    /// Whether the less significant digits of will be written first. This is
+    ///     the style preferred by the Eldar, but as the least significant digit
+    ///     is marked, it can go either way without ambiguity.
+    pub little_endian: bool,
 }
 
 impl Numeral {
@@ -94,6 +99,7 @@ impl Numeral {
             base_10,
             ordinal: false,
             lines: false,
+            little_endian: true,
         }
     }
 
@@ -166,13 +172,11 @@ impl Numeral {
             None
         }
     }
-
-    // pub fn render(&self) -> String { self.to_string() }
 }
 
 impl Display for Numeral {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let value: Digits;
+        let mut value: Digits;
         let size: usize;
 
         let base_marker: char;
@@ -215,6 +219,10 @@ impl Display for Numeral {
             // width += 1;
         }
 
+        if !self.little_endian {
+            value.digits.reverse();
+        }
+
         match value.digits.as_slice() {
             [] => {}
             /*[0, 1] if !self.base_10 => {
@@ -226,8 +234,8 @@ impl Display for Numeral {
                 text.push(NUMERAL[*digit as usize]);
                 text.push(base_marker);
             }
-            [first, digits @ ..] => {
-                text.push(NUMERAL[*first as usize]);
+            [units, digits @ ..] if self.little_endian => {
+                text.push(NUMERAL[*units as usize]);
                 text.push(DC_UNDER_RING);
 
                 if mark_ones {
@@ -236,6 +244,19 @@ impl Display for Numeral {
 
                 for digit in digits {
                     text.push(NUMERAL[*digit as usize]);
+                    text.push(base_marker);
+                }
+            }
+            [digits @ .., units] => {
+                for digit in digits {
+                    text.push(NUMERAL[*digit as usize]);
+                    text.push(base_marker);
+                }
+
+                text.push(NUMERAL[*units as usize]);
+                text.push(DC_UNDER_RING);
+
+                if mark_ones {
                     text.push(base_marker);
                 }
             }
