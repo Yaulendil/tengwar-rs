@@ -26,9 +26,9 @@
 //! ```
 //! use tengwar::{Quenya, TengwarMode};
 //!
-//! let text: String = Quenya::transcribe("namárië:-");
+//! let text: String = Quenya::transcribe("namárië !");
 //!
-//! assert_eq!(text, "");
+//! assert_eq!(text, " ");
 //! ```
 //!
 //! With the use of the [`ToTengwar`] helper trait, two methods are provided on
@@ -42,12 +42,12 @@
 //! ```
 //! use tengwar::{Quenya, ToTengwar};
 //!
-//! let mut transcriber = "namárië:-".transcriber::<Quenya>();
+//! let mut transcriber = "namárië !".transcriber::<Quenya>();
 //! transcriber.alt_a = true; // Use the alternate form of the A-tehta.
 //!
 //! let text: String = transcriber.collect();
 //!
-//! assert_eq!(text, "");
+//! assert_eq!(text, " ");
 //! ```
 //!
 //! The other method is [`to_tengwar`]. This is mostly a convenience method,
@@ -56,9 +56,9 @@
 //! ```
 //! use tengwar::{Quenya, ToTengwar};
 //!
-//! let text: String = "namárië:-".to_tengwar::<Quenya, String>();
+//! let text: String = "namárië !".to_tengwar::<Quenya, String>();
 //!
-//! assert_eq!(text, "");
+//! assert_eq!(text, " ");
 //! ```
 //!
 //! Also available, and likely the easiest to discover via code completion, is
@@ -69,9 +69,9 @@
 //! ```
 //! use tengwar::{Quenya, transcribe};
 //!
-//! let text: String = transcribe::<Quenya>("namárië:-");
+//! let text: String = transcribe::<Quenya>("namárië !");
 //!
-//! assert_eq!(text, "");
+//! assert_eq!(text, " ");
 //! ```
 
 #[macro_use]
