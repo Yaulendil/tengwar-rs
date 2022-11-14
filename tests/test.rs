@@ -4,9 +4,19 @@ use tengwar::{*, characters::*, mode::*};
 #[test]
 fn test_regulars() {
     let mut t = TEMA_TINCO.new_tengwa();
-    t.tyelle.make_ascending();
+    assert_eq!(*t.as_char(), TENGWA_TINCO);
 
+    t.tyelle.stem_dn = false;
+    assert_eq!(*t.as_char(), TENGWA_ORE);
+
+    t.tyelle.stem_up = true;
     assert_eq!(*t.as_char(), TENGWA_THULE);
+
+    t.tyelle.doubled = true;
+    assert_eq!(*t.as_char(), TENGWA_ANTO);
+
+    t.tema = &TEMA_PARMA;
+    assert_eq!(*t.as_char(), TENGWA_AMPA);
 }
 
 
