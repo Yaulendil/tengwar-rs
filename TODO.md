@@ -10,7 +10,7 @@
 ### Library
 - [ ] Redo ZWJ ligature cases
 ### Output
-- [ ] Write nonfinal rincë **before** tehtar
+- [x] Write nonfinal rincë **before** tehtar
 ### Tests
 - [ ] Write iterator-focused test suite in `tests/`
 - [ ] Write numeral-focused tests

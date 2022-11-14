@@ -2,6 +2,22 @@ use std::fmt::{Display, Formatter, Write};
 use super::*;
 
 
+enum Rince {
+    Basic,
+    Final,
+}
+
+impl Rince {
+    const fn choose(base: char) -> Self {
+        if rince_valid_final(base) {
+            Self::Final
+        } else {
+            Self::Basic
+        }
+    }
+}
+
+
 enum TehtaChar {
     OnAraAfter(char),
     OnAraBefore(char),
@@ -67,6 +83,7 @@ pub struct Glyph {
     pub ligate_zwj: bool,
 }
 
+/// Public: Construction and modification.
 impl Glyph {
     /// Define a new empty glyph.
     pub const fn new() -> Self {
@@ -208,6 +225,7 @@ impl Glyph {
     }
 }
 
+/// Public: Information and logic.
 impl Glyph {
     /// Determine the base character to be used for this glyph. If one is not
     ///     set, an appropriate "carrier" mark will be returned instead.
@@ -290,7 +308,21 @@ impl Glyph {
     }
 }
 
+/// Private: Helper methods.
 impl Glyph {
+    /// Choose the correct form of Sa-Rincë.
+    const fn choose_rince(&self) -> Option<Rince> {
+        if self.rince {
+            if self.rince_final {
+                Some(Rince::choose(self.base()))
+            } else {
+                Some(Rince::Basic)
+            }
+        } else {
+            None
+        }
+    }
+
     /// Resolve the position and identity of the tehta.
     const fn tehta_char(&self) -> Option<TehtaChar> {
         let Some(tehta) = self.tehta else {
@@ -400,20 +432,48 @@ impl Display for Glyph {
                 f.write_char(base)?;
                 self.write_mods(f)?;
 
-                f.write_char(tehta)?;
-                self.write_rince(f)?;
-                //  TODO: If there will be a nonfinal rincë in this position,
-                //      print it BEFORE the tehta. Discovered an issue with the
-                //      base rincë, when placed after the tehta, not combining
-                //      properly with the unique long forms.
+                //  NOTE: If there will be a non-final rincë in this position,
+                //      write it BEFORE the tehta. Discovered an issue with the
+                //      basic rincë, when placed after the tehta, not combining
+                //      properly after the unique long forms.
+                match self.choose_rince() {
+                    Some(Rince::Basic) => {
+                        f.write_char(SA_RINCE)?;
+                        f.write_char(tehta)?;
+                    }
+                    Some(Rince::Final) => {
+                        f.write_char(tehta)?;
+                        f.write_char(SA_RINCE_FINAL)?;
+                    }
+                    None => {
+                        f.write_char(tehta)?;
+                    }
+                }
             }
             Some(TehtaChar::OnTengwaTwice(tehta)) => {
                 f.write_char(base)?;
                 self.write_mods(f)?;
 
-                f.write_char(tehta)?;
-                f.write_char(tehta)?;
-                self.write_rince(f)?;
+                //  NOTE: If the tehta is being doubled, it is PROBABLY not one
+                //      of the characters that has the issue described above.
+                //      However, the same rule should probably be followed here
+                //      for consistency.
+                match self.choose_rince() {
+                    Some(Rince::Basic) => {
+                        f.write_char(SA_RINCE)?;
+                        f.write_char(tehta)?;
+                        f.write_char(tehta)?;
+                    }
+                    Some(Rince::Final) => {
+                        f.write_char(tehta)?;
+                        f.write_char(tehta)?;
+                        f.write_char(SA_RINCE_FINAL)?;
+                    }
+                    None => {
+                        f.write_char(tehta)?;
+                        f.write_char(tehta)?;
+                    }
+                }
             }
             None => {
                 f.write_char(base)?;

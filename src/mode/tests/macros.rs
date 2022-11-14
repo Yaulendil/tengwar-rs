@@ -35,18 +35,18 @@ macro_rules! test_tengwar {
         let expected: String = $expected.into_iter().collect();
         let received: String = test_tengwar!(#$mode $([$($t)*])?, $input);
 
-        assert_eq!(expected, received,
-            "Transcription of {input:?} does not match expectation.\
-            \n  Expected: {expected}\
-            \n  Received: {received}",
-            input = $input,
-        );
-
         println!(
             "[{file}:{line:0>3}] {mode}: {input:?} -> {received}",
             file = file!(),
             line = line!(),
             mode = stringify!($mode),
+            input = $input,
+        );
+
+        assert_eq!(expected, received,
+            "Transcription of {input:?} does not match expectation.\
+            \n  Expected: {expected}\
+            \n  Received: {received}",
             input = $input,
         );
 

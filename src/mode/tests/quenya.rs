@@ -25,7 +25,7 @@ fn alt_rince() {
     //  Check final basic against final alternate on T.
     let otso = test_tengwar!(Quenya, "otso" => [
         CARRIER_SHORT, TEHTA_O.base, // o
-        TENGWA_TINCO, TEHTA_O.base, SA_RINCE, // tso
+        TENGWA_TINCO, SA_RINCE, TEHTA_O.base, // tso
     ]);
     let otso_alt = test_tengwar!(Quenya[alt_rince=true], "otso" => [
         CARRIER_SHORT, TEHTA_O.base, // o
@@ -37,7 +37,7 @@ fn alt_rince() {
     //  Check nonfinal basic against nonfinal alternate on T.
     let otsor = test_tengwar!(Quenya, "otsor" => [
         CARRIER_SHORT, TEHTA_O.base, // o
-        TENGWA_TINCO, TEHTA_O.base, SA_RINCE, // tso
+        TENGWA_TINCO, SA_RINCE, TEHTA_O.base, // tso
         TENGWA_ORE, // r
     ]);
     test_tengwar!(Quenya, "otzor" == otsor);
@@ -47,7 +47,7 @@ fn alt_rince() {
     //  Check final basic against final alternate on K.
     let mixa = test_tengwar!(Quenya, "mixa" => [
         TENGWA_MALTA, TEHTA_I.base, // mi
-        TENGWA_CALMA, TEHTA_A.base, SA_RINCE, // xa
+        TENGWA_CALMA, SA_RINCE, TEHTA_A.base, // xa
     ]);
     test_tengwar!(Quenya, "micsa" == mixa);
     test_tengwar!(Quenya, "miksa" == mixa);
@@ -60,7 +60,7 @@ fn alt_rince() {
     //  Check nonfinal basic against nonfinal alternate on K.
     let mixar = test_tengwar!(Quenya, "mixar" => [
         TENGWA_MALTA, TEHTA_I.base, // mi
-        TENGWA_CALMA, TEHTA_A.base, SA_RINCE, // xa
+        TENGWA_CALMA, SA_RINCE, TEHTA_A.base, // xa
         TENGWA_ORE, // r
     ]);
     test_tengwar!(Quenya, "micsar" == mixar);
@@ -306,7 +306,7 @@ fn words() {
         TENGWA_LAMBE, // l
         TENGWA_CALMA, TEHTA_A.base, // ca
         TENGWA_ROMEN, TEHTA_A.base, // ra
-        TENGWA_CALMA, TEHTA_E.base, SA_RINCE, // xë
+        TENGWA_CALMA, SA_RINCE, TEHTA_E.base, // xë
     ]);
     test_tengwar!(Quenya, "helkarakse" == helcaraxe);
 

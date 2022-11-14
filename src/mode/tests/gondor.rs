@@ -86,7 +86,7 @@ fn nuquernar() {
 #[test]
 fn words() {
     test_tengwar!(Gondor, "axë" => [
-        TENGWA_CALMA, TEHTA_A.base, SA_RINCE, // ax
+        TENGWA_CALMA, SA_RINCE, TEHTA_A.base, // ax
         CARRIER_SHORT, TEHTA_E.base, // ë
     ]);
 
