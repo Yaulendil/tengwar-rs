@@ -8,9 +8,15 @@
 [Tengwar Telcontar]: https://freetengwar.sourceforge.net/tengtelc.html
 
 Automated conversion of Latin text into Tengwar codepoints in the Unicode Private Use Area.
-Primarily targets the Classical Quenya mode, with tenuous support for the Sindarin modes of Beleriand and Gondor.
+Primarily targets the Classical Quenya mode, but also supports the Sindarin modes of Beleriand and Gondor.
+This allows for typesetting text in the various Elvish languages of J.R.R. Tolkien.
 
 The codepoints used are the ones defined by the [Free Tengwar Font Project](https://freetengwar.sourceforge.net/mapping.html), based on the mapping in the [ConScript Unicode Registry](https://en.wikipedia.org/wiki/Tengwar#ConScript_Unicode_Registry), and will only correctly render if a font is installed that includes them.
+For an image example that does not require any fonts to be installed, see the bottom of the page.
+
+This project provides both an executable program and a software library.
+The rest of this page describes the executable program.
+For information on using it as a library instead, refer to [the library documentation](https://docs.rs/tengwar).
 
 ## Installation
 
@@ -107,6 +113,16 @@ It is therefore highly recommended to enclose all of your input text in double q
 ## Features
 
 [Cargo Features](https://doc.rust-lang.org/cargo/reference/features.html#command-line-feature-options) allow very powerful changes to the behavior of a program to be baked in at compile-time.
+
+### `csur`
+
+The ConScript Unicode Registry defines a block of codepoints for the Tengwar, and these are the codepoints used by this program.
+However, the Tengwar are in the (very slow) process of being added to the official Unicode standard, in the [Supplemental Multilingual Plane](https://www.unicode.org/roadmaps/smp/).
+At that time, this program will switch to using those codepoints instead.
+
+The `csur` feature does not *currently* do anything, but when the Tengwar are finally encoded, it will cause this program to continue using the CSUR block.
+The feature is provided now, ahead of time, so that anyone who wants to may specify the feature in an update system — or, if using this program as a library, in their `Cargo.toml`.
+This essentially allows you to opt out of the eventual switch.
 
 ### `dots-standard`
 
