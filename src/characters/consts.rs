@@ -121,6 +121,22 @@ pub const NUMERAL: [char; 13] = [
 ];
 
 
+/// This array contains the first 24 regular tengwar, arranged by value for use
+///     in enumeration, as described in Part III of [Quettar #1].
+///
+/// [Quettar #1]: https://www.quettar.org/special1.pdf
+pub const SEQUENCE: [char; 24] = [
+    TEMA_TINCO.single_dn, TEMA_PARMA.single_dn, TEMA_CALMA.single_dn, TEMA_QESSE.single_dn,
+    TEMA_TINCO.double_dn, TEMA_PARMA.double_dn, TEMA_CALMA.double_dn, TEMA_QESSE.double_dn,
+    TEMA_TINCO.single_up, TEMA_PARMA.single_up, TEMA_CALMA.single_up, TEMA_QESSE.single_up,
+    TEMA_TINCO.double_up, TEMA_PARMA.double_up, TEMA_CALMA.double_up, TEMA_QESSE.double_up,
+    TEMA_TINCO.double_sh, TEMA_PARMA.double_sh, TEMA_CALMA.double_sh, TEMA_QESSE.double_sh,
+    TEMA_TINCO.single_sh, TEMA_PARMA.single_sh, TEMA_CALMA.single_sh, TEMA_QESSE.single_sh,
+    // TEMA_TINCO.single_ex, TEMA_PARMA.single_ex, TEMA_CALMA.single_ex, TEMA_QESSE.single_ex,
+    // TEMA_TINCO.double_ex, TEMA_PARMA.double_ex, TEMA_CALMA.double_ex, TEMA_QESSE.double_ex,
+];
+
+
 /// A single dot positioned inside the preceding character.
 pub const PUNCT_DOT_0: char = DC_INNER_DOT_1;
 
