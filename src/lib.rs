@@ -18,6 +18,7 @@
 //! [`transcribe`]: TengwarMode::transcribe
 //! [`transcriber`]: ToTengwar::transcriber
 //! [`to_tengwar`]: ToTengwar::to_tengwar
+//! [`to_tengwar_with`]: ToTengwar::to_tengwar_with
 //!
 //! The most basic way to convert text is the [`transcribe`] associated function
 //!     on the [`TengwarMode`] trait. This function accepts any input type that
@@ -31,7 +32,7 @@
 //! assert_eq!(text, " ");
 //! ```
 //!
-//! With the use of the [`ToTengwar`] helper trait, two methods are provided on
+//! With the use of the [`ToTengwar`] helper trait, some methods are provided on
 //!     the input type directly. This trait is automatically implemented for all
 //!     types implementing [`AsRef<str>`]. The first method is [`transcriber`],
 //!     which constructs a [`Transcriber`] for the text, allowing iteration over
@@ -50,9 +51,12 @@
 //! assert_eq!(text, " ");
 //! ```
 //!
-//! The other method is [`to_tengwar`]. This is mostly a convenience method,
+//! The second method is [`to_tengwar`]. This is mostly a convenience method,
 //!     which simply calls [`transcriber`] and immediately [`collect`]s the
 //!     iterator into the output type.
+//!
+//! The third method is [`to_tengwar_with`], which does the same, but allows a
+//!     closure to modify the [`Transcriber`] just before it is collected.
 //! ```
 //! use tengwar::{Quenya, ToTengwar};
 //!
@@ -163,6 +167,31 @@ pub trait ToTengwar {
     /// ```
     fn to_tengwar<M: TengwarMode, T: FromIterator<Token>>(&self) -> T {
         self.transcriber::<M>().collect()
+    }
+
+    /// Transcribe this object into the Tengwar, using a closure to modify the
+    ///     [`Transcriber`] settings first.
+    ///
+    /// For examples of the `Transcriber` settings, see [`Self::transcriber`].
+    ///
+    /// # Example
+    /// ```
+    /// use tengwar::{Quenya, ToTengwar};
+    ///
+    /// let text: String = "namárië !".to_tengwar_with::<Quenya, _>(|ts| {
+    ///     ts.alt_a = true;
+    /// });
+    ///
+    /// assert_eq!(text, " ");
+    /// ```
+    //  TODO: Decide whether to keep this. It seems useful, but it may just be
+    //      API bloat. How much effort does it really save?
+    fn to_tengwar_with<M: TengwarMode, T: FromIterator<Token>>(
+        &self, settings: impl FnOnce(&mut Transcriber<Tokenizer<M>>),
+    ) -> T {
+        let mut transcriber = self.transcriber::<M>();
+        settings(&mut transcriber);
+        transcriber.collect()
     }
 }
 
