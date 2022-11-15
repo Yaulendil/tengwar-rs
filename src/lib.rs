@@ -109,9 +109,58 @@ pub fn transcribe<M: TengwarMode>(text: impl ToTengwar) -> String {
 pub trait ToTengwar {
     /// Create a [`Transcriber`] to iteratively transcribe this text into the
     ///     Tengwar. The returned iterator will yield [`Token`]s.
+    ///
+    /// # Example
+    /// ```
+    /// use tengwar::{Quenya, ToTengwar, VowelStyle};
+    ///
+    /// const INPUT: &str = "lotsë súva"; // "a flower is sinking"
+    ///
+    ///
+    /// //  Collect directly with default settings.
+    /// let mut ts = INPUT.transcriber::<Quenya>();
+    /// assert_eq!(ts.collect::<String>(), " ");
+    ///
+    ///
+    /// //  Use Unique Tehtar.
+    /// let mut ts = INPUT.transcriber::<Quenya>();
+    /// ts.vowels = VowelStyle::Unique;
+    /// assert_eq!(ts.collect::<String>(), " ");
+    ///
+    ///
+    /// //  Use Nuquernë Tengwar.
+    /// let mut ts = INPUT.transcriber::<Quenya>();
+    /// ts.nuquerna = true;
+    /// assert_eq!(ts.collect::<String>(), " ");
+    ///
+    ///
+    /// //  Use Unique Tehtar and Nuquernë Tengwar.
+    /// let mut ts = INPUT.transcriber::<Quenya>();
+    /// ts.nuquerna = true;
+    /// ts.vowels = VowelStyle::Unique;
+    /// assert_eq!(ts.collect::<String>(), " ");
+    ///
+    ///
+    /// //  Use several options.
+    /// let mut ts = INPUT.transcriber::<Quenya>();
+    /// ts.alt_a = true;
+    /// ts.alt_rince = true;
+    /// ts.nuquerna = true;
+    /// ts.vowels = VowelStyle::Separate;
+    /// assert_eq!(ts.collect::<String>(), " ");
+    /// ```
     fn transcriber<M: TengwarMode>(&self) -> Transcriber<Tokenizer<M>>;
 
-    /// Transcribe this object into the Tengwar.
+    /// Transcribe this object into the Tengwar directly.
+    ///
+    /// # Example
+    /// ```
+    /// use tengwar::{Quenya, ToTengwar};
+    ///
+    /// let text: String = "namárië !".to_tengwar::<Quenya, _>();
+    ///
+    /// assert_eq!(text, " ");
+    /// ```
     fn to_tengwar<M: TengwarMode, T: FromIterator<Token>>(&self) -> T {
         self.transcriber::<M>().collect()
     }
