@@ -14,7 +14,7 @@ pub use gondor::Gondor;
 pub use quenya::Quenya;
 pub use iter::Tokenizer;
 
-use crate::{Numeral, Token};
+use crate::{Numeral, Token, Transcriber};
 
 
 /// The result of a call to [`TengwarMode::process`]. This specifies the next
@@ -56,6 +56,13 @@ pub trait TengwarMode: Default + Sized {
     /// [`Transcriber`]: crate::Transcriber
     fn transcribe<T: FromIterator<Token>>(input: impl AsRef<str>) -> T {
         Tokenizer::<Self>::from_str(input).into_transcriber().collect()
+    }
+
+    /// Set up a [`Transcriber`] over the characters of an input string.
+    ///
+    /// [`Transcriber`]: crate::Transcriber
+    fn transcriber(input: impl AsRef<str>) -> Transcriber<Tokenizer<Self>> {
+        Tokenizer::<Self>::from_str(input).into_transcriber()
     }
 
     /// Perform any last-minute modifications to a [`Token`] that may be needed

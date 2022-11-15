@@ -13,16 +13,13 @@
 //!
 //! # Examples
 //!
-//! [`AsRef<str>`]: AsRef
 //! [`collect`]: Iterator::collect
-//! [`transcribe`]: TengwarMode::transcribe
-//! [`transcriber`]: ToTengwar::transcriber
-//! [`to_tengwar`]: ToTengwar::to_tengwar
-//! [`to_tengwar_with`]: ToTengwar::to_tengwar_with
 //!
-//! The most basic way to convert text is the [`transcribe`] associated function
-//!     on the [`TengwarMode`] trait. This function accepts any input type that
-//!     implements [`AsRef<str>`], and can return any type that implements
+//! ## TengwarMode trait
+//!
+//! The most basic way to convert text is the [`TengwarMode::transcribe`]
+//!     associated function. This function accepts any input type that
+//!     implements `AsRef<str>`, and can return any type that implements
 //!     `FromIterator<Token>`; This includes `Vec<Token>` and [`String`].
 //! ```
 //! use tengwar::{Quenya, TengwarMode};
@@ -31,9 +28,11 @@
 //! assert_eq!(text, " ");
 //! ```
 //!
+//! ## ToTengwar trait
+//!
 //! With the use of the [`ToTengwar`] helper trait, some methods are provided on
-//!     the input type directly. This trait is automatically implemented for all
-//!     types implementing [`AsRef<str>`]. The first method is [`transcriber`],
+//!     the input type directly. This trait is automatically implemented for any
+//!     type implementing `AsRef<str>`. The first is [`ToTengwar::transcriber`],
 //!     which constructs a [`Transcriber`] for the text, allowing iteration over
 //!     [`Token`]s.
 //!
@@ -49,13 +48,9 @@
 //! assert_eq!(text, " ");
 //! ```
 //!
-//! The second method is [`to_tengwar`]. This is mostly a convenience method,
-//!     which simply calls [`transcriber`] and immediately [`collect`]s the
-//!     iterator into a [`String`].
-//!
-//! The third method is [`to_tengwar_with`], which does the same, but takes
-//!     [`TranscriberSettings`] to modify the [`Transcriber`] before it is
-//!     collected. This allows settings to be specified once and reused.
+//! The second method is [`ToTengwar::to_tengwar`]. This is mostly a convenience
+//!     method, which simply calls [`ToTengwar::transcriber`] and immediately
+//!     [`collect`]s the Iterator into a [`String`].
 //! ```
 //! use tengwar::{Quenya, ToTengwar};
 //!
@@ -63,11 +58,30 @@
 //! assert_eq!(text, " ");
 //! ```
 //!
+//! The third method is [`ToTengwar::to_tengwar_with`], which does the same, but
+//!     takes [`TranscriberSettings`] to modify the [`Transcriber`] before it is
+//!     collected. This allows settings to be specified once and reused.
+//! ```
+//! use tengwar::{Quenya, ToTengwar, TranscriberSettings};
+//!
+//! let mut settings = TranscriberSettings::new();
+//! settings.alt_a = true;
+//! settings.nuquerna = true;
+//!
+//! let text: String = "namárië !".to_tengwar_with::<Quenya>(settings);
+//! assert_eq!(text, " ");
+//!
+//! let text: String = "lotsë súva".to_tengwar_with::<Quenya>(settings);
+//! assert_eq!(text, " ");
+//! ```
+//!
+//! ## Crate-level function
+//!
 //! Also available, and likely the easiest to discover via code completion, is
 //!     the top-level [`crate::transcribe`] function, which takes an implementor
 //!     of [`TengwarMode`] as a generic parameter. This function accepts any
 //!     input type that implements [`ToTengwar`], and is a passthrough to the
-//!     [`to_tengwar`] method.
+//!     [`ToTengwar::to_tengwar`] method.
 //! ```
 //! use tengwar::{Quenya, transcribe};
 //!
