@@ -28,7 +28,6 @@
 //! use tengwar::{Quenya, TengwarMode};
 //!
 //! let text: String = Quenya::transcribe("namárië !");
-//!
 //! assert_eq!(text, " ");
 //! ```
 //!
@@ -38,7 +37,7 @@
 //!     which constructs a [`Transcriber`] for the text, allowing iteration over
 //!     [`Token`]s.
 //!
-//! The [`Transcriber`] also has [`TranscriberSettings`], holds several public
+//! The `Transcriber` also has [`TranscriberSettings`], holding several public
 //!     fields, which can be changed to adjust various aspects of its behavior.
 //! ```
 //! use tengwar::{Quenya, ToTengwar};
@@ -47,13 +46,12 @@
 //! transcriber.settings.alt_a = true; // Use the alternate form of the A-tehta.
 //!
 //! let text: String = transcriber.collect();
-//!
 //! assert_eq!(text, " ");
 //! ```
 //!
 //! The second method is [`to_tengwar`]. This is mostly a convenience method,
 //!     which simply calls [`transcriber`] and immediately [`collect`]s the
-//!     iterator into the output type.
+//!     iterator into a [`String`].
 //!
 //! The third method is [`to_tengwar_with`], which does the same, but takes
 //!     [`TranscriberSettings`] to modify the [`Transcriber`] before it is
@@ -61,8 +59,7 @@
 //! ```
 //! use tengwar::{Quenya, ToTengwar};
 //!
-//! let text: String = "namárië !".to_tengwar::<Quenya, String>();
-//!
+//! let text: String = "namárië !".to_tengwar::<Quenya>();
 //! assert_eq!(text, " ");
 //! ```
 //!
@@ -75,7 +72,6 @@
 //! use tengwar::{Quenya, transcribe};
 //!
 //! let text: String = transcribe::<Quenya>("namárië !");
-//!
 //! assert_eq!(text, " ");
 //! ```
 
@@ -105,7 +101,7 @@ use mode::Tokenizer;
 /// This function merely calls a Trait method, but is likely the most readily
 ///     discoverable part of the library when using code completion tools.
 pub fn transcribe<M: TengwarMode>(text: impl ToTengwar) -> String {
-    text.to_tengwar::<M, String>()
+    text.to_tengwar::<M>()
 }
 
 
@@ -124,26 +120,26 @@ pub trait ToTengwar {
     ///
     /// //  Collect directly with default settings.
     /// let mut ts = INPUT.transcriber::<Quenya>();
-    /// assert_eq!(ts.collect::<String>(), " ");
+    /// assert_eq!(ts.into_string(), " ");
     ///
     ///
     /// //  Use Unique Tehtar.
     /// let mut ts = INPUT.transcriber::<Quenya>();
     /// ts.settings.vowels = VowelStyle::Unique;
-    /// assert_eq!(ts.collect::<String>(), " ");
+    /// assert_eq!(ts.into_string(), " ");
     ///
     ///
     /// //  Use Nuquernë Tengwar.
     /// let mut ts = INPUT.transcriber::<Quenya>();
     /// ts.settings.nuquerna = true;
-    /// assert_eq!(ts.collect::<String>(), " ");
+    /// assert_eq!(ts.into_string(), " ");
     ///
     ///
     /// //  Use Unique Tehtar and Nuquernë Tengwar.
     /// let mut ts = INPUT.transcriber::<Quenya>();
     /// ts.settings.nuquerna = true;
     /// ts.settings.vowels = VowelStyle::Unique;
-    /// assert_eq!(ts.collect::<String>(), " ");
+    /// assert_eq!(ts.into_string(), " ");
     ///
     ///
     /// //  Use several options.
@@ -152,7 +148,7 @@ pub trait ToTengwar {
     /// ts.settings.alt_rince = true;
     /// ts.settings.nuquerna = true;
     /// ts.settings.vowels = VowelStyle::Separate;
-    /// assert_eq!(ts.collect::<String>(), " ");
+    /// assert_eq!(ts.into_string(), " ");
     /// ```
     fn transcriber<M: TengwarMode>(&self) -> Transcriber<Tokenizer<M>>;
 
@@ -162,12 +158,11 @@ pub trait ToTengwar {
     /// ```
     /// use tengwar::{Quenya, ToTengwar};
     ///
-    /// let text: String = "namárië !".to_tengwar::<Quenya, _>();
-    ///
+    /// let text: String = "namárië !".to_tengwar::<Quenya>();
     /// assert_eq!(text, " ");
     /// ```
-    fn to_tengwar<M: TengwarMode, T: FromIterator<Token>>(&self) -> T {
-        self.transcriber::<M>().collect()
+    fn to_tengwar<M: TengwarMode>(&self) -> String {
+        self.transcriber::<M>().into_string()
     }
 
     /// Transcribe this object into the Tengwar, using [`TranscriberSettings`]
@@ -185,17 +180,14 @@ pub trait ToTengwar {
     /// settings.alt_a = true;
     /// settings.nuquerna = true;
     ///
-    /// let text: String = "namárië !".to_tengwar_with::<Quenya, _>(settings);
+    /// let text: String = "namárië !".to_tengwar_with::<Quenya>(settings);
     /// assert_eq!(text, " ");
     ///
-    /// let text: String = "lotsë súva".to_tengwar_with::<Quenya, _>(settings);
+    /// let text: String = "lotsë súva".to_tengwar_with::<Quenya>(settings);
     /// assert_eq!(text, " ");
     /// ```
-    fn to_tengwar_with<M: TengwarMode, T: FromIterator<Token>>(
-        &self,
-        settings: TranscriberSettings,
-    ) -> T {
-        self.transcriber::<M>().with_settings(settings).collect()
+    fn to_tengwar_with<M: TengwarMode>(&self, settings: TranscriberSettings) -> String {
+        self.transcriber::<M>().with_settings(settings).into_string()
     }
 }
 
@@ -275,6 +267,9 @@ impl<I: Iterator<Item=Token>> Transcriber<I> {
             settings: Default::default(),
         }
     }
+
+    /// Collect all [`Token`]s into a [`String`].
+    pub fn into_string(self) -> String { self.collect() }
 
     /// Return a reference to the previous Token.
     pub fn last(&self) -> Option<&Token> { self.last.as_ref() }

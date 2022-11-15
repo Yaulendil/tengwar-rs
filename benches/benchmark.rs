@@ -49,7 +49,7 @@ fn bench_mode_quenya(b: &mut test::Bencher) {
         out.clear();
 
         for text in TEXTS_Q {
-            out.push(text.to_tengwar::<Quenya, _>());
+            out.push(text.transcriber::<Quenya>().collect());
         }
     });
 }
@@ -63,7 +63,7 @@ fn bench_mode_beleriand(b: &mut test::Bencher) {
         out.clear();
 
         for text in TEXTS_S {
-            out.push(text.to_tengwar::<Beleriand, _>());
+            out.push(text.transcriber::<Beleriand>().collect());
         }
     });
 }
@@ -77,7 +77,7 @@ fn bench_mode_gondor(b: &mut test::Bencher) {
         out.clear();
 
         for text in TEXTS_S {
-            out.push(text.to_tengwar::<Gondor, _>());
+            out.push(text.transcriber::<Gondor>().collect());
         }
     });
 }
