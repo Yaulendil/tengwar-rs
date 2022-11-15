@@ -282,38 +282,9 @@ impl<I: Iterator<Item=Token>> Transcriber<I> {
     /// Return a reference to the next Token, without advancing the Iterator.
     pub fn peek(&mut self) -> Option<&Token> { self.inner.peek() }
 
+    /// Change the transcription behavior settings.
     pub const fn with_settings(mut self, new: TranscriberSettings) -> Self {
         self.settings = new;
-        self
-    }
-
-    pub const fn with_alt_a(mut self, enabled: bool) -> Self {
-        self.settings.alt_a = enabled;
-        self
-    }
-
-    pub const fn with_alt_rince(mut self, enabled: bool) -> Self {
-        self.settings.alt_rince = enabled;
-        self
-    }
-
-    pub const fn with_ligatures_short(mut self, enabled: bool) -> Self {
-        self.settings.ligate_short = enabled;
-        self
-    }
-
-    pub const fn with_ligatures_zwj(mut self, enabled: bool) -> Self {
-        self.settings.ligate_zwj = enabled;
-        self
-    }
-
-    pub const fn with_nuquerna(mut self, enabled: bool) -> Self {
-        self.settings.nuquerna = enabled;
-        self
-    }
-
-    pub const fn with_vowels(mut self, vowels: VowelStyle) -> Self {
-        self.settings.vowels = vowels;
         self
     }
 }
