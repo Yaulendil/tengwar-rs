@@ -40,5 +40,13 @@ optional = true
 [features]
 default = []
 
+# Use the codepoints in the ConScript Unicode Registry, rather than the official
+#   codepoints in the Supplementary Multilingual Plane. This feature does not
+#   yet do anything, because the codepoints in the SMP have not been approved,
+#   but it exists in advance for any dependents to opt out of the switch ahead
+#   of time.
+# We may be waiting for a while.
+csur = []
+
 # Use standard Unicode characters for dot punctuation.
 dots-standard = []

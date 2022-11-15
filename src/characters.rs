@@ -2,6 +2,7 @@
 //!     effectively with the Tengwar.
 //  TODO: Document EVERY ITEM in this module.
 
+// #[cfg_attr(feature = "csur", path = "characters/consts_csur.rs")]
 pub mod consts;
 pub mod glyph;
 pub mod numeral;
