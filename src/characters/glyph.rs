@@ -236,6 +236,7 @@ impl Glyph {
                 tehta: Some(tehta),
                 tehta_alt,
                 nuquerna: true,
+                vowels: VowelStyle::Doubled | VowelStyle::Unique,
                 ..
             } if nuquerna_valid(base) && !(tehta_alt && tehta.needs_ara()) => {
                 //  In this case, ALL of the following are true:
@@ -248,7 +249,7 @@ impl Glyph {
             }
 
             &Glyph { base: Some(base), .. } => base,
-            &Glyph { tehta_alt, ligate_short, .. } => {
+            &Glyph { base: None, tehta_alt, ligate_short, .. } => {
                 if tehta_alt {
                     CARRIER_LONG
                 } else if ligate_short {
