@@ -123,21 +123,51 @@ pub const fn telco_ligates_with(base: char) -> bool {
 }
 
 
-/// Determine whether two `Glyph`s can be joined by a zero-width joiner. These
+/// Determine whether two [`Glyph`]s can be joined by a zero-width joiner. These
 ///     rules are based on the "Tengwar Telcontar" font, and are to some degree
 ///     based on opinion.
 pub const fn ligature_valid(prev: &Glyph, next: &Glyph) -> bool {
-    if matches!(prev.base, Some(TENGWA_SILME) | Some(TENGWA_ESSE)) {
-        !(prev.tehta.is_some() && next.tehta.is_some()) && match next.base {
-            Some(con) => nuquerna_valid(con)
-                || (TEMA_TINCO.single_dn <= con && con <= TENGWA_ARDA),
-            None => false,
+    let tehta_left: bool = prev.tehta.is_some();
+    let tehta_right: bool = next.tehta.is_some();
+
+    match (prev.tengwa(), next.tengwa()) {
+        (Some(Tengwa::Irregular(TENGWA_SILME | TENGWA_ESSE)), rhs) => {
+            //  Left tengwa is Silmë or Essë.
+            if tehta_left && tehta_right {
+                //  Both tengwar carry tehtar. Do not allow ligation, in order
+                //      to reduce crowding.
+                false
+            } else {
+                //  Allow ligation with another Silmë or Essë, or with Rómen,
+                //      Arda, or any regular tengwa.
+                match rhs {
+                    Some(Tengwa::Irregular(TENGWA_SILME)) => true,
+                    Some(Tengwa::Irregular(TENGWA_ESSE)) => true,
+                    Some(Tengwa::Irregular(TENGWA_ROMEN)) => true,
+                    Some(Tengwa::Irregular(TENGWA_ARDA)) => true,
+                    Some(tengwa) => tengwa.is_regular(),
+                    None => false,
+                }
+            }
         }
-    } else if let (Some(left), Some(right)) = (prev.base, next.base) {
-        TEMA_TINCO.single_dn <= left && left <= TENGWA_ARDA
-            && TEMA_TINCO.single_dn <= right && right <= TENGWA_ARDA
-    } else {
-        !(prev.tehta.is_some() && next.tehta.is_some())
+        (Some(lhs), Some(rhs)) => {
+            //  Allow ligation between any two tengwar which are either Rómen,
+            //      Arda, or regular.
+            let accept_lhs: bool = match lhs {
+                Tengwa::Irregular(TENGWA_ROMEN) => true,
+                Tengwa::Irregular(TENGWA_ARDA) => true,
+                tengwa => tengwa.is_regular(),
+            };
+            let accept_rhs: bool = match rhs {
+                Tengwa::Irregular(TENGWA_ROMEN) => true,
+                Tengwa::Irregular(TENGWA_ARDA) => true,
+                tengwa => tengwa.is_regular(),
+            };
+
+            accept_lhs && accept_rhs
+        }
+        //  Allow ligation if the two glyphs do not both carry tehtar.
+        _ => !(tehta_left && tehta_right),
     }
 }
 
@@ -267,24 +297,38 @@ impl<'t> Tengwa<'t> {
 
     pub const fn as_char(&self) -> &char {
         match self {
-            Tengwa::Irregular(char) => char,
-            // Tengwa::Irregular(char) => &char.0,
-            Tengwa::Regular(tengwa) => tengwa.as_char(),
+            Self::Irregular(char) => char,
+            // Self::Irregular(char) => &char.0,
+            Self::Regular(tengwa) => tengwa.as_char(),
         }
     }
 
     pub const fn as_irregular(&self) -> Option<&char> {
         match self {
-            Tengwa::Irregular(char) => Some(char),
-            // Tengwa::Irregular(char) => Some(&char.0),
-            Tengwa::Regular(_) => None,
+            Self::Irregular(char) => Some(char),
+            // Self::Irregular(char) => Some(&char.0),
+            Self::Regular(_) => None,
         }
     }
 
     pub const fn as_regular(&self) -> Option<&TengwaRegular<'t>> {
         match self {
-            Tengwa::Irregular(_) => None,
-            Tengwa::Regular(tengwa) => Some(tengwa),
+            Self::Irregular(_) => None,
+            Self::Regular(tengwa) => Some(tengwa),
+        }
+    }
+
+    pub const fn is_irregular(&self) -> bool {
+        match self {
+            Self::Irregular(_) => true,
+            Self::Regular(_) => false,
+        }
+    }
+
+    pub const fn is_regular(&self) -> bool {
+        match self {
+            Self::Irregular(_) => false,
+            Self::Regular(_) => true,
         }
     }
 }

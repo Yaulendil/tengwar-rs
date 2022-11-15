@@ -261,6 +261,14 @@ impl Glyph {
         }
     }
 
+    /// Return a [`Tengwa`] representing the base [`char`], if there is one.
+    pub const fn tengwa(&self) -> Option<Tengwa<'static>> {
+        match self.base {
+            Some(char) => Some(Tengwa::either_from(char)),
+            None => None,
+        }
+    }
+
     /// Determine whether a rincë may be added to this glyph. Returns `false` if
     ///     a rincë is already set.
     pub const fn can_take_rince(&self) -> bool {
