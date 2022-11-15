@@ -8,7 +8,7 @@ macro_rules! test_tengwar {
 
         #[allow(unused_mut)]
         let mut iter = $input.transcriber::<$mode>();
-        $($(iter.$k = $v;)*)?
+        $($(iter.settings.$k = $v;)*)?
         iter.collect()
     }};
 
@@ -23,12 +23,6 @@ macro_rules! test_tengwar {
             $mode $([$($t)*])?,
             $input => $expected
         );
-    };
-    ($mode:ty $([$($t:tt)*])?, $input:expr => [$($chars:tt)*]) => {
-        test_tengwar!(
-            $mode $([$($t)*])?,
-            $input => ([$($chars)*])
-        )
     };
 
     ($mode:ty $([$($t:tt)*])?, $input:expr => $expected:expr) => {{

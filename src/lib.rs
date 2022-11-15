@@ -38,13 +38,13 @@
 //!     which constructs a [`Transcriber`] for the text, allowing iteration over
 //!     [`Token`]s.
 //!
-//! The [`Transcriber`] also holds several public fields, which can be changed
-//!     to adjust various aspects of its behavior.
+//! The [`Transcriber`] also has [`TranscriberSettings`], holds several public
+//!     fields, which can be changed to adjust various aspects of its behavior.
 //! ```
 //! use tengwar::{Quenya, ToTengwar};
 //!
 //! let mut transcriber = "namárië !".transcriber::<Quenya>();
-//! transcriber.alt_a = true; // Use the alternate form of the A-tehta.
+//! transcriber.settings.alt_a = true; // Use the alternate form of the A-tehta.
 //!
 //! let text: String = transcriber.collect();
 //!
@@ -55,8 +55,9 @@
 //!     which simply calls [`transcriber`] and immediately [`collect`]s the
 //!     iterator into the output type.
 //!
-//! The third method is [`to_tengwar_with`], which does the same, but allows a
-//!     closure to modify the [`Transcriber`] just before it is collected.
+//! The third method is [`to_tengwar_with`], which does the same, but takes
+//!     [`TranscriberSettings`] to modify the [`Transcriber`] before it is
+//!     collected. This allows settings to be specified once and reused.
 //! ```
 //! use tengwar::{Quenya, ToTengwar};
 //!
@@ -128,29 +129,29 @@ pub trait ToTengwar {
     ///
     /// //  Use Unique Tehtar.
     /// let mut ts = INPUT.transcriber::<Quenya>();
-    /// ts.vowels = VowelStyle::Unique;
+    /// ts.settings.vowels = VowelStyle::Unique;
     /// assert_eq!(ts.collect::<String>(), " ");
     ///
     ///
     /// //  Use Nuquernë Tengwar.
     /// let mut ts = INPUT.transcriber::<Quenya>();
-    /// ts.nuquerna = true;
+    /// ts.settings.nuquerna = true;
     /// assert_eq!(ts.collect::<String>(), " ");
     ///
     ///
     /// //  Use Unique Tehtar and Nuquernë Tengwar.
     /// let mut ts = INPUT.transcriber::<Quenya>();
-    /// ts.nuquerna = true;
-    /// ts.vowels = VowelStyle::Unique;
+    /// ts.settings.nuquerna = true;
+    /// ts.settings.vowels = VowelStyle::Unique;
     /// assert_eq!(ts.collect::<String>(), " ");
     ///
     ///
     /// //  Use several options.
     /// let mut ts = INPUT.transcriber::<Quenya>();
-    /// ts.alt_a = true;
-    /// ts.alt_rince = true;
-    /// ts.nuquerna = true;
-    /// ts.vowels = VowelStyle::Separate;
+    /// ts.settings.alt_a = true;
+    /// ts.settings.alt_rince = true;
+    /// ts.settings.nuquerna = true;
+    /// ts.settings.vowels = VowelStyle::Separate;
     /// assert_eq!(ts.collect::<String>(), " ");
     /// ```
     fn transcriber<M: TengwarMode>(&self) -> Transcriber<Tokenizer<M>>;
@@ -169,29 +170,32 @@ pub trait ToTengwar {
         self.transcriber::<M>().collect()
     }
 
-    /// Transcribe this object into the Tengwar, using a closure to modify the
-    ///     [`Transcriber`] settings first.
+    /// Transcribe this object into the Tengwar, using [`TranscriberSettings`]
+    ///     provided as an argument. This allows the settings to be reused much
+    ///     more easily.
     ///
-    /// For examples of the `Transcriber` settings, see [`Self::transcriber`].
+    /// For examples of the available settings, see the documentation of
+    ///     [`Self::transcriber`].
     ///
     /// # Example
     /// ```
-    /// use tengwar::{Quenya, ToTengwar};
+    /// use tengwar::{Quenya, ToTengwar, TranscriberSettings};
     ///
-    /// let text: String = "namárië !".to_tengwar_with::<Quenya, _>(|ts| {
-    ///     ts.alt_a = true;
-    /// });
+    /// let mut settings = TranscriberSettings::new();
+    /// settings.alt_a = true;
+    /// settings.nuquerna = true;
     ///
+    /// let text: String = "namárië !".to_tengwar_with::<Quenya, _>(settings);
     /// assert_eq!(text, " ");
+    ///
+    /// let text: String = "lotsë súva".to_tengwar_with::<Quenya, _>(settings);
+    /// assert_eq!(text, " ");
     /// ```
-    //  TODO: Decide whether to keep this. It seems useful, but it may just be
-    //      API bloat. How much effort does it really save?
     fn to_tengwar_with<M: TengwarMode, T: FromIterator<Token>>(
-        &self, settings: impl FnOnce(&mut Transcriber<Tokenizer<M>>),
+        &self,
+        settings: TranscriberSettings,
     ) -> T {
-        let mut transcriber = self.transcriber::<M>();
-        settings(&mut transcriber);
-        transcriber.collect()
+        self.transcriber::<M>().with_settings(settings).collect()
     }
 }
 
@@ -259,7 +263,104 @@ impl FromIterator<Token> for String {
 pub struct Transcriber<I: Iterator<Item=Token>> {
     inner: Peekable<I>,
     last: Option<Token>,
+    pub settings: TranscriberSettings,
+}
 
+impl<I: Iterator<Item=Token>> Transcriber<I> {
+    /// Construct a Transcriber around an Iterator of [`Token`]s.
+    pub fn new(iter: I) -> Self {
+        Self {
+            inner: iter.peekable(),
+            last: None,
+            settings: Default::default(),
+        }
+    }
+
+    /// Return a reference to the previous Token.
+    pub fn last(&self) -> Option<&Token> { self.last.as_ref() }
+
+    /// Return a reference to the next Token, without advancing the Iterator.
+    pub fn peek(&mut self) -> Option<&Token> { self.inner.peek() }
+
+    pub const fn with_settings(mut self, new: TranscriberSettings) -> Self {
+        self.settings = new;
+        self
+    }
+
+    pub const fn with_alt_a(mut self, enabled: bool) -> Self {
+        self.settings.alt_a = enabled;
+        self
+    }
+
+    pub const fn with_alt_rince(mut self, enabled: bool) -> Self {
+        self.settings.alt_rince = enabled;
+        self
+    }
+
+    pub const fn with_ligatures_short(mut self, enabled: bool) -> Self {
+        self.settings.ligate_short = enabled;
+        self
+    }
+
+    pub const fn with_ligatures_zwj(mut self, enabled: bool) -> Self {
+        self.settings.ligate_zwj = enabled;
+        self
+    }
+
+    pub const fn with_nuquerna(mut self, enabled: bool) -> Self {
+        self.settings.nuquerna = enabled;
+        self
+    }
+
+    pub const fn with_vowels(mut self, vowels: VowelStyle) -> Self {
+        self.settings.vowels = vowels;
+        self
+    }
+}
+
+impl<T: IntoIterator<Item=Token>> From<T> for Transcriber<T::IntoIter> {
+    fn from(iter: T) -> Self { Self::new(iter.into_iter()) }
+}
+
+impl<I: Iterator<Item=Token>> Iterator for Transcriber<I> {
+    type Item = Token;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let mut token: Token = self.inner.next()?;
+
+        if let Token::Glyph(glyph) = &mut token {
+            glyph.ligate_zwj = self.settings.ligate_zwj;
+            glyph.nuquerna = self.settings.nuquerna;
+            glyph.vowels = self.settings.vowels;
+
+            if self.settings.alt_a {
+                glyph.set_alt_a();
+            }
+
+            match self.inner.peek() {
+                Some(Token::Glyph(next)) => {
+                    glyph.rince_final = false;
+                    glyph.ligate_short = self.settings.ligate_short
+                        // && glyph.is_short_carrier()
+                        && next.telco_ligates();
+                }
+                _ => {
+                    glyph.rince_final = self.settings.alt_rince;
+                    glyph.ligate_short = false;
+                }
+            }
+        }
+
+        self.last = Some(token);
+        self.last
+    }
+}
+
+
+/// Behavior settings to be used by a [`Transcriber`].
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+pub struct TranscriberSettings {
     /// If this is `true`, the [A-tehta](characters::TEHTA_A) will be replaced
     ///     with its [alternate form](characters::TEHTA_YANTA).
     pub alt_a: bool,
@@ -279,7 +380,7 @@ pub struct Transcriber<I: Iterator<Item=Token>> {
     pub ligate_zwj: bool,
 
     /// If this is `true`, the characters [Silmë](characters::TENGWA_SILME) and
-    ///     [Essë](characters::TENGWA_ESSE) will use their inverted Nuquerna
+    ///     [Essë](characters::TENGWA_ESSE) will use their inverted Nuquernë
     ///     variants when holding a tehta.
     pub nuquerna: bool,
 
@@ -287,13 +388,9 @@ pub struct Transcriber<I: Iterator<Item=Token>> {
     pub vowels: VowelStyle,
 }
 
-impl<I: Iterator<Item=Token>> Transcriber<I> {
-    /// Construct a Transcriber around an Iterator of [`Token`]s.
-    pub fn new(iter: I) -> Self {
+impl TranscriberSettings {
+    pub const fn new() -> Self {
         Self {
-            inner: iter.peekable(),
-            last: None,
-
             alt_a: false,
             alt_rince: false,
             ligate_short: false,
@@ -302,78 +399,8 @@ impl<I: Iterator<Item=Token>> Transcriber<I> {
             vowels: VowelStyle::DEFAULT,
         }
     }
-
-    /// Return a reference to the previous Token.
-    pub fn last(&self) -> Option<&Token> { self.last.as_ref() }
-
-    /// Return a reference to the next Token, without advancing the Iterator.
-    pub fn peek(&mut self) -> Option<&Token> { self.inner.peek() }
-
-    pub const fn with_alt_a(mut self, enabled: bool) -> Self {
-        self.alt_a = enabled;
-        self
-    }
-
-    pub const fn with_alt_rince(mut self, enabled: bool) -> Self {
-        self.alt_rince = enabled;
-        self
-    }
-
-    pub const fn with_ligatures_short(mut self, enabled: bool) -> Self {
-        self.ligate_short = enabled;
-        self
-    }
-
-    pub const fn with_ligatures_zwj(mut self, enabled: bool) -> Self {
-        self.ligate_zwj = enabled;
-        self
-    }
-
-    pub const fn with_nuquerna(mut self, enabled: bool) -> Self {
-        self.nuquerna = enabled;
-        self
-    }
-
-    pub const fn with_vowels(mut self, vowels: VowelStyle) -> Self {
-        self.vowels = vowels;
-        self
-    }
 }
 
-impl<T: IntoIterator<Item=Token>> From<T> for Transcriber<T::IntoIter> {
-    fn from(iter: T) -> Self { Self::new(iter.into_iter()) }
-}
-
-impl<I: Iterator<Item=Token>> Iterator for Transcriber<I> {
-    type Item = Token;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let mut token: Token = self.inner.next()?;
-
-        if let Token::Glyph(glyph) = &mut token {
-            glyph.ligate_zwj = self.ligate_zwj;
-            glyph.nuquerna = self.nuquerna;
-            glyph.vowels = self.vowels;
-
-            if self.alt_a {
-                glyph.set_alt_a();
-            }
-
-            match self.inner.peek() {
-                Some(Token::Glyph(next)) => {
-                    glyph.rince_final = false;
-                    glyph.ligate_short = self.ligate_short
-                        // && glyph.is_short_carrier()
-                        && next.telco_ligates();
-                }
-                _ => {
-                    glyph.rince_final = self.alt_rince;
-                    glyph.ligate_short = false;
-                }
-            }
-        }
-
-        self.last = Some(token);
-        self.last
-    }
+impl Default for TranscriberSettings {
+    fn default() -> Self { Self::new() }
 }

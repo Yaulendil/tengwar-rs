@@ -85,12 +85,12 @@ impl Runner {
         macro_rules! run {
             ($mode:ty, $input:expr) => {{
                 let mut transcriber = $input.transcriber::<$mode>();
-                transcriber.alt_a = self.alt_a;
-                transcriber.alt_rince = self.alt_rince;
-                transcriber.ligate_short = self.ligate_short;
-                transcriber.ligate_zwj = self.ligate_zwj;
-                transcriber.nuquerna = self.nuquerna;
-                transcriber.vowels = self.vowels;
+                transcriber.settings.alt_a = self.alt_a;
+                transcriber.settings.alt_rince = self.alt_rince;
+                transcriber.settings.ligate_short = self.ligate_short;
+                transcriber.settings.ligate_zwj = self.ligate_zwj;
+                transcriber.settings.nuquerna = self.nuquerna;
+                transcriber.settings.vowels = self.vowels;
                 transcriber.collect()
             }};
         }
