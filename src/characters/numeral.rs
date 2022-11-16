@@ -3,7 +3,7 @@ use super::consts::*;
 
 
 /// Prefix expected to be found on input numbers meant to be shown as Base-10.
-pub const PREF_B10_IN: char = '#';
+pub const PREF_DEC_IN: char = '#';
 /// Suffix expected to be found on input numbers that are meant to be ordinal.
 pub const SUFF_ORD_IN: char = '@';
 
@@ -138,7 +138,7 @@ impl Numeral {
         //      a better way to do it, given the vastly different style of
         //      interface.
         let base_10: bool = match slice {
-            [PREF_B10_IN, after @ ..] => {
+            [PREF_DEC_IN, after @ ..] => {
                 slice = after;
                 true
             }
