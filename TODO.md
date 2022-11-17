@@ -22,6 +22,11 @@
 ### CLI
 ### Docs
 ### Input
+- [ ] Definitively decide what to do wrt "language" vs "mode":
+  - Would be very nice to have a dedicated `--language`/`-L` option for frontend clarity. How would this interact with having multiple Sindarin modes?
+  - Possible division:
+    - Explicit "mode" options (`--quenya`, `--gondor`) become "language" options (`--quenya`, `--sindarin`), each mapping to a "primary mode" for the language
+    - Values of `--mode` option (`--mode=quenya`, `--mode=gondor`) stripped of language meaning (`--mode=classical`, `--mode=gondor`)
 - [ ] Allow custom Modes to be specified via a config language (Would TOML work?)
 ### Library
 - [ ] Cirth

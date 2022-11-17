@@ -52,8 +52,8 @@ impl LongVowels {
 #[derive(Clone, Copy, Debug, ValueEnum)]
 pub enum Mode {
     /// The Classical Mode, used for Quenya.
-    #[value(alias = "q")]
-    Quenya,
+    #[value(alias = "c")]
+    Classical,
     /// The Mode of Gondor, used for Sindarin.
     #[value(alias = "g")]
     Gondor,
@@ -67,7 +67,7 @@ pub enum Mode {
 
 impl Mode {
     #[allow(dead_code)]
-    pub const DEFAULT: Self = Self::Quenya;
+    pub const DEFAULT: Self = Self::Classical;
 
     pub fn convert<T: FromIterator<Token>>(
         &self,
@@ -75,7 +75,7 @@ impl Mode {
         settings: TranscriberSettings,
     ) -> T {
         match self {
-            Self::Quenya => convert::<Quenya, T>(input, settings),
+            Self::Classical => convert::<Quenya, T>(input, settings),
             Self::Gondor => convert::<Gondor, T>(input, settings),
             Self::Beleriand => convert::<Beleriand, T>(input, settings),
             /*Self::English => convert::<English, T>(input, settings),*/

@@ -148,7 +148,7 @@ impl Command {
         if let Some(mode) = by_name {
             mode
         } else if quenya {
-            Mode::Quenya
+            Mode::Classical
         } else if gondor {
             Mode::Gondor
         } else if beleriand {
