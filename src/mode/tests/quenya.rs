@@ -70,6 +70,19 @@ fn alt_rince() {
     test_tengwar!(Quenya[alt_rince=true], "micsar" == mixar);
     test_tengwar!(Quenya[alt_rince=true], "miksar" == mixar);
     test_tengwar!(Quenya[alt_rince=true], "mikzar" == mixar);
+
+    //  Confirm that a vowel interrupts rincë.
+    let tas = test_tengwar!(Quenya, "tas" => [
+        TENGWA_TINCO, TEHTA_A.base, // ta
+        TENGWA_SILME, // s
+    ]);
+    test_tengwar!(Quenya[alt_rince=true], "tas" == tas);
+    test_tengwar!(Quenya, "tsa" => [
+        TENGWA_TINCO, SA_RINCE, TEHTA_A.base, // tsa
+    ]);
+    test_tengwar!(Quenya[alt_rince=true], "tsa" => [
+        TENGWA_TINCO, TEHTA_A.base, SA_RINCE_FINAL, // tsa
+    ]);
 }
 
 

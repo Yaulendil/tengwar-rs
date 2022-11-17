@@ -31,11 +31,11 @@ fn test_modes() {
     run(["-B", ARG_S]);
 
     //  Mode option, separate.
-    run(["--mode", "quenya", ARG_Q]);
-    run(["--mode", "Quenya", ARG_Q]);
-    run(["--mode", "QUENYA", ARG_Q]);
-    run(["--mode", "q", ARG_Q]);
-    run(["--mode", "Q", ARG_Q]);
+    run(["--mode", "classical", ARG_Q]);
+    run(["--mode", "Classical", ARG_Q]);
+    run(["--mode", "CLASSICAL", ARG_Q]);
+    run(["--mode", "c", ARG_Q]);
+    run(["--mode", "C", ARG_Q]);
     run(["--mode", "gondor", ARG_S]);
     run(["--mode", "G", ARG_S]);
     run(["--mode", "g", ARG_S]);
@@ -43,9 +43,9 @@ fn test_modes() {
     run(["--mode", "B", ARG_S]);
     run(["--mode", "b", ARG_S]);
     //  Short.
-    run(["-M", "quenya", ARG_Q]);
-    run(["-M", "q", ARG_Q]);
-    run(["-M", "Q", ARG_Q]);
+    run(["-M", "classical", ARG_Q]);
+    run(["-M", "c", ARG_Q]);
+    run(["-M", "C", ARG_Q]);
     run(["-M", "gondor", ARG_S]);
     run(["-M", "G", ARG_S]);
     run(["-M", "g", ARG_S]);
@@ -54,11 +54,11 @@ fn test_modes() {
     run(["-M", "b", ARG_S]);
 
     //  Mode option, joined.
-    run(["--mode=quenya", ARG_Q]);
-    run(["--mode=Quenya", ARG_Q]);
-    run(["--mode=QUENYA", ARG_Q]);
-    run(["--mode=q", ARG_Q]);
-    run(["--mode=Q", ARG_Q]);
+    run(["--mode=classical", ARG_Q]);
+    run(["--mode=Classical", ARG_Q]);
+    run(["--mode=CLASSICAL", ARG_Q]);
+    run(["--mode=c", ARG_Q]);
+    run(["--mode=C", ARG_Q]);
     run(["--mode=gondor", ARG_S]);
     run(["--mode=G", ARG_S]);
     run(["--mode=g", ARG_S]);
@@ -66,10 +66,10 @@ fn test_modes() {
     run(["--mode=B", ARG_S]);
     run(["--mode=b", ARG_S]);
     //  Short (equal).
-    run(["-M=quenya", ARG_Q]);
-    run(["-M=Quenya", ARG_Q]);
-    run(["-M=q", ARG_Q]);
-    run(["-M=Q", ARG_Q]);
+    run(["-M=classical", ARG_Q]);
+    run(["-M=Classical", ARG_Q]);
+    run(["-M=c", ARG_Q]);
+    run(["-M=C", ARG_Q]);
     run(["-M=gondor", ARG_S]);
     run(["-M=G", ARG_S]);
     run(["-M=g", ARG_S]);
@@ -77,10 +77,10 @@ fn test_modes() {
     run(["-M=B", ARG_S]);
     run(["-M=b", ARG_S]);
     //  Short (concat).
-    run(["-Mquenya", ARG_Q]);
-    run(["-MQuenya", ARG_Q]);
-    run(["-Mq", ARG_Q]);
-    run(["-MQ", ARG_Q]);
+    run(["-Mclassical", ARG_Q]);
+    run(["-MClassical", ARG_Q]);
+    run(["-Mc", ARG_Q]);
+    run(["-MC", ARG_Q]);
     run(["-Mgondor", ARG_S]);
     run(["-Mg", ARG_S]);
     run(["-MG", ARG_S]);
@@ -102,13 +102,13 @@ fn test_modes_invalid() {
     run_err(["-QB", ARG_S]);
     run_err(["-GB", ARG_S]);
     run_err(["-QGB", ARG_S]);
-    run_err(["-Q", "-Mq", ARG_Q]);
+    run_err(["-Q", "-Mc", ARG_Q]);
     run_err(["-Q", "-Mg", ARG_Q]);
     run_err(["-Q", "-Mb", ARG_Q]);
-    run_err(["-G", "-Mq", ARG_S]);
+    run_err(["-G", "-Mc", ARG_S]);
     run_err(["-G", "-Mg", ARG_S]);
     run_err(["-G", "-Mb", ARG_S]);
-    run_err(["-B", "-Mq", ARG_S]);
+    run_err(["-B", "-Mc", ARG_S]);
     run_err(["-B", "-Mg", ARG_S]);
     run_err(["-B", "-Mb", ARG_S]);
 }
@@ -159,6 +159,12 @@ fn test_styles() {
     run(["-lseparate", ARG_Q]);
     run(["-ldoubled", ARG_Q]);
     run(["-lunique", ARG_Q]);
+    run(["-ls", ARG_Q]);
+    run(["-ld", ARG_Q]);
+    run(["-lu", ARG_Q]);
+    run(["-l0", ARG_Q]);
+    run(["-l1", ARG_Q]);
+    run(["-l2", ARG_Q]);
 
     //  Vowel options, with no value.
     run_err(["--long=", "doubled", ARG_Q]);
