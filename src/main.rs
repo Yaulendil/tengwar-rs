@@ -150,8 +150,12 @@ struct Command {
     /// For typefaces that do not support these ligatures, the presence of the
     ///     joiners should not affect rendering; However, it does increase the
     ///     number of bytes in the output by approximately 15%.
+    /*///
+    /// This option may be specified multiple times to further loosen the rules
+    ///     of ligature formation.*/
     #[arg(long, short = 'z')]
-    ligate_zwj: bool,
+    #[arg(action = clap::ArgAction::Count)]
+    ligate_zwj: u8,
 
     /// Options for determining output style.
     #[command(flatten, next_help_heading = "Style")]

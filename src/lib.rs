@@ -251,7 +251,7 @@ impl FromIterator<Token> for String {
 
             if let Token::Glyph(current) = token {
                 if let Some(Token::Glyph(next)) = iter.peek() {
-                    if current.ligate_zwj && current.ligates_with(next) {
+                    if 0 < current.ligate_zwj && current.ligates_with(next) {
                         buf.push(characters::ZWJ);
                     }
                 }
@@ -366,9 +366,9 @@ pub struct TranscriberSettings {
     ///     where appropriate.
     pub ligate_short: bool,
 
-    /// If this is `true`, [zero-width joiners](characters::ZWJ) will be placed
+    /// If this is nonzero, [zero-width joiners](characters::ZWJ) will be placed
     ///     between glyphs to form font ligatures where appropriate.
-    pub ligate_zwj: bool,
+    pub ligate_zwj: u8,
 
     /// If this is `true`, the characters [Silmë](characters::TENGWA_SILME) and
     ///     [Essë](characters::TENGWA_ESSE) will use their inverted Nuquernë
@@ -385,7 +385,7 @@ impl TranscriberSettings {
             alt_a: false,
             alt_rince: false,
             ligate_short: false,
-            ligate_zwj: false,
+            ligate_zwj: 0,
             nuquerna: false,
             vowels: VowelStyle::DEFAULT,
         }

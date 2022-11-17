@@ -80,7 +80,7 @@ pub struct Glyph {
     /// Indicates whether this glyph should try to use [`ZWJ`] ligation if it
     ///     needs to output a separate carrier. This does NOT cause the glyph to
     ///     try to ligate with the NEXT glyph.
-    pub ligate_zwj: bool,
+    pub ligate_zwj: u8,
 }
 
 /// Public: Construction and modification.
@@ -106,7 +106,7 @@ impl Glyph {
             dot_inner: false,
             dot_under: false,
             ligate_short: false,
-            ligate_zwj: false,
+            ligate_zwj: 0,
         }
     }
 
@@ -422,7 +422,7 @@ impl Display for Glyph {
                 self.write_mods(f)?;
                 self.write_rince_nonfinal(f)?;
 
-                if self.ligate_zwj && ligates_with_ara(base) {
+                if 0 < self.ligate_zwj && ligates_with_ara(base) {
                     f.write_char(ZWJ)?;
                 }
 

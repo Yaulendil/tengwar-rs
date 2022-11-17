@@ -88,26 +88,26 @@ fn alt_rince() {
 
 #[test]
 fn ligatures() {
-    test_tengwar!(Quenya[ligate_short=false, ligate_zwj=false], "istar" => [
+    test_tengwar!(Quenya[ligate_short=false, ligate_zwj=0], "istar" => [
         CARRIER_SHORT, TEHTA_I.base, // i
         TENGWA_SILME, // s
         TENGWA_TINCO, TEHTA_A.base, // ta
         TENGWA_ORE, // r
     ]);
-    test_tengwar!(Quenya[ligate_short=true, ligate_zwj=false], "istar" => [
+    test_tengwar!(Quenya[ligate_short=true, ligate_zwj=0], "istar" => [
         CARRIER_SHORT_LIG, TEHTA_I.base, // i
         TENGWA_SILME, // s
         TENGWA_TINCO, TEHTA_A.base, // ta
         TENGWA_ORE, // r
     ]);
 
-    test_tengwar!(Quenya[ligate_short=false, ligate_zwj=true], "istar" => [
+    test_tengwar!(Quenya[ligate_short=false, ligate_zwj=1], "istar" => [
         CARRIER_SHORT, TEHTA_I.base, // i
         ZWJ, TENGWA_SILME, // s
         ZWJ, TENGWA_TINCO, TEHTA_A.base, // ta
         ZWJ, TENGWA_ORE, // r
     ]);
-    test_tengwar!(Quenya[ligate_short=true, ligate_zwj=true], "istar" => [
+    test_tengwar!(Quenya[ligate_short=true, ligate_zwj=1], "istar" => [
         CARRIER_SHORT_LIG, TEHTA_I.base, // i
         ZWJ, TENGWA_SILME, // s
         ZWJ, TENGWA_TINCO, TEHTA_A.base, // ta
