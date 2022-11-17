@@ -78,18 +78,19 @@ struct StyleFlags {
     alt_rince: bool,
 
     /// Set behavior for long vowels.
-    #[arg(long, short = 'l', value_name = "STYLE")]
-    #[arg(group = "vowels", value_enum, ignore_case = true)]
+    #[arg(long = "long", short = 'l', value_name = "STYLE")]
+    #[arg(group = "tehtar", value_enum, ignore_case = true)]
     #[arg(default_value_t = VowelStyle::DEFAULT)]
-    long: VowelStyle,
+    vowels: VowelStyle,
 
     /// Do not use inverted "nuquerna" variants.
     ///
     /// Some tengwar typically occupy the center space above them, where a vowel
     ///     diacritic would be placed. When one of these tengwar needs to have a
     ///     vowel, it is often inverted to make room; This option prevents that.
-    #[arg(long, short = 'n')]
-    no_nuquernar: bool,
+    #[arg(long = "no-nuquernar", short = 'n')]
+    #[arg(action = clap::ArgAction::SetFalse)]
+    nuquerna: bool,
 }
 
 
@@ -178,8 +179,8 @@ impl Command {
             alt_rince: self.style_flags.alt_rince,
             ligate_short: self.ligate_short,
             ligate_zwj: self.ligate_zwj,
-            nuquerna: !self.style_flags.no_nuquernar,
-            vowels: self.style_flags.long,
+            nuquerna: self.style_flags.nuquerna,
+            vowels: self.style_flags.vowels,
         }
     }
 }
@@ -191,7 +192,9 @@ fn main() {
 
     #[cfg(debug_assertions)]
     if command.debug {
-        dbg!(command);
+        let mode = command.mode();
+        let settings = command.settings();
+        dbg!(command, mode, settings);
         exit(0);
     }
 
