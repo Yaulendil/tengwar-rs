@@ -6,11 +6,17 @@ use tengwar::*;
 
 #[derive(Clone, Copy, Debug, ValueEnum)]
 pub enum LongVowels {
-    /// Always use the extended carrier mark.
+    /// Always use the separate extended carrier mark.
+    //  0: No tehta `char`s will ever follow a base tengwa.
+    #[value(alias = "s", alias = "0")]
     Separate,
     /// Where possible, use doubled diacritics.
+    //  2: Up to two tehta `char`s may follow a base tengwa.
+    #[value(alias = "d", alias = "2")]
     Doubled,
     /// Where possible, use unique diacritics.
+    //  1: Up to one tehta `char` may follow a base tengwa.
+    #[value(alias = "u", alias = "1")]
     Unique,
 }
 
