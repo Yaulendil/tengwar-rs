@@ -13,6 +13,31 @@ fn convert<M: TengwarMode, T: FromIterator<Token>>(
 
 
 #[derive(Clone, Copy, Debug, ValueEnum)]
+pub enum Language {
+    /// The High Elven of the Noldorin Exiles.
+    #[value(alias = "q", alias = "qya")]
+    Quenya,
+    /// The Grey Elven of Beleriand.
+    #[value(alias = "s", alias = "sjn")]
+    Sindarin,
+    /*/// The language of the Angles.
+    #[value(alias = "e", alias = "eng")]
+    English,*/
+}
+
+#[allow(dead_code)]
+impl Language {
+    pub const fn mode(&self) -> Mode {
+        match self {
+            Self::Quenya => Mode::Classical,
+            Self::Sindarin => Mode::Gondor,
+            /*Self::English => Mode::English,*/
+        }
+    }
+}
+
+
+#[derive(Clone, Copy, Debug, ValueEnum)]
 pub enum Mode {
     /// The Classical Mode, used for Quenya.
     #[value(alias = "c")]

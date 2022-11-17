@@ -51,6 +51,11 @@ struct ModeFlags {
     #[arg(group = "mode")]
     english: bool,*/
 
+    /*/// Set a mode by language.
+    #[arg(long = "lang", short = 'L', value_name = "LANG")]
+    #[arg(group = "mode", value_enum, ignore_case = true)]
+    language: Option<Language>,*/
+
     /// Set a mode by name.
     #[arg(long = "mode", short = 'M', value_name = "MODE")]
     #[arg(group = "mode", value_enum, ignore_case = true)]
@@ -142,11 +147,14 @@ impl Command {
             gondor,
             beleriand,
             /*english,*/
+            /*language,*/
             by_name,
         } = self.mode_flags;
 
         if let Some(mode) = by_name {
             mode
+        /*} else if let Some(lang) = language {
+            lang.mode()*/
         } else if quenya {
             Mode::Classical
         } else if gondor {
