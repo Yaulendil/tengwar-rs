@@ -6,7 +6,7 @@ mod bin_test;
 
 use std::{io::{BufRead, stdin, stdout, Write}, process::exit};
 use bin_mode::*;
-use tengwar::TranscriberSettings;
+use tengwar::{TranscriberSettings, VowelStyle};
 
 
 #[derive(Args, Debug)]
@@ -75,8 +75,8 @@ struct StyleFlags {
     /// Set behavior for long vowels.
     #[arg(long, short = 'l', value_name = "STYLE")]
     #[arg(group = "vowels", value_enum, ignore_case = true)]
-    #[arg(default_value_t = LongVowels::DEFAULT)]
-    long: LongVowels,
+    #[arg(default_value_t = VowelStyle::DEFAULT)]
+    long: VowelStyle,
 
     /// Do not use inverted "nuquerna" variants.
     ///
@@ -171,7 +171,7 @@ impl Command {
             ligate_short: self.ligate_short,
             ligate_zwj: self.ligate_zwj,
             nuquerna: !self.style_flags.no_nuquernar,
-            vowels: self.style_flags.long.style(),
+            vowels: self.style_flags.long,
         }
     }
 }

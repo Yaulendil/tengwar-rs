@@ -93,6 +93,9 @@
 extern crate cfg_if;
 
 #[macro_use]
+extern crate clap;
+
+#[macro_use]
 #[cfg(feature = "serde")]
 extern crate serde;
 

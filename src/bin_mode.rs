@@ -13,43 +13,6 @@ fn convert<M: TengwarMode, T: FromIterator<Token>>(
 
 
 #[derive(Clone, Copy, Debug, ValueEnum)]
-pub enum LongVowels {
-    /// Always use the separate extended carrier mark.
-    //  0: No tehta `char`s will ever follow a base tengwa.
-    #[value(alias = "s", alias = "0")]
-    Separate,
-    /// Where possible, use doubled diacritics.
-    //  2: Up to two tehta `char`s may follow a base tengwa.
-    #[value(alias = "d", alias = "2")]
-    Doubled,
-    /// Where possible, use unique diacritics.
-    //  1: Up to one tehta `char` may follow a base tengwa.
-    #[value(alias = "u", alias = "1")]
-    Unique,
-}
-
-impl LongVowels {
-    pub const DEFAULT: Self = Self::from_lib(VowelStyle::DEFAULT);
-
-    pub const fn from_lib(style: VowelStyle) -> Self {
-        match style {
-            VowelStyle::Separate => Self::Separate,
-            VowelStyle::Doubled => Self::Doubled,
-            VowelStyle::Unique => Self::Unique,
-        }
-    }
-
-    pub const fn style(&self) -> VowelStyle {
-        match self {
-            Self::Separate => VowelStyle::Separate,
-            Self::Doubled => VowelStyle::Doubled,
-            Self::Unique => VowelStyle::Unique,
-        }
-    }
-}
-
-
-#[derive(Clone, Copy, Debug, ValueEnum)]
 pub enum Mode {
     /// The Classical Mode, used for Quenya.
     #[value(alias = "c")]

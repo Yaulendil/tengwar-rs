@@ -18,15 +18,21 @@ pub use tema::*;
 
 /// The type of behavior to be followed in the rendering of tehtar representing
 ///     "long" vowels.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, ValueEnum)]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub enum VowelStyle {
-    /// Always use the extended carrier mark.
-    Separate,
+    /// Always use the separate extended carrier mark.
+    //  0: No tehta `char`s will ever follow a base tengwa.
+    #[value(alias = "s", alias = "0")]
+    Separate = 0,
     /// Where possible, use doubled diacritics.
-    Doubled,
+    //  2: Up to two tehta `char`s may follow a base tengwa.
+    #[value(alias = "d", alias = "2")]
+    Doubled = 2,
     /// Where possible, use unique diacritics.
-    Unique,
+    //  1: Up to one tehta `char` may follow a base tengwa.
+    #[value(alias = "u", alias = "1")]
+    Unique = 1,
 }
 
 impl VowelStyle {
