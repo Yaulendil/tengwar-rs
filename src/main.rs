@@ -65,7 +65,7 @@ struct ModeFlags {
 
 #[derive(Args, Debug)]
 struct StyleFlags {
-    /// Use the alternate "yanta" diacritic for A-vowels.
+    /// Use the alternate "yanta" tehta for A-vowels.
     ///
     /// The alternate form is simpler and much quicker to write by hand than the
     ///     default tri-dot, and may be preferred when typesetting text intended
@@ -74,10 +74,34 @@ struct StyleFlags {
     alt_a: bool,
 
     /// Use a more ornate "sa-rincë" for final sibilants.
+    ///
+    /// The basic rincë is a small hook attached to the bottom of a tengwa. This
+    ///     option enables the use of a larger "curl" version attached to the
+    ///     right side.
+    ///
+    /// The alternate version may only be applied to the final tengwa in a word,
+    ///     and only to certain tengwar.
     #[arg(long, short = 'r')]
     alt_rince: bool,
 
-    /// Set behavior for long vowels.
+    /// Set behavior for long vowel tehtar.
+    ///
+    /// Generally, a long vowel may be indicated by
+    ///     (1) writing the tehta twice,
+    ///     (2) writing the tehta on an extended carrier, or
+    ///     (3) writing a vertical line below the base tengwa.
+    ///
+    /// The first method has two possible implementations:
+    ///     (1a) writing the same codepoint twice, and
+    ///     (1b) using a dedicated codepoint for a doubled tehta.
+    /// The extended carrier forms a ZWJ ligature with many tengwar, becoming a
+    ///     vertical line below, making the third method a special case of the
+    ///     second method (combined with `--ligate-zwj`).
+    ///
+    /// Support for these methods and implementations varies between fonts, so
+    ///     all are provided as possibilities. However, certain tehtar are not
+    ///     suitable for doubling, and so will always use the separate extended
+    ///     carrier, regardless of this setting.
     #[arg(long = "long", short = 'l', value_name = "STYLE")]
     #[arg(group = "tehtar", value_enum, ignore_case = true)]
     #[arg(default_value_t = VowelStyle::DEFAULT)]
@@ -87,7 +111,8 @@ struct StyleFlags {
     ///
     /// Some tengwar typically occupy the center space above them, where a vowel
     ///     diacritic would be placed. When one of these tengwar needs to have a
-    ///     vowel, it is often inverted to make room; This option prevents that.
+    ///     vowel, it is often inverted to make room; This option prevents that,
+    ///     as some typefaces can handle it well.
     #[arg(long = "no-nuquernar", short = 'n')]
     #[arg(action = clap::ArgAction::SetFalse)]
     nuquerna: bool,
@@ -97,9 +122,9 @@ struct StyleFlags {
 /// Transliterate text into J.R.R. Tolkien's Tengwar.
 ///
 /// Since the Tengwar are simply a writing system, and not a full language,
-/// there are various "modes" that can be used for transliteration. The default
-/// is the Classical Mode, mainly used for Quenya, but others are available for
-/// selection by command line options.
+///     there are various "modes" that can be used for transliteration. The
+///     default is the Classical Mode, mainly used for Quenya, but others are
+///     available for selection by command line options.
 #[derive(Debug, Parser)]
 #[command(version, max_term_width(100))]
 struct Command {
@@ -112,7 +137,7 @@ struct Command {
     #[arg(long)]
     ligate_all: bool,
 
-    /// Use the ligated short carrier when applicable.
+    /// Use the ligated short carrier where applicable.
     #[arg(long, short = 's')]
     ligate_short: bool,
 
@@ -136,6 +161,7 @@ struct Command {
     #[command(flatten, next_help_heading = "Modes")]
     mode_flags: ModeFlags,
 
+    /// Show the parsed input settings and immediately exit.
     #[arg(long, hide = true)]
     #[cfg(debug_assertions)]
     debug: bool,

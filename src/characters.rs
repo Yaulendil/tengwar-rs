@@ -25,11 +25,11 @@ pub enum VowelStyle {
     //  0: No tehta `char`s will ever follow a base tengwa.
     #[value(alias = "s", alias = "0")]
     Separate = 0,
-    /// Where possible, use doubled diacritics.
+    /// Where possible, write the normal codepoint twice.
     //  2: Up to two tehta `char`s may follow a base tengwa.
     #[value(alias = "d", alias = "2")]
     Doubled = 2,
-    /// Where possible, use unique diacritics.
+    /// Where possible, write the dedicated "long" codepoint once.
     //  1: Up to one tehta `char` may follow a base tengwa.
     #[value(alias = "u", alias = "1")]
     Unique = 1,
