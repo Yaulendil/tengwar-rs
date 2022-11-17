@@ -11,7 +11,7 @@ use tengwar::TranscriberSettings;
 
 #[derive(Args, Debug)]
 struct ModeFlags {
-    /// Transliterate in the Classical Mode (default).
+    /// Transliterate in the Classical Quenya Mode (default).
     ///
     /// Independent Tengwar represent consonant sounds, with vowels being
     ///     represented by a Tehta placed above either the preceding consonant
@@ -22,7 +22,7 @@ struct ModeFlags {
     #[arg(group = "mode")]
     quenya: bool,
 
-    /// Transliterate in the Mode of Gondor.
+    /// Transliterate in the Sindarin Mode of Gondor.
     ///
     /// Independent Tengwar represent consonant sounds, with vowels being
     ///     represented by a Tehta placed above either the following consonant
@@ -34,7 +34,7 @@ struct ModeFlags {
     #[arg(group = "mode")]
     gondor: bool,
 
-    /// Transliterate in the Mode of Beleriand.
+    /// Transliterate in the Sindarin Mode of Beleriand.
     ///
     /// Independent Tengwar are used for both consonants and vowels. Tehtar are
     ///     used only to mark diphthongs and long vowels. This is also referred
