@@ -77,9 +77,7 @@ pub struct Glyph {
     /// [ligating short carrier]: CARRIER_SHORT_LIG
     pub ligate_short: bool,
 
-    /// Indicates whether this glyph should try to use [`ZWJ`] ligation if it
-    ///     needs to output a separate carrier. This does NOT cause the glyph to
-    ///     try to ligate with the NEXT glyph.
+    /// Indicates whether this glyph should try to use [`ZWJ`] ligation.
     pub ligate_zwj: u8,
 }
 
@@ -301,7 +299,7 @@ impl Glyph {
     /// Determine whether the base [`char`] of this glyph is permitted to ligate
     ///     with another glyph using a zero-width joiner.
     pub const fn ligates_with(&self, other: &Self) -> bool {
-        ligature_valid(self, other)
+        ligature_valid(self, other, self.ligate_zwj)
     }
 
     /// Determine whether the base [`char`] of this glyph is permitted to ligate

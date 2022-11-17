@@ -150,9 +150,9 @@ struct Command {
     /// For typefaces that do not support these ligatures, the presence of the
     ///     joiners should not affect rendering; However, it does increase the
     ///     number of bytes in the output by approximately 15%.
-    /*///
+    ///
     /// This option may be specified multiple times to further loosen the rules
-    ///     of ligature formation.*/
+    ///     of ligature formation.
     #[arg(long, short = 'z')]
     #[arg(action = clap::ArgAction::Count)]
     ligate_zwj: u8,
@@ -207,8 +207,8 @@ impl Command {
         TranscriberSettings {
             alt_a: self.style_flags.alt_a,
             alt_rince: self.style_flags.alt_rince,
-            ligate_short: self.ligate_short,
-            ligate_zwj: self.ligate_zwj,
+            ligate_short: self.ligate_all || self.ligate_short,
+            ligate_zwj: if self.ligate_all { u8::MAX } else { self.ligate_zwj },
             nuquerna: self.style_flags.nuquerna,
             vowels: self.style_flags.vowels,
         }

@@ -127,7 +127,9 @@ fn test_styles() {
     run(["-s", ARG_Q]);
     run(["-z", ARG_Q]);
     run(["-sz", ARG_Q]);
+    run(["-szzz", ARG_Q]);
     run(["-s", "-z", ARG_Q]);
+    run(["-s", "-z", "-z", "-z", ARG_Q]);
 
     //  Alternate A-tehta.
     run(["--alt-a", ARG_Q]);

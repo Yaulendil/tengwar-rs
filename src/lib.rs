@@ -251,7 +251,7 @@ impl FromIterator<Token> for String {
 
             if let Token::Glyph(current) = token {
                 if let Some(Token::Glyph(next)) = iter.peek() {
-                    if 0 < current.ligate_zwj && current.ligates_with(next) {
+                    if current.ligates_with(next) {
                         buf.push(characters::ZWJ);
                     }
                 }

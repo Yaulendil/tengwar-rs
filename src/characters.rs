@@ -133,48 +133,54 @@ pub const fn telco_ligates_with(base: char) -> bool {
 /// Determine whether two [`Glyph`]s can be joined by a zero-width joiner. These
 ///     rules are based on the "Tengwar Telcontar" font, and are to some degree
 ///     based on opinion.
-pub const fn ligature_valid(prev: &Glyph, next: &Glyph) -> bool {
+pub const fn ligature_valid(prev: &Glyph, next: &Glyph, level: u8) -> bool {
+    const L_SILME: u8 = 2;
+    const L_SILME_MORE: u8 = 3;
+    const L_REGULARS: u8 = 3;
+
+    if level == 0 { return false; }
+
     let tehta_left: bool = prev.tehta.is_some();
     let tehta_right: bool = next.tehta.is_some();
 
     match (prev.tengwa(), next.tengwa()) {
-        (Some(Tengwa::Irregular(TENGWA_SILME | TENGWA_ESSE)), rhs) => {
-            //  Left tengwa is Silmë or Essë.
+        (Some(Tengwa::Irregular(TENGWA_SILME)), Some(rhs)) => {
+            //  Left tengwa is Silmë.
             if tehta_left && tehta_right {
                 //  Both tengwar carry tehtar. Do not allow ligation, in order
                 //      to reduce crowding.
                 false
             } else {
-                //  Allow ligation with another Silmë or Essë, or with Rómen,
-                //      Arda, or any regular tengwa.
                 match rhs {
-                    Some(Tengwa::Irregular(TENGWA_SILME)) => true,
-                    Some(Tengwa::Irregular(TENGWA_ESSE)) => true,
-                    Some(Tengwa::Irregular(TENGWA_ROMEN)) => true,
-                    Some(Tengwa::Irregular(TENGWA_ARDA)) => true,
-                    Some(tengwa) => tengwa.is_regular(),
-                    None => false,
+                    //  Allow ligation with any regular.
+                    _ if level < L_SILME => false,
+                    Tengwa::Regular(_) => true,
+
+                    //  Allow ligation with select irregulars.
+                    _ if level < L_SILME_MORE => false,
+                    Tengwa::Irregular(TENGWA_SILME) => true,
+                    Tengwa::Irregular(TENGWA_ESSE) => true,
+                    Tengwa::Irregular(TENGWA_ROMEN) => true,
+                    Tengwa::Irregular(TENGWA_ARDA) => true,
+                    Tengwa::Irregular(TENGWA_LAMBE) => true,
+                    Tengwa::Irregular(TENGWA_ALDA) => true,
+                    Tengwa::Irregular(TENGWA_HALLA) => true,
+                    Tengwa::Irregular(TENGWA_MALTA_HOOKED) => true,
+                    Tengwa::Irregular(TENGWA_VALA_HOOKED) => true,
+                    Tengwa::Irregular(TENGWA_LOWDHAM_HW) => true,
+
+                    //  Do not allow ligation with anything else.
+                    Tengwa::Irregular(_) => false,
                 }
             }
         }
-        (Some(lhs), Some(rhs)) => {
-            //  Allow ligation between any two tengwar which are either Rómen,
-            //      Arda, or regular.
-            let accept_lhs: bool = match lhs {
-                Tengwa::Irregular(TENGWA_ROMEN) => true,
-                Tengwa::Irregular(TENGWA_ARDA) => true,
-                tengwa => tengwa.is_regular(),
-            };
-            let accept_rhs: bool = match rhs {
-                Tengwa::Irregular(TENGWA_ROMEN) => true,
-                Tengwa::Irregular(TENGWA_ARDA) => true,
-                tengwa => tengwa.is_regular(),
-            };
+        (Some(Tengwa::Regular(lhs)), Some(Tengwa::Regular(rhs))) => {
+            let accept_lhs: bool = lhs.tema.left && lhs.tyelle.is_ascending();
+            let accept_rhs: bool = !rhs.tema.left && rhs.tyelle.is_descending();
 
-            accept_lhs && accept_rhs
+            L_REGULARS <= level && accept_lhs && accept_rhs
         }
-        //  Allow ligation if the two glyphs do not both carry tehtar.
-        _ => !(tehta_left && tehta_right),
+        _ => false,
     }
 }
 

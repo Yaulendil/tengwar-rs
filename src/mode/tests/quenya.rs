@@ -88,30 +88,69 @@ fn alt_rince() {
 
 #[test]
 fn ligatures() {
-    test_tengwar!(Quenya[ligate_short=false, ligate_zwj=0], "istar" => [
+    test_tengwar!(Quenya[ligate_short=false, ligate_zwj=0], "ista" => [
         CARRIER_SHORT, TEHTA_I.base, // i
         TENGWA_SILME, // s
         TENGWA_TINCO, TEHTA_A.base, // ta
-        TENGWA_ORE, // r
     ]);
-    test_tengwar!(Quenya[ligate_short=true, ligate_zwj=0], "istar" => [
+    test_tengwar!(Quenya[ligate_short=true, ligate_zwj=0], "ista" => [
         CARRIER_SHORT_LIG, TEHTA_I.base, // i
         TENGWA_SILME, // s
         TENGWA_TINCO, TEHTA_A.base, // ta
-        TENGWA_ORE, // r
     ]);
 
-    test_tengwar!(Quenya[ligate_short=false, ligate_zwj=1], "istar" => [
+    test_tengwar!(Quenya[ligate_short=false, ligate_zwj=1], "ista" => [
         CARRIER_SHORT, TEHTA_I.base, // i
-        ZWJ, TENGWA_SILME, // s
-        ZWJ, TENGWA_TINCO, TEHTA_A.base, // ta
-        ZWJ, TENGWA_ORE, // r
+        TENGWA_SILME, // s
+        TENGWA_TINCO, TEHTA_A.base, // ta
     ]);
-    test_tengwar!(Quenya[ligate_short=true, ligate_zwj=1], "istar" => [
+    test_tengwar!(Quenya[ligate_short=true, ligate_zwj=1], "ista" => [
         CARRIER_SHORT_LIG, TEHTA_I.base, // i
-        ZWJ, TENGWA_SILME, // s
-        ZWJ, TENGWA_TINCO, TEHTA_A.base, // ta
-        ZWJ, TENGWA_ORE, // r
+        TENGWA_SILME, // s
+        TENGWA_TINCO, TEHTA_A.base, // ta
+    ]);
+
+    test_tengwar!(Quenya[ligate_short=false, ligate_zwj=2], "ista" => [
+        CARRIER_SHORT, TEHTA_I.base, // i
+        TENGWA_SILME, ZWJ, // s
+        TENGWA_TINCO, TEHTA_A.base, // ta
+    ]);
+    test_tengwar!(Quenya[ligate_short=true, ligate_zwj=2], "ista" => [
+        CARRIER_SHORT_LIG, TEHTA_I.base, // i
+        TENGWA_SILME, ZWJ, // s
+        TENGWA_TINCO, TEHTA_A.base, // ta
+    ]);
+
+    test_tengwar!(Quenya[ligate_short=false, ligate_zwj=3], "ista" => [
+        CARRIER_SHORT, TEHTA_I.base, // i
+        TENGWA_SILME, ZWJ, // s
+        TENGWA_TINCO, TEHTA_A.base, // ta
+    ]);
+    test_tengwar!(Quenya[ligate_short=true, ligate_zwj=3], "ista" => [
+        CARRIER_SHORT_LIG, TEHTA_I.base, // i
+        TENGWA_SILME, ZWJ, // s
+        TENGWA_TINCO, TEHTA_A.base, // ta
+    ]);
+
+    test_tengwar!(Quenya[ligate_zwj=0], "ohta" => [
+        CARRIER_SHORT, TEHTA_O.base, // o
+        TENGWA_AHA, // h
+        TENGWA_TINCO, TEHTA_A.base, // ta
+    ]);
+    test_tengwar!(Quenya[ligate_zwj=1], "ohta" => [
+        CARRIER_SHORT, TEHTA_O.base, // o
+        TENGWA_AHA, // h
+        TENGWA_TINCO, TEHTA_A.base, // ta
+    ]);
+    test_tengwar!(Quenya[ligate_zwj=2], "ohta" => [
+        CARRIER_SHORT, TEHTA_O.base, // o
+        TENGWA_AHA, // h
+        TENGWA_TINCO, TEHTA_A.base, // ta
+    ]);
+    test_tengwar!(Quenya[ligate_zwj=3], "ohta" => [
+        CARRIER_SHORT, TEHTA_O.base, // o
+        TENGWA_AHA, ZWJ, // h
+        TENGWA_TINCO, TEHTA_A.base, // ta
     ]);
 
     //  Test short ligatures thoroughly against regular tengwar.
