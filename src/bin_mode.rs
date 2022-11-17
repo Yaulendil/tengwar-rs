@@ -4,6 +4,14 @@
 use tengwar::*;
 
 
+fn convert<M: TengwarMode, T: FromIterator<Token>>(
+    input: impl ToTengwar,
+    settings: TranscriberSettings,
+) -> T {
+    input.transcriber::<M>().with_settings(settings).collect()
+}
+
+
 #[derive(Clone, Copy, Debug, ValueEnum)]
 pub enum LongVowels {
     /// Always use the separate extended carrier mark.
@@ -60,52 +68,33 @@ pub enum Mode {
 impl Mode {
     #[allow(dead_code)]
     pub const DEFAULT: Self = Self::Quenya;
+
+    pub fn convert<T: FromIterator<Token>>(
+        &self,
+        input: impl ToTengwar,
+        settings: TranscriberSettings,
+    ) -> T {
+        match self {
+            Self::Quenya => convert::<Quenya, T>(input, settings),
+            Self::Gondor => convert::<Gondor, T>(input, settings),
+            Self::Beleriand => convert::<Beleriand, T>(input, settings),
+            /*Self::English => convert::<English, T>(input, settings),*/
+        }
+    }
 }
 
 
 pub struct Runner {
     pub mode: Mode,
-
-    pub alt_a: bool,
-    pub alt_rince: bool,
-    pub ligate_short: bool,
-    pub ligate_zwj: bool,
-    pub nuquerna: bool,
-    pub vowels: VowelStyle,
+    pub settings: TranscriberSettings,
 }
 
 impl Runner {
-    pub const fn new(mode: Mode) -> Self {
-        Self {
-            mode,
-            alt_a: false,
-            alt_rince: false,
-            ligate_short: false,
-            ligate_zwj: false,
-            nuquerna: false,
-            vowels: VowelStyle::DEFAULT,
-        }
+    pub const fn new(mode: Mode, settings: TranscriberSettings) -> Self {
+        Self { mode, settings }
     }
 
     pub fn convert<T: FromIterator<Token>>(&self, input: impl ToTengwar) -> T {
-        macro_rules! run {
-            ($mode:ty, $input:expr) => {{
-                let mut transcriber = $input.transcriber::<$mode>();
-                transcriber.settings.alt_a = self.alt_a;
-                transcriber.settings.alt_rince = self.alt_rince;
-                transcriber.settings.ligate_short = self.ligate_short;
-                transcriber.settings.ligate_zwj = self.ligate_zwj;
-                transcriber.settings.nuquerna = self.nuquerna;
-                transcriber.settings.vowels = self.vowels;
-                transcriber.collect()
-            }};
-        }
-
-        match self.mode {
-            Mode::Quenya => run!(Quenya, input),
-            Mode::Gondor => run!(Gondor, input),
-            Mode::Beleriand => run!(Beleriand, input),
-            /*Mode::English => run!(English, input),*/
-        }
+        self.mode.convert::<T>(input, self.settings)
     }
 }

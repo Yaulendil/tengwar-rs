@@ -6,6 +6,7 @@ mod bin_test;
 
 use std::{io::{BufRead, stdin, stdout, Write}, process::exit};
 use bin_mode::*;
+use tengwar::TranscriberSettings;
 
 
 #[derive(Args, Debug)]
@@ -160,14 +161,18 @@ impl Command {
     }
 
     const fn runner(&self) -> Runner {
-        let mut runner = Runner::new(self.mode());
-        runner.alt_a = self.style_flags.alt_a;
-        runner.alt_rince = self.style_flags.alt_rince;
-        runner.ligate_short = self.ligate_short;
-        runner.ligate_zwj = self.ligate_zwj;
-        runner.nuquerna = !self.style_flags.no_nuquernar;
-        runner.vowels = self.style_flags.long.style();
-        runner
+        Runner::new(self.mode(), self.settings())
+    }
+
+    const fn settings(&self) -> TranscriberSettings {
+        TranscriberSettings {
+            alt_a: self.style_flags.alt_a,
+            alt_rince: self.style_flags.alt_rince,
+            ligate_short: self.ligate_short,
+            ligate_zwj: self.ligate_zwj,
+            nuquerna: !self.style_flags.no_nuquernar,
+            vowels: self.style_flags.long.style(),
+        }
     }
 }
 
