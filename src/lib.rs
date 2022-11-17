@@ -164,7 +164,7 @@ pub trait ToTengwar {
     /// ts.settings.vowels = VowelStyle::Separate;
     /// assert_eq!(ts.into_string(), " ");
     /// ```
-    fn transcriber<M: TengwarMode>(&self) -> Transcriber<Tokenizer<M>>;
+    fn transcriber<M: TengwarMode>(&self) -> Transcriber<M>;
 
     /// Transcribe this object into the Tengwar directly.
     ///
@@ -206,7 +206,7 @@ pub trait ToTengwar {
 }
 
 impl<S: AsRef<str>> ToTengwar for S {
-    fn transcriber<M: TengwarMode>(&self) -> Transcriber<Tokenizer<M>> {
+    fn transcriber<M: TengwarMode>(&self) -> Transcriber<M> {
         Tokenizer::from_str(self).into_transcriber()
     }
 }
@@ -263,17 +263,25 @@ impl FromIterator<Token> for String {
 /// An iterator over a sequence of [`Token`]s which applies various rules. This
 ///     is the top level construct of the transcription process.
 ///
+/// This type is a special case of a [`TokenIter`], where the internal iterator
+///     is a [`Tokenizer`].
+pub type Transcriber<M> = TokenIter<Tokenizer<M>>;
+
+
+/// An iterator over a sequence of [`Token`]s which applies various rules. This
+///     is the top level construct of the transcription process.
+///
 /// This iterator is intended to work with a [`Tokenizer`], but is able to wrap
 ///     any type that iterates over `Token`s. Whether this would be useful is
 ///     not yet clear, but it is likely a good capability to have, just in case.
-pub struct Transcriber<I: Iterator<Item=Token>> {
+pub struct TokenIter<I: Iterator<Item=Token>> {
     inner: Peekable<I>,
     last: Option<Token>,
     pub settings: TranscriberSettings,
 }
 
-impl<I: Iterator<Item=Token>> Transcriber<I> {
-    /// Construct a Transcriber around an Iterator of [`Token`]s.
+impl<I: Iterator<Item=Token>> TokenIter<I> {
+    /// Construct a TokenIter around an Iterator of [`Token`]s.
     pub fn new(iter: I) -> Self {
         Self {
             inner: iter.peekable(),
@@ -298,11 +306,11 @@ impl<I: Iterator<Item=Token>> Transcriber<I> {
     }
 }
 
-impl<T: IntoIterator<Item=Token>> From<T> for Transcriber<T::IntoIter> {
+impl<T: IntoIterator<Item=Token>> From<T> for TokenIter<T::IntoIter> {
     fn from(iter: T) -> Self { Self::new(iter.into_iter()) }
 }
 
-impl<I: Iterator<Item=Token>> Iterator for Transcriber<I> {
+impl<I: Iterator<Item=Token>> Iterator for TokenIter<I> {
     type Item = Token;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -337,7 +345,7 @@ impl<I: Iterator<Item=Token>> Iterator for Transcriber<I> {
 }
 
 
-/// Behavior settings to be used by a [`Transcriber`].
+/// Behavior settings to be used by a [`TokenIter`].
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct TranscriberSettings {

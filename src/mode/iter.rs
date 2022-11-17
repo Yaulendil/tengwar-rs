@@ -82,7 +82,7 @@ impl<M: TengwarMode> Tokenizer<M> {
 
     /// Wrap this [`Tokenizer`] in a [`Transcriber`] that can apply higher-level
     ///     rules.
-    pub fn into_transcriber(self) -> Transcriber<Self> { self.into() }
+    pub fn into_transcriber(self) -> Transcriber<M> { self.into() }
 
     /// Return the slice of original [`char`]s, corresponding to the ones that
     ///     will be processed in the next step.

@@ -61,7 +61,7 @@ pub trait TengwarMode: Default + Sized {
     /// Set up a [`Transcriber`] over the characters of an input string.
     ///
     /// [`Transcriber`]: crate::Transcriber
-    fn transcriber(input: impl AsRef<str>) -> Transcriber<Tokenizer<Self>> {
+    fn transcriber(input: impl AsRef<str>) -> Transcriber<Self> {
         Tokenizer::<Self>::from_str(input).into_transcriber()
     }
 

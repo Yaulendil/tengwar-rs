@@ -24,9 +24,9 @@ fn test_regulars() {
 fn test_transcribe() {
     let mut tokens_saved = Vec::new();
 
-    let token_iter = Tokenizer::<Quenya>::from_str("eleni");
-    let token_saver = token_iter.inspect(|t| tokens_saved.push(*t));
-    let transcriber = Transcriber::new(token_saver);
+    let tokenizer = Tokenizer::<Quenya>::from_str("eleni");
+    let token_saver = tokenizer.inspect(|t| tokens_saved.push(*t));
+    let token_iter = TokenIter::new(token_saver);
 
-    assert_eq!(transcriber.count(), tokens_saved.len());
+    assert_eq!(token_iter.count(), tokens_saved.len());
 }
