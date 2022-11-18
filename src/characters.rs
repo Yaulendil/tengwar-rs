@@ -375,8 +375,8 @@ impl<'t> From<TengwaRegular<'t>> for Tengwa<'t> {
 
 impl<'t> From<char> for Tengwa<'t> {
     fn from(char: char) -> Self {
-        // Self::either_from(char)
-        Self::irregular_from(char)
+        Self::either_from(char)
+        // Self::irregular_from(char)
     }
 }
 
@@ -409,6 +409,25 @@ impl<'t> BaseChar<'t> {
             Self::Tengwa(tengwa) => Some(tengwa),
         }
     }
+}
+
+impl<'t> From<char> for BaseChar<'t> {
+    fn from(char: char) -> Self {
+        match char {
+            CARRIER_LONG => Self::Carrier(true),
+            CARRIER_SHORT => Self::Carrier(false),
+            CARRIER_SHORT_LIG => Self::Carrier(false),
+            c => Self::Tengwa(c.into()),
+        }
+    }
+}
+
+impl<'t> From<Tengwa<'t>> for BaseChar<'t> {
+    fn from(tengwa: Tengwa<'t>) -> Self { Self::Tengwa(tengwa) }
+}
+
+impl<'t> From<TengwaRegular<'t>> for BaseChar<'t> {
+    fn from(tengwa: TengwaRegular<'t>) -> Self { Self::Tengwa(tengwa.into()) }
 }
 
 
