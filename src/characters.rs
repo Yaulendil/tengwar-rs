@@ -371,6 +371,29 @@ impl<'t> From<char> for Tengwa<'t> {
 }*/
 
 
+#[derive(Clone, Copy, Debug)]
+pub enum BaseChar<'t> {
+    Carrier(bool),
+    Tengwa(Tengwa<'t>),
+}
+
+impl<'t> BaseChar<'t> {
+    pub const fn to_char(&self) -> char {
+        match self {
+            Self::Carrier(long) => carrier(*long),
+            Self::Tengwa(tengwa) => *tengwa.as_char(),
+        }
+    }
+
+    pub const fn tengwa(&self) -> Option<&Tengwa<'t>> {
+        match self {
+            Self::Carrier(_) => None,
+            Self::Tengwa(tengwa) => Some(tengwa),
+        }
+    }
+}
+
+
 #[test]
 #[cfg(test)]
 fn report_sizes() {
@@ -390,6 +413,7 @@ fn report_sizes() {
         size_of::<Tyelle>(),
         size_of::<TengwaRegular>(),
         size_of::<Tengwa>(),
+        size_of::<BaseChar>(),
     );
 
     eprintln!("Main:");
