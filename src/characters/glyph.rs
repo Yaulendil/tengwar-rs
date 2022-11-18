@@ -2,13 +2,51 @@ use std::fmt::{Display, Formatter, Write};
 use super::*;
 
 
+#[derive(Clone, Copy, Debug)]
+pub struct TengwaTehta<'t> {
+    pub tengwa: Option<Tengwa<'t>>,
+    pub tehta: Option<char>,
+}
+
+
+#[derive(Clone, Copy, Debug)]
+pub enum Parts<'t> {
+    One(TengwaTehta<'t>),
+    Two(TengwaTehta<'t>, TengwaTehta<'t>),
+}
+
+impl<'t> Parts<'t> {
+    pub const fn has_two(&self) -> bool {
+        match self {
+            Self::One(..) => false,
+            Self::Two(..) => true,
+        }
+    }
+
+    pub const fn lhs(&self) -> &TengwaTehta<'t> {
+        match self {
+            Self::One(tt) => tt,
+            Self::Two(tt, _) => tt,
+        }
+    }
+
+    pub const fn rhs(&self) -> &TengwaTehta<'t> {
+        match self {
+            Self::One(tt) => tt,
+            Self::Two(_, tt) => tt,
+        }
+    }
+}
+
+
+#[derive(Clone, Copy, Debug)]
 enum Rince {
     Basic,
     Final,
 }
 
 impl Rince {
-    const fn choose(base: char) -> Self {
+    pub const fn choose(base: char) -> Self {
         if rince_valid_final(base) {
             Self::Final
         } else {
@@ -18,11 +56,23 @@ impl Rince {
 }
 
 
-enum TehtaChar {
+#[derive(Clone, Copy, Debug)]
+pub enum TehtaChar {
     OnAraAfter(char),
     OnAraBefore(char),
     OnTengwaOnce(char),
     OnTengwaTwice(char),
+}
+
+impl TehtaChar {
+    pub const fn is_separate(&self) -> bool {
+        match self {
+            Self::OnAraAfter(_) => true,
+            Self::OnAraBefore(_) => true,
+            Self::OnTengwaOnce(_) => false,
+            Self::OnTengwaTwice(_) => false,
+        }
+    }
 }
 
 
@@ -264,6 +314,35 @@ impl Glyph {
         match self.base {
             Some(char) => Some(Tengwa::either_from(char)),
             None => None,
+        }
+    }
+
+    pub const fn parts(&self) -> Parts<'static> {
+        let tehta: Option<TehtaChar> = self.tehta_char();
+
+        match tehta {
+            Some(TehtaChar::OnAraAfter(c)) => {
+                let lhs = TengwaTehta { tengwa: self.tengwa(), tehta: None };
+                let rhs = TengwaTehta { tengwa: None, tehta: Some(c) };
+                Parts::Two(lhs, rhs)
+            }
+            Some(TehtaChar::OnAraBefore(c)) => {
+                let lhs = TengwaTehta { tengwa: None, tehta: Some(c) };
+                let rhs = TengwaTehta { tengwa: self.tengwa(), tehta: None };
+                Parts::Two(lhs, rhs)
+            }
+            Some(TehtaChar::OnTengwaOnce(c)) => Parts::One(TengwaTehta {
+                tengwa: self.tengwa(),
+                tehta: Some(c),
+            }),
+            Some(TehtaChar::OnTengwaTwice(c)) => Parts::One(TengwaTehta {
+                tengwa: self.tengwa(),
+                tehta: Some(c),
+            }),
+            None => Parts::One(TengwaTehta {
+                tengwa: self.tengwa(),
+                tehta: None,
+            }),
         }
     }
 

@@ -140,15 +140,31 @@ pub const fn ligature_valid(prev: &Glyph, next: &Glyph, level: u8) -> bool {
 
     if level == 0 { return false; }
 
-    let tehta_left: bool = prev.tehta.is_some();
-    let tehta_right: bool = next.tehta.is_some();
+    let lhs = *prev.parts().rhs();
+    let rhs = *next.parts().lhs();
+    let tengwar = (&lhs.tengwa, &rhs.tengwa);
+    let tehtar = (lhs.tehta, rhs.tehta);
 
-    match (prev.tengwa(), next.tengwa()) {
+    match tengwar {
         (Some(Tengwa::Irregular(TENGWA_SILME)), Some(rhs)) => {
             //  Left tengwa is Silmë.
-            if tehta_left && tehta_right {
-                //  Both tengwar carry tehtar. Do not allow ligation, in order
-                //      to reduce crowding.
+
+            //  Ligatures of Silmë are very compact. The tehtar may make it too
+            //      crowded. Determine whether this is the case.
+            let too_crowded: bool = match tehtar {
+                //  Two single dots are okay.
+                (Some(DC_OVER_DOT_1), Some(DC_OVER_DOT_1)) => false,
+
+                /*//  A single dot paired with another is okay.
+                (Some(DC_OVER_DOT_1), Some(_)) => false,
+                (Some(_), Some(DC_OVER_DOT_1)) => false,*/
+
+                //  Two more complex tehtar would be too much.
+                (Some(_), Some(_)) => true,
+                _ => false,
+            };
+
+            if too_crowded {
                 false
             } else {
                 match rhs {
@@ -175,6 +191,8 @@ pub const fn ligature_valid(prev: &Glyph, next: &Glyph, level: u8) -> bool {
             }
         }
         (Some(Tengwa::Regular(lhs)), Some(Tengwa::Regular(rhs))) => {
+            //  Both tengwar are regular. Allow ligation between two regulars,
+            //      joining their stems, if they have shapes approximating `dp`.
             let accept_lhs: bool = lhs.tema.left && lhs.tyelle.is_ascending();
             let accept_rhs: bool = !rhs.tema.left && rhs.tyelle.is_descending();
 
