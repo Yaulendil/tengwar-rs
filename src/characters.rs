@@ -10,10 +10,10 @@ pub mod tehta;
 pub mod tema;
 
 pub use consts::*;
-pub use glyph::*;
-pub use numeral::*;
-pub use tehta::*;
-pub use tema::*;
+pub use glyph::Glyph;
+pub use numeral::Numeral;
+pub use tehta::Tehta;
+pub use tema::{Tema, TengwaRegular, Tyelle};
 
 
 /// The type of behavior to be followed in the rendering of tehtar representing
@@ -369,3 +369,36 @@ impl<'t> From<char> for Tengwa<'t> {
         Self::try_either_from(char).ok_or(())
     }
 }*/
+
+
+#[test]
+#[cfg(test)]
+fn report_sizes() {
+    use std::mem::size_of;
+
+    eprintln!("Glyph helpers:");
+    dbg!(
+        size_of::<glyph::Parts>(),
+        size_of::<glyph::TehtaChar>(),
+        size_of::<glyph::TengwaTehta>(),
+    );
+
+    eprintln!("Tengwa helpers:");
+    dbg!(
+        size_of::<Tema>(),
+        size_of::<&Tema>(),
+        size_of::<Tyelle>(),
+        size_of::<TengwaRegular>(),
+        size_of::<Tengwa>(),
+    );
+
+    eprintln!("Main:");
+    dbg!(
+        size_of::<VowelStyle>(),
+        size_of::<Glyph>(),
+        size_of::<Numeral>(),
+        size_of::<crate::Token>(),
+    );
+
+    eprintln!();
+}
