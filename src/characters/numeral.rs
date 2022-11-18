@@ -2,10 +2,18 @@ use std::fmt::{Display, Formatter};
 use super::consts::*;
 
 
+pub const BASE_10_DOT: char = DC_OVER_DOT_1;
+pub const BASE_10_LINE: char = DC_OVER_LINE;
+pub const BASE_12_DOT: char = DC_UNDER_DOT_1;
+pub const BASE_12_LINE: char = DC_UNDER_LINE_H;
+pub const MOD_UNITS: char = DC_UNDER_RING;
+
 /// Prefix expected to be found on input numbers meant to be shown as Base-10.
 pub const PREF_DEC_IN: char = '#';
 /// Suffix expected to be found on input numbers that are meant to be ordinal.
 pub const SUFF_ORD_IN: char = '@';
+/// Suffix expected to be found on input numbers that are sequence indices.
+pub const SUFF_SEQ_IN: char = '&';
 
 //  NOTE: The maximum value of this type determines the maximum supported base
 //      of the number system. It is somewhat hard to imagine any new Tolkien
@@ -188,10 +196,10 @@ impl Display for Numeral {
             size = value.size() + 3;
 
             if self.lines {
-                base_marker = DC_OVER_LINE;
+                base_marker = BASE_10_LINE;
                 mark_ones = true;
             } else {
-                base_marker = DC_OVER_DOT_1;
+                base_marker = BASE_10_DOT;
                 mark_ones = true;
             }
         } else {
@@ -200,10 +208,10 @@ impl Display for Numeral {
             size = value.size();
 
             if self.lines {
-                base_marker = DC_UNDER_LINE_H;
+                base_marker = BASE_12_LINE;
                 mark_ones = true;
             } else {
-                base_marker = DC_UNDER_DOT_1;
+                base_marker = BASE_12_DOT;
                 mark_ones = false;
             }
         }
@@ -236,7 +244,7 @@ impl Display for Numeral {
             }
             [units, digits @ ..] if self.little_endian => {
                 text.push(NUMERAL[*units as usize]);
-                text.push(DC_UNDER_RING);
+                text.push(MOD_UNITS);
 
                 if mark_ones {
                     text.push(base_marker);
@@ -254,7 +262,7 @@ impl Display for Numeral {
                 }
 
                 text.push(NUMERAL[*units as usize]);
-                text.push(DC_UNDER_RING);
+                text.push(MOD_UNITS);
 
                 if mark_ones {
                     text.push(base_marker);

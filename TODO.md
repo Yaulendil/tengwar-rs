@@ -9,12 +9,13 @@
 - [x] Normalize diacritics in input
 - [x] ~~Support (duo)decimal points OR~~ drop generic in `Numeral`
 ### Library
+- [ ] Implement "sequence" numerals
 - [x] Redo ZWJ ligature cases
 ### Output
 - [x] Write nonfinal rincë **before** tehtar
 ### Tests
 - [ ] Write iterator-focused test suite in `tests/`
-- [ ] Write numeral-focused tests
+- [x] Write numeral-focused tests
 
 ---
 ## Whenever

@@ -275,6 +275,101 @@ fn normalization() {
 
 
 #[test]
+fn numerals() {
+    use numeral::*;
+
+    //  Test Base-12.
+    test_tengwar!(Quenya, "0" => [NUM_0, BASE_12_DOT]);
+    test_tengwar!(Quenya, "1" => [NUM_1, BASE_12_DOT]);
+    test_tengwar!(Quenya, "9" => [NUM_9, BASE_12_DOT]);
+    test_tengwar!(Quenya, "10" => [NUM_A, BASE_12_DOT]);
+    test_tengwar!(Quenya, "11" => [NUM_B, BASE_12_DOT]);
+    // test_tengwar!(Quenya, "12" => [NUM_C, BASE_12_DOT]);
+    test_tengwar!(Quenya, "12" => [
+        NUM_0, MOD_UNITS, /*BASE_12_DOT,*/
+        NUM_1, BASE_12_DOT,
+    ]);
+    test_tengwar!(Quenya, "24" => [
+        NUM_0, MOD_UNITS, /*BASE_12_DOT,*/
+        NUM_2, BASE_12_DOT,
+    ]);
+    test_tengwar!(Quenya, "25" => [
+        NUM_1, MOD_UNITS, /*BASE_12_DOT,*/
+        NUM_2, BASE_12_DOT,
+    ]);
+    test_tengwar!(Quenya, "144" => [
+        NUM_0, MOD_UNITS, /*BASE_12_DOT,*/
+        NUM_0, BASE_12_DOT,
+        NUM_1, BASE_12_DOT,
+    ]);
+    test_tengwar!(Quenya, "171" => [
+        NUM_3, MOD_UNITS, /*BASE_12_DOT,*/
+        NUM_2, BASE_12_DOT,
+        NUM_1, BASE_12_DOT,
+    ]);
+
+    //  Test Base-10.
+    test_tengwar!(Quenya, "#1" => [NUM_1, BASE_10_DOT]);
+    test_tengwar!(Quenya, "#9" => [NUM_9, BASE_10_DOT]);
+    test_tengwar!(Quenya, "#10" => [
+        NUM_0, MOD_UNITS, BASE_10_DOT,
+        NUM_1, BASE_10_DOT,
+    ]);
+    test_tengwar!(Quenya, "#20" => [
+        NUM_0, MOD_UNITS, BASE_10_DOT,
+        NUM_2, BASE_10_DOT,
+    ]);
+    test_tengwar!(Quenya, "#21" => [
+        NUM_1, MOD_UNITS, BASE_10_DOT,
+        NUM_2, BASE_10_DOT,
+    ]);
+    test_tengwar!(Quenya, "#100" => [
+        NUM_0, MOD_UNITS, BASE_10_DOT,
+        NUM_0, BASE_10_DOT,
+        NUM_1, BASE_10_DOT,
+    ]);
+    test_tengwar!(Quenya, "#123" => [
+        NUM_3, MOD_UNITS, BASE_10_DOT,
+        NUM_2, BASE_10_DOT,
+        NUM_1, BASE_10_DOT,
+    ]);
+
+    //  Test leading zeroes.
+    //  TODO: Implement support, or decide not to.
+    test_tengwar!(Quenya, "000" => [NUM_0, /*NUM_0, NUM_0,*/ BASE_12_DOT]);
+    test_tengwar!(Quenya, "001" => [NUM_1, /*NUM_0, NUM_0,*/ BASE_12_DOT]);
+
+    //  Test negatives.
+    test_tengwar!(Quenya, "#-0" => [
+        /*Numeral::PREF_NEG_OUT,*/
+        NUM_0, BASE_10_DOT,
+    ]);
+    test_tengwar!(Quenya, "#-1" => [
+        Numeral::PREF_NEG_OUT,
+        NUM_1, BASE_10_DOT,
+    ]);
+    test_tengwar!(Quenya, "#-10" => [
+        Numeral::PREF_NEG_OUT,
+        NUM_0, MOD_UNITS, BASE_10_DOT,
+        NUM_1, BASE_10_DOT,
+    ]);
+
+    //  Test ordinals.
+    test_tengwar!(Quenya, "#1@" => [
+        NUM_1, BASE_10_DOT,
+        Numeral::SUFF_ORD_OUT,
+    ]);
+
+    //  Test negative ordinals.
+    test_tengwar!(Quenya, "#-1@" => [
+        Numeral::PREF_NEG_OUT,
+        NUM_1, BASE_10_DOT,
+        Numeral::SUFF_ORD_OUT,
+    ]);
+}
+
+
+#[test]
 fn nuquernar() {
     //  Check Silmë.
     let _silme = test_tengwar!(Quenya, "silmë" => [
