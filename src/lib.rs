@@ -112,7 +112,7 @@ extern crate clap;
 #[cfg(feature = "serde")]
 extern crate serde;
 
-mod macros;
+// mod macros;
 
 pub mod characters;
 pub mod mode;
