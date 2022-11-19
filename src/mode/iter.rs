@@ -180,6 +180,12 @@ impl<M: TengwarMode> Tokenizer<M> {
                 IterStep::Success(token)
             }
 
+            //  Look for a sequence index.
+            else if let Some((char, len)) = mode.find_index(&data[head..]) {
+                self.advance_head(len);
+                IterStep::Success(Token::Char(char))
+            }
+
             //  Look for a numeric value.
             else if let Some((num, len)) = mode.find_numeral(&data[head..]) {
                 self.advance_head(len);

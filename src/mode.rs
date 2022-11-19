@@ -70,6 +70,12 @@ pub trait TengwarMode: Default + Sized {
     ///     this method is a no-op.
     fn finalize(&self, token: &mut Token, next: Option<&Token>) {}
 
+    /// Try to parse a slice of characters into an "index" of a sequence. This
+    ///     special case of a numeral is intended for use in enumerated lists.
+    fn find_index(&mut self, slice: &[char]) -> Option<(char, usize)> {
+        crate::characters::numeral::find_index(slice)
+    }
+
     /// Try to parse a slice of characters into a [`Numeral`]. If successful,
     ///     returns the `Numeral` alongside the number of [`char`]s that were
     ///     processed in order to find it.

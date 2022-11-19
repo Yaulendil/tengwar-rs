@@ -13,7 +13,7 @@ pub const PREF_DEC_IN: char = '#';
 /// Suffix expected to be found on input numbers that are meant to be ordinal.
 pub const SUFF_ORD_IN: char = '@';
 /// Suffix expected to be found on input numbers that are sequence indices.
-pub const SUFF_SEQ_IN: char = '&';
+pub const SUFF_SEQ_IN: char = '#';
 
 //  NOTE: The maximum value of this type determines the maximum supported base
 //      of the number system. It is somewhat hard to imagine any new Tolkien
@@ -65,6 +65,39 @@ impl Digits {
 
     fn size(&self) -> usize {
         self.negative as usize + self.digits.len() * 6
+    }
+}
+
+
+pub const fn find_index(slice: &[char]) -> Option<(char, usize)> {
+    let value: usize;
+    let chars: usize;
+
+    match slice {
+        [c10 @ '0'..='9', c01 @ '0'..='9', SUFF_SEQ_IN, ..] => {
+            let ones: usize = *c01 as usize - '0' as usize;
+            let tens: usize = *c10 as usize - '0' as usize;
+
+            value = 10 * tens + ones;
+            chars = 3;
+        }
+        [c01 @ '0'..='9', SUFF_SEQ_IN, ..] => {
+            let ones: usize = *c01 as usize - '0' as usize;
+
+            value = ones;
+            chars = 2;
+        }
+        _ => return None,
+    }
+
+    match value.checked_sub(1) {
+        /*//  TODO: Not stable as const.
+        Some(i) => match SEQUENCE.get(i) {
+            Some(char) => Some((*char, len)),
+            None => None,
+        }*/
+        Some(idx) if idx < SEQUENCE.len() => Some((SEQUENCE[idx], chars)),
+        _ => None,
     }
 }
 

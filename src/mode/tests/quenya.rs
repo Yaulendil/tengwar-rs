@@ -366,6 +366,31 @@ fn numerals() {
         NUM_1, BASE_10_DOT,
         Numeral::SUFF_ORD_OUT,
     ]);
+
+    //  Test sequence indices (one digit).
+    test_tengwar!(Quenya, "/#" => ['/', SUFF_SEQ_IN]);
+    test_tengwar!(Quenya, "0#" => [NUM_0, BASE_12_DOT, SUFF_SEQ_IN]);
+    test_tengwar!(Quenya, "1#" => [SEQUENCE[0]]);
+    test_tengwar!(Quenya, "9#" => [SEQUENCE[8]]);
+    test_tengwar!(Quenya, ":#" => [PUNCT_DOT_2, SUFF_SEQ_IN]);
+
+    //  Test sequence indices (two digits).
+    test_tengwar!(Quenya, "00#" => [NUM_0, BASE_12_DOT, SUFF_SEQ_IN]);
+    test_tengwar!(Quenya, "01#" => [SEQUENCE[0]]);
+    test_tengwar!(Quenya, "09#" => [SEQUENCE[8]]);
+    test_tengwar!(Quenya, "10#" => [SEQUENCE[9]]);
+    test_tengwar!(Quenya, "11#" => [SEQUENCE[10]]);
+    test_tengwar!(Quenya, "24#" => [SEQUENCE[23]]);
+    test_tengwar!(Quenya, "25#" => [
+        NUM_1, MOD_UNITS, /*BASE_12_DOT,*/
+        NUM_2, BASE_12_DOT,
+        SUFF_SEQ_IN,
+    ]);
+    test_tengwar!(Quenya, "30#" => [
+        NUM_6, MOD_UNITS, /*BASE_12_DOT,*/
+        NUM_2, BASE_12_DOT,
+        SUFF_SEQ_IN,
+    ]);
 }
 
 
