@@ -4,7 +4,7 @@
 use tengwar::*;
 
 
-fn convert<M: TengwarMode, T: FromIterator<Token>>(
+fn convert<M: TengwarMode + Default, T: FromIterator<Token>>(
     input: impl ToTengwar,
     settings: TranscriberSettings,
 ) -> T {

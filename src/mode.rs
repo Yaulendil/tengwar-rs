@@ -67,7 +67,7 @@ impl ParseAction {
 ///     implements methods that receive slices of [`char`]s and progressively
 ///     construct [`Token`]s held in internal state.
 #[allow(unused_variables)]
-pub trait TengwarMode: Default + Sized {
+pub trait TengwarMode {
     /// This is the maximum size for a "chunk" of [`char`]s passed to
     ///     [`Self::process`]. It is also the maximum number of passes that will
     ///     be attempted before skipping a `char` and moving on.
@@ -77,15 +77,29 @@ pub trait TengwarMode: Default + Sized {
     ///     immediately collect it into the target type.
     ///
     /// [`Transcriber`]: crate::Transcriber
-    fn transcribe<T: FromIterator<Token>>(input: impl AsRef<str>) -> T {
-        Tokenizer::<Self>::from_str(input).into_transcriber().collect()
+    fn transcribe<T: FromIterator<Token>>(input: impl AsRef<str>) -> T
+        where Self: Default,
+    {
+        Self::default_transcriber(input).collect()
+    }
+
+    /// Set up a [`Transcriber`] over the characters of an input string, using
+    ///     the default initial state of this mode.
+    ///
+    /// [`Transcriber`]: crate::Transcriber
+    fn default_transcriber(input: impl AsRef<str>) -> Transcriber<Self>
+        where Self: Default,
+    {
+        Self::default().into_transcriber(input)
     }
 
     /// Set up a [`Transcriber`] over the characters of an input string.
     ///
     /// [`Transcriber`]: crate::Transcriber
-    fn transcriber(input: impl AsRef<str>) -> Transcriber<Self> {
-        Tokenizer::<Self>::from_str(input).into_transcriber()
+    fn into_transcriber(self, input: impl AsRef<str>) -> Transcriber<Self>
+        where Self: Sized,
+    {
+        Tokenizer::<Self>::with_mode(input, self).into_transcriber()
     }
 
     /// Perform any last-minute modifications to a [`Token`] that may be needed
@@ -112,7 +126,7 @@ pub trait TengwarMode: Default + Sized {
     }
 
     /// If there is a [`Token`] currently under construction, return it and
-    ///     clear it from the internal state, preparing to begin a new tengwa.
+    ///     clear it from the internal state, preparing to begin a new one.
     ///
     /// Ideally, this method should be cheap to call, because it will be called
     ///     whenever [`next`] is called on a [`Tokenizer`] which has reached the

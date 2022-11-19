@@ -56,7 +56,7 @@ pub struct Tokenizer<M: TengwarMode> {
 /// Public functionality.
 impl<M: TengwarMode> Tokenizer<M> {
     /// Set up a new Tokenizer over a sequence of [`char`]s.
-    pub fn new(chars: Vec<char>) -> Self {
+    pub fn new(chars: Vec<char>, mode: M) -> Self {
         let size: usize = chars.len().min(M::MAX_CHUNK);
         let mut lower = chars.clone();
 
@@ -70,14 +70,21 @@ impl<M: TengwarMode> Tokenizer<M> {
             head: 0,
             size,
             skip: 0,
-            mode: M::default(),
+            mode,
             next: None,
         }
     }
 
     /// Set up a new Tokenizer over UTF-8 text.
-    pub fn from_str(s: impl AsRef<str>) -> Self {
-        Self::new(s.as_ref().nfc().collect())
+    pub fn from_str(s: impl AsRef<str>) -> Self
+        where M: Default,
+    {
+        Self::with_mode(s, M::default())
+    }
+
+    /// Set up a new Tokenizer over UTF-8 text with a specific mode instance.
+    pub fn with_mode(s: impl AsRef<str>, mode: M) -> Self {
+        Self::new(s.as_ref().nfc().collect(), mode)
     }
 
     /// Wrap this [`Tokenizer`] in a [`Transcriber`] that can apply higher-level

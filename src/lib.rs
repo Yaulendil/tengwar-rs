@@ -130,7 +130,7 @@ use mode::Tokenizer;
 ///
 /// This function merely calls a Trait method, but is likely the most readily
 ///     discoverable part of the library when using code completion tools.
-pub fn transcribe<M: TengwarMode>(text: impl ToTengwar) -> String {
+pub fn transcribe<M: TengwarMode + Default>(text: impl ToTengwar) -> String {
     text.to_tengwar::<M>()
 }
 
@@ -180,7 +180,7 @@ pub trait ToTengwar {
     /// ts.settings.vowels = VowelStyle::Separate;
     /// assert_eq!(ts.into_string(), " ");
     /// ```
-    fn transcriber<M: TengwarMode>(&self) -> Transcriber<M>;
+    fn transcriber<M: TengwarMode + Default>(&self) -> Transcriber<M>;
 
     /// Transcribe this object into the Tengwar directly.
     ///
@@ -191,7 +191,7 @@ pub trait ToTengwar {
     /// let text: String = "namárië !".to_tengwar::<Quenya>();
     /// assert_eq!(text, " ");
     /// ```
-    fn to_tengwar<M: TengwarMode>(&self) -> String {
+    fn to_tengwar<M: TengwarMode + Default>(&self) -> String {
         self.transcriber::<M>().into_string()
     }
 
@@ -216,13 +216,15 @@ pub trait ToTengwar {
     /// let text: String = "lotsë súva".to_tengwar_with::<Quenya>(settings);
     /// assert_eq!(text, " ");
     /// ```
-    fn to_tengwar_with<M: TengwarMode>(&self, settings: TranscriberSettings) -> String {
+    fn to_tengwar_with<M>(&self, settings: TranscriberSettings) -> String
+        where M: TengwarMode + Default
+    {
         self.transcriber::<M>().with_settings(settings).into_string()
     }
 }
 
 impl<S: AsRef<str>> ToTengwar for S {
-    fn transcriber<M: TengwarMode>(&self) -> Transcriber<M> {
+    fn transcriber<M: TengwarMode + Default>(&self) -> Transcriber<M> {
         Tokenizer::from_str(self).into_transcriber()
     }
 }
