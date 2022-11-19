@@ -1,5 +1,10 @@
-//! This file contains the basic constants and data structures required to work
+//! This module defines the basic constants and data structures required to work
 //!     effectively with the Tengwar.
+//!
+//! The core of this module is the [`consts`] submodule, which defines every
+//!     codepoint used by the crate. These codepoint definitions are supported
+//!     by the [`Tehta`] and [`Tema`] types, and are used to support the
+//!     [`Glyph`], [`Numeral`], and [`Tengwa`] types.
 //  TODO: Document EVERY ITEM in this module.
 
 // #[cfg_attr(feature = "csur", path = "characters/consts_csur.rs")]

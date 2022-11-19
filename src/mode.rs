@@ -1,4 +1,12 @@
-//! This module consolidates the modes of transliteration for simplicity.
+//! This module defines the interface, and default implementations, for "modes"
+//!     of the Tengwar: High-level rules for text representations.
+//!
+//! The core of the module is the [`TengwarMode`] trait, which defines the
+//!     common functionality. The [`Tokenizer`] iterator takes input text and
+//!     uses the rules of a mode to construct [`Token`]s.
+//!
+//! There are three modes currently implemented by default: [`Quenya`],
+//!     [`Gondor`], and [`Beleriand`].
 
 pub mod beleriand;
 // pub mod general;

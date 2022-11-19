@@ -6,21 +6,34 @@
 //! [Free Tengwar Font Project]: http://freetengwar.sourceforge.net/mapping.html
 //! [Tengwar Telcontar]: http://freetengwar.sourceforge.net/tengtelc.html
 //!
-//! # Modes
+//! # Overview
 //!
-//! Three modes are currently provided: [`Quenya`] ("Classical"), [`Beleriand`],
-//!     and [`Gondor`]. Each mode implements the [`TengwarMode`] trait.
+//! The library is split into two main modules. The [`characters`] module is
+//!     primarily concerned with defining the data and datastructures needed to
+//!     represent Tengwar. The [`mode`] module, on the other hand, is mainly
+//!     concerned with transcription, defining the [`TengwarMode`] trait for the
+//!     rules and the [`Tokenizer`] type for applying them.
+//!
+//! However, this first level of transcription is usually not enough; Therefore,
+//!     the top level of the crate defines the [`TokenIter`] type to perform
+//!     additional transformations. This higher-level iterator can be configured
+//!     at runtime, and is capable of looking ahead and behind to determine the
+//!     context, enabling critical situational behaviors.
+//!
+//! Three modes are currently provided by default: [`Quenya`] ("Classical"),
+//!     [`Beleriand`], and [`Gondor`]. Each mode implements the [`TengwarMode`]
+//!     trait.
 //!
 //! # Examples
 //!
 //! [`collect`]: Iterator::collect
 //!
-//! ## TengwarMode trait
+//! ## `TengwarMode` trait
 //!
-//! The most basic way to convert text is the [`TengwarMode::transcribe`]
-//!     associated function. This function accepts any input type that
-//!     implements `AsRef<str>`, and can return any type that implements
-//!     `FromIterator<Token>`; This includes `Vec<Token>` and [`String`].
+//! The most direct way to convert text is [`TengwarMode::transcribe`]. This
+//!     function accepts any input type that implements `AsRef<str>`, and can
+//!     return any type that implements `FromIterator<Token>`; This includes
+//!     `Vec<Token>` and [`String`].
 //! ```
 //! use tengwar::{Quenya, TengwarMode};
 //!
@@ -28,12 +41,12 @@
 //! assert_eq!(text, " ");
 //! ```
 //!
-//! ## ToTengwar trait
+//! ## `ToTengwar` trait
 //!
-//! With the use of the [`ToTengwar`] helper trait, some methods are provided on
-//!     the input type directly. This trait is automatically implemented for any
-//!     type implementing `AsRef<str>`. The first is [`ToTengwar::transcriber`],
-//!     which constructs a [`Transcriber`] for the text, allowing iteration over
+//! With the use of the [`ToTengwar`] helper trait (automatically implemented
+//!     for any type implementing `AsRef<str>`), three methods are provided on
+//!     the input type directly. The first is [`ToTengwar::transcriber`], which
+//!     constructs a [`Transcriber`] for the text, allowing iteration over
 //!     [`Token`]s.
 //!
 //! The `Transcriber` also has [`TranscriberSettings`], holding several public
@@ -274,9 +287,11 @@ pub type Transcriber<M> = TokenIter<Tokenizer<M>>;
 /// An iterator over a sequence of [`Token`]s which applies various rules. This
 ///     is the top level construct of the transcription process.
 ///
-/// This iterator is intended to work with a [`Tokenizer`], but is able to wrap
-///     any type that iterates over `Token`s. Whether this would be useful is
-///     not yet clear, but it is likely a good capability to have, just in case.
+/// This iterator is intended to work with a [`Tokenizer`], but is able to work
+///     with any type that iterates over `Token`s. This allows the tokens to be
+///     filtered or modified after being parsed, but before the surrounding
+///     context is analyzed. This ability may be critical to perform changes
+///     that would affect the context.
 pub struct TokenIter<I: Iterator<Item=Token>> {
     inner: Peekable<I>,
     last: Option<Token>,
