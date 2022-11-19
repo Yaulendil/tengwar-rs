@@ -192,7 +192,7 @@ impl TengwarMode for Beleriand {
         let initial: bool = self.previous.is_none();
 
         if let ['\\', _, ..] = chunk {
-            ParseAction::Escape
+            ParseAction::ESC_BACKSLASH
         } else if let Some(current) = &mut self.current {
             //  A glyph is currently being constructed, but this mode does not
             //      have any modifications. Finish it.

@@ -165,9 +165,9 @@ impl<M: TengwarMode> Tokenizer<M> {
                             None => IterStep::Again,
                         }
                     }
-                    ParseAction::Escape => {
-                        self.skip += 1;
-                        self.advance_head(1);
+                    ParseAction::Escape { len_seq, n_skip } => {
+                        self.advance_head(len_seq);
+                        self.skip += n_skip;
                         IterStep::Again
                     }
                 }

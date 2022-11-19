@@ -27,7 +27,10 @@ pub enum ParseAction {
     MatchedPart(usize),
     /// A complete [`Token`] has been processed.
     MatchedToken {
+        /// The completed [`Token`].
         token: Token,
+        /// The number of [`char`]s that were processed during the final step of
+        ///     parsing this Token.
         len: usize,
     },
     /// A portion of the input has been determined to be irrelevant to the
@@ -36,7 +39,19 @@ pub enum ParseAction {
     Skip(usize),
     /// An escape sequence has been found. The next [`char`] will be ignored,
     ///     and the one following will be passed through unchanged.
-    Escape,
+    Escape {
+        /// The number of [`char`]s in the escape sequence itself. These will be
+        ///     ignored, and will not be present in the output in any way.
+        len_seq: usize,
+        /// The number of [`char`]s affected by the escape sequence. These will
+        ///     be passed through to the output without being processed.
+        n_skip: usize,
+    },
+}
+
+impl ParseAction {
+    /// The behavior of a simple backslash escape sequence.
+    pub const ESC_BACKSLASH: Self = Self::Escape { len_seq: 1, n_skip: 1 };
 }
 
 
