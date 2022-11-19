@@ -31,8 +31,8 @@ When run directly, reads all command-line arguments and prints them back in Teng
     > tengwar "Elen síla lúmenn' omentielvo :"
         
 
-    > tengwar "Utúlie'n aurë ! Aiya Eldalië ar Atanatári , utúlie'n aurë !."
-              
+    > tengwar "Utúlie'n aurë!, Aiya Eldalië ar Atanatári , utúlie'n aurë!:"
+            
 
 If no arguments are provided, reads from Standard Input and prints transliteration to Standard Output line by line.
 All input is assumed to be UTF-8 encoded, and output will also be UTF-8 encoded.
@@ -50,6 +50,42 @@ Alternative "Modes" can be selected via command-line switch:
              
 
 The full list of available modes can be viewed with `tengwar -h`.
+
+
+### Numerals
+
+Numbers are parsed quite differently from alphabetical text.
+This is because in Tengwar, the least significant digit is placed on the left, and numbers typically use a Base 12 system.
+The requirement to parse a number as a whole does, however, allow for some formatting to be specified inline.
+Plain numbers are simple enough:
+
+    > tengwar "9"
+    
+
+The default presentation is in duodecimal, Base 12, as is the custom of the Elves:
+
+    > tengwar "22"
+    
+
+Prefixing a number with `#` will force a number to be presented in decimal, Base 10:
+
+    > tengwar "#22"
+    
+
+Suffixing a number with `@` will append a suffix to specify an Ordinal number — for instance, "second" instead of "two":
+
+    > tengwar "Laurelin nánë i 2@ alda"
+        
+
+Suffixing a number between 1 and 24 with `#` will eschew the typical numerals entirely, and instead use the regular tengwar as indices for a sequence.
+This usage was described by Christopher Tolkien, and published in [Quettar #1](https://www.quettar.org/special1.pdf).
+This is analogous to using the Latin alphabet to enumerate a list (`a.`, `b.`, etc).
+
+    > tengwar "1#︙ Telperion
+    2#︙ Laurelin"
+     
+     
+
 
 ### Ligation
 
@@ -78,7 +114,7 @@ Tengwar [punctuation](https://at.mansbjorkman.net/teng_punctuation.htm) is essen
 It is therefore probably best to not even try, and instead to punctuate the input text with the output in mind.
 
 This program does convert punctuation marks into Unicode codepoints, but whitespace is passed through verbatim, neither added nor subtracted¹.
-As of this writing at version `0.8.0`, punctuation is processed as can be seen above and in the following table:
+As of this writing at version `1.0.0`, punctuation is processed as can be seen above and in the following table:
 
 | Input              | Output |
 |--------------------|:------:|

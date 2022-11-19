@@ -1,9 +1,9 @@
 [package]
 name = "tengwar"
-description = "Transliterate latin text into J.R.R. Tolkien's Tengwar."
-version = "0.10.0-dev"
+description = "Transliterate text into J.R.R. Tolkien's Tengwar."
+version = "1.0.0"
 
-authors = ["Yaulendil <davarice@protonmail.com>"]
+authors = ["Yaulendil"]
 repository = "https://github.com/yaulendil/tengwar-rs"
 readme = "README.md"
 
