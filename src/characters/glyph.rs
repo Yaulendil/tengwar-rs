@@ -410,7 +410,7 @@ impl Glyph {
     }
 
     /// Resolve the position and identity of the tehta.
-    const fn tehta_char(&self) -> Option<TehtaChar> {
+    pub const fn tehta_char(&self) -> Option<TehtaChar> {
         let Some(tehta) = self.tehta else {
             //  If there is no tehta, there is nothing to use for it.
             return None;

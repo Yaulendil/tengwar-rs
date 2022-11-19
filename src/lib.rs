@@ -247,6 +247,24 @@ pub enum Token {
     // String(Cow<'static, str>),
 }
 
+impl Token {
+    pub const fn glyph(&self) -> Option<&Glyph> {
+        match self {
+            Self::Char(_) => None,
+            Self::Glyph(g) => Some(g),
+            Self::Number(_) => None,
+        }
+    }
+
+    pub const fn numeral(&self) -> Option<&Numeral> {
+        match self {
+            Self::Char(_) => None,
+            Self::Glyph(_) => None,
+            Self::Number(n) => Some(n),
+        }
+    }
+}
+
 impl Display for Token {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {

@@ -14,7 +14,7 @@
 ### Output
 - [x] Write nonfinal rincë **before** tehtar
 ### Tests
-- [ ] Write iterator-focused test suite in `tests/`
+- [x] Write iterator-focused test suite in `tests/`
 - [x] Write numeral-focused tests
 
 ---
