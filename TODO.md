@@ -18,6 +18,18 @@
 - [x] Write numeral-focused tests
 
 ---
+## 1.1.0
+
+### CLI
+### Docs
+### Input
+### Library
+- [ ] Gondor "Full" Mode
+- [ ] Flesh out `Policy` to make ligature/rincë rules extensible
+### Output
+### Tests
+
+---
 ## Whenever
 
 ### CLI
@@ -32,8 +44,6 @@
 ### Library
 - [ ] Cirth
 - [ ] English Mode?
-- [ ] Gondor "Full" Mode
-- [ ] Flesh out `Policy` to make ligature/rincë rules extensible
 - [ ] "Reverse" transcription; Tengwar to Latin text
 - [ ] Switch all Tengwar codepoints to official Unicode values (when they are accepted)
 ### Output
