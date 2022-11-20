@@ -50,3 +50,5 @@ csur = []
 
 # Use standard Unicode characters for dot punctuation.
 dots-standard = []
+# Enable custom transcription modes, defined by config file.
+mode-custom = ["serde"]

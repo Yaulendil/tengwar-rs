@@ -9,6 +9,7 @@
 //!     [`Gondor`], and [`Beleriand`].
 
 pub mod beleriand;
+pub mod custom;
 // pub mod general;
 pub mod gondor;
 pub mod quenya;
@@ -17,6 +18,7 @@ mod iter;
 mod tests;
 
 pub use beleriand::Beleriand;
+pub use custom::CustomMode;
 // pub use general::General;
 pub use gondor::Gondor;
 pub use quenya::Quenya;
