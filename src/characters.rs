@@ -138,7 +138,11 @@ pub const fn telco_ligates_with(base: char) -> bool {
 /// Determine whether two [`Glyph`]s can be joined by a zero-width joiner. These
 ///     rules are based on the "Tengwar Telcontar" font, and are to some degree
 ///     based on opinion.
-pub const fn ligature_valid(prev: &Glyph, next: &Glyph, level: u8) -> bool {
+pub const fn ligature_valid<P: crate::policy::Policy>(
+    prev: &Glyph<P>,
+    next: &Glyph<P>,
+    level: u8,
+) -> bool {
     const L_SILME: u8 = 2;
     const L_SILME_MORE: u8 = 3;
     const L_REGULARS: u8 = 3;

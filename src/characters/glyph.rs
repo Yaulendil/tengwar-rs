@@ -1,4 +1,5 @@
-use std::fmt::{Display, Formatter, Write};
+use std::{fmt::{Display, Formatter, Write}, marker::PhantomData};
+use crate::policy::{Policy, Standard};
 use super::*;
 
 
@@ -81,7 +82,7 @@ impl TehtaChar {
 ///     length, and information on vowel and ligature behavior.
 #[derive(Clone, Copy, Debug, Default)]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct Glyph {
+pub struct Glyph<P: Policy = Standard> {
     /// A base character.
     pub base: Option<char>,
     /// The primary diacritical marking over the base character.
@@ -129,10 +130,13 @@ pub struct Glyph {
 
     /// Indicates whether this glyph should try to use [`ZWJ`] ligation.
     pub ligate_zwj: u8,
+
+    // pub policy: P,
+    pub _p: PhantomData<P>,
 }
 
 /// Public: Construction and modification.
-impl Glyph {
+impl<P: Policy> Glyph<P> {
     /// Define a new empty glyph.
     pub const fn new() -> Self {
         Self {
@@ -155,6 +159,9 @@ impl Glyph {
             dot_under: false,
             ligate_short: false,
             ligate_zwj: 0,
+
+            // policy: P::new(),
+            _p: PhantomData,
         }
     }
 
@@ -181,6 +188,29 @@ impl Glyph {
     /// Define a glyph with only a [`Tehta`]. It may be marked as Alternate.
     pub const fn new_vowel(tehta: Tehta, alt: bool) -> Self {
         Self { tehta: Some(tehta), tehta_alt: alt, ..Self::new() }
+    }
+
+    pub const fn change_policy<Q: Policy>(&self) -> Glyph<Q> {
+        Glyph {
+            base: self.base,
+            tehta: self.tehta,
+            tehta_alt: self.tehta_alt,
+            tehta_first: self.tehta_first,
+            vowels: self.vowels,
+            rince: self.rince,
+            rince_final: self.rince_final,
+            nasal: self.nasal,
+            labial: self.labial,
+            palatal: self.palatal,
+            nuquerna: self.nuquerna,
+            long_cons: self.long_cons,
+            dot_inner: self.dot_inner,
+            dot_under: self.dot_under,
+            ligate_short: self.ligate_short,
+            ligate_zwj: self.ligate_zwj,
+            // policy: P::new(),
+            _p: PhantomData,
+        }
     }
 
     pub const fn with_tengwa(mut self, tengwa: char) -> Self {
@@ -274,7 +304,7 @@ impl Glyph {
 }
 
 /// Public: Information and logic.
-impl Glyph {
+impl<P: Policy> Glyph<P> {
     /// Determine the base character to be used for this glyph. If one is not
     ///     set, an appropriate "carrier" mark will be returned instead.
     pub const fn base(&self) -> char {
@@ -383,19 +413,19 @@ impl Glyph {
 
     /// Determine whether the base [`char`] of this glyph is permitted to ligate
     ///     with [Ára](TENGWA_ARA) using a zero-width joiner.
-    pub const fn ligates_with_ara(&self) -> bool {
-        ligates_with_ara(self.base())
+    pub fn ligates_with_ara(&self) -> bool {
+        P::ligates_with_ara(self.base())
     }
 
     /// Determine whether [Telco](TENGWA_TELCO) is permitted to ligate with the
     ///     base [`char`] of this glyph using a zero-width joiner.
-    pub const fn telco_ligates(&self) -> bool {
-        telco_ligates_with(self.base())
+    pub fn telco_ligates(&self) -> bool {
+        P::telco_ligates_with(self.base())
     }
 }
 
 /// Private: Helper methods.
-impl Glyph {
+impl<P: Policy> Glyph<P> {
     /// Choose the correct form of Sa-Rincë.
     const fn choose_rince(&self) -> Option<Rince> {
         if self.rince {
@@ -489,7 +519,7 @@ impl Glyph {
     }
 }
 
-impl Display for Glyph {
+impl<P: Policy> Display for Glyph<P> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let base: char = self.base();
 
@@ -499,7 +529,7 @@ impl Display for Glyph {
                 self.write_mods(f)?;
                 self.write_rince_nonfinal(f)?;
 
-                if 0 < self.ligate_zwj && ligates_with_ara(base) {
+                if 0 < self.ligate_zwj && P::ligates_with_ara(base) {
                     f.write_char(ZWJ)?;
                 }
 
@@ -572,19 +602,19 @@ impl Display for Glyph {
     }
 }
 
-impl From<char> for Glyph {
+impl<P: Policy> From<char> for Glyph<P> {
     fn from(cons: char) -> Self {
         Self::new_base(cons)
     }
 }
 
-impl From<Tengwa<'_>> for Glyph {
+impl<P: Policy> From<Tengwa<'_>> for Glyph<P> {
     fn from(tengwa: Tengwa) -> Self {
         Self::new_base(*tengwa)
     }
 }
 
-impl From<Tehta> for Glyph {
+impl<P: Policy> From<Tehta> for Glyph<P> {
     fn from(tehta: Tehta) -> Self {
         Self::new_tehta(tehta)
     }
