@@ -277,8 +277,8 @@ impl<P: Policy> Token<P> {
 impl<P: Policy> Display for Token<P> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            &Self::Char(ch) => f.write_char(ch),
-            Self::Glyph(t) => t.fmt(f),
+            Self::Char(ch) => f.write_char(*ch),
+            Self::Glyph(g) => g.fmt(f),
             Self::Number(n) => n.fmt(f),
             // Self::String(s) => f.write_str(s),
         }
@@ -286,7 +286,7 @@ impl<P: Policy> Display for Token<P> {
 }
 
 impl<P: Policy> FromIterator<Token<P>> for String {
-    fn from_iter<T: IntoIterator<Item=Token<P>>>(iter: T) -> Self {
+    fn from_iter<I: IntoIterator<Item=Token<P>>>(iter: I) -> Self {
         let mut iter = iter.into_iter().peekable();
         let mut buf = String::new();
 
@@ -312,24 +312,24 @@ impl<P: Policy> FromIterator<Token<P>> for String {
 ///
 /// This type is a special case of a [`TokenIter`], where the internal iterator
 ///     is a [`Tokenizer`].
-pub type Transcriber<M, P = Standard> = TokenIter<Tokenizer<M>, P>;
+pub type Transcriber<M, P = Standard> = TokenIter<Tokenizer<M>, Standard, P>;
 
 
 /// An iterator over a sequence of [`Token`]s which applies various rules. This
 ///     is the top level construct of the transcription process.
 ///
 /// This iterator is intended to work with a [`Tokenizer`], but is able to work
-///     with any type that iterates over `Token`s. This allows the tokens to be
-///     filtered or modified after being parsed, but before the surrounding
+///     with any type that iterates over [`Token`]s. This allows the tokens to
+///     be filtered or modified after being parsed, but before the surrounding
 ///     context is analyzed. This ability may be critical to perform changes
 ///     that would affect the context.
-pub struct TokenIter<I: Iterator<Item=Token<P>>, P: Policy = Standard> {
+pub struct TokenIter<I: Iterator<Item=Token<P>>, P: Policy, Q: Policy = P> {
     inner: Peekable<I>,
-    last: Option<Token<P>>,
+    last: Option<Token<Q>>,
     pub settings: TranscriberSettings,
 }
 
-impl<I: Iterator<Item=Token<P>>, P: Policy> TokenIter<I, P> {
+impl<I: Iterator<Item=Token<P>>, P: Policy> TokenIter<I, P, P> {
     /// Construct a TokenIter around an Iterator of [`Token`]s.
     pub fn new(iter: I) -> Self {
         Self {
@@ -338,15 +338,26 @@ impl<I: Iterator<Item=Token<P>>, P: Policy> TokenIter<I, P> {
             settings: Default::default(),
         }
     }
+}
 
+impl<I: Iterator<Item=Token<P>>, P: Policy, Q: Policy> TokenIter<I, P, Q> {
     /// Collect all [`Token`]s into a [`String`].
     pub fn into_string(self) -> String { self.collect() }
 
     /// Return a reference to the previous Token.
-    pub fn last(&self) -> Option<&Token<P>> { self.last.as_ref() }
+    pub fn last(&self) -> Option<&Token<Q>> { self.last.as_ref() }
 
     /// Return a reference to the next Token, without advancing the Iterator.
     pub fn peek(&mut self) -> Option<&Token<P>> { self.inner.peek() }
+
+    /// Change the [`Policy`] used for the [`Glyph`]s produced by this iterator.
+    pub fn set_policy<R: Policy>(self) -> TokenIter<I, P, R> {
+        TokenIter {
+            inner: self.inner,
+            last: self.last.map(Token::change_policy),
+            settings: self.settings,
+        }
+    }
 
     /// Change the transcription behavior settings.
     pub const fn with_settings(mut self, new: TranscriberSettings) -> Self {
@@ -355,15 +366,22 @@ impl<I: Iterator<Item=Token<P>>, P: Policy> TokenIter<I, P> {
     }
 }
 
-impl<T: IntoIterator<Item=Token<P>>, P: Policy> From<T> for TokenIter<T::IntoIter, P> {
-    fn from(iter: T) -> Self { Self::new(iter.into_iter()) }
+impl<I, P> From<I> for TokenIter<I::IntoIter, P, P> where
+    I: IntoIterator<Item=Token<P>>,
+    P: Policy,
+{
+    fn from(iter: I) -> Self { Self::new(iter.into_iter()) }
 }
 
-impl<I: Iterator<Item=Token<P>>, P: Policy> Iterator for TokenIter<I, P> {
-    type Item = Token<P>;
+impl<I, P, Q> Iterator for TokenIter<I, P, Q> where
+    I: Iterator<Item=Token<P>>,
+    P: Policy,
+    Q: Policy,
+{
+    type Item = Token<Q>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let mut token: Token<P> = self.inner.next()?;
+        let mut token: Token<Q> = self.inner.next()?.change_policy::<Q>();
 
         if let Token::Glyph(glyph) = &mut token {
             glyph.ligate_zwj = self.settings.ligate_zwj;

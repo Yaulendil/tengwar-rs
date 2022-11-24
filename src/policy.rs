@@ -1,5 +1,4 @@
-use std::iter::Map;
-use crate::{characters::*, Token};
+use crate::{characters::*, TengwarMode, ToTengwar, Transcriber};
 
 
 /// This trait defines higher-level behavior for rendering Tengwar.
@@ -39,6 +38,13 @@ pub trait Policy: Copy {
     ///     character. For a character at the end of a word, a more ornate
     ///     variant may be used.
     fn sa_rince(c: char, is_final: bool) -> Option<char> { None }
+
+    /// Create a [`Transcriber`] using the given [`TengwarMode`].
+    fn transcriber<M>(input: impl ToTengwar) -> Transcriber<M, Self>
+        where M: TengwarMode + Default,
+    {
+        input.transcriber().set_policy()
+    }
 }
 
 
@@ -77,7 +83,7 @@ impl Policy for Standard {
 }
 
 
-pub trait IterPolicyChange<P: Policy> {
+/*pub trait IterPolicyChange<P: Policy> {
     type NewIter<Q: Policy>: Iterator<Item=Token<Q>>;
 
     fn change_policy<Q: Policy>(self) -> Self::NewIter<Q>;
@@ -89,4 +95,4 @@ impl<I: Iterator<Item=Token<P>>, P: Policy> IterPolicyChange<P> for I {
     fn change_policy<Q: Policy>(self) -> Self::NewIter<Q> {
         self.map(Token::<P>::change_policy::<Q>)
     }
-}
+}*/
