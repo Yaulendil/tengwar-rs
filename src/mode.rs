@@ -18,6 +18,7 @@ mod iter;
 mod tests;
 
 pub use beleriand::Beleriand;
+#[cfg(feature = "mode-custom")]
 pub use custom::CustomMode;
 // pub use general::General;
 pub use gondor::Gondor;

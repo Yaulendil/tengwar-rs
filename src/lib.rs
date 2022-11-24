@@ -249,6 +249,14 @@ pub enum Token<P: Policy = Standard> {
 }
 
 impl<P: Policy> Token<P> {
+    pub const fn change_policy<Q: Policy>(self) -> Token<Q> {
+        match self {
+            Self::Glyph(glyph) => Token::Glyph(glyph.change_policy()),
+            Self::Char(char) => Token::Char(char),
+            Self::Number(number) => Token::Number(number),
+        }
+    }
+
     pub const fn glyph(&self) -> Option<&Glyph<P>> {
         match self {
             Self::Char(_) => None,

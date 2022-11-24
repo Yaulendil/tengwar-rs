@@ -1,4 +1,5 @@
-use crate::characters::*;
+use std::iter::Map;
+use crate::{characters::*, Token};
 
 
 /// This trait defines higher-level behavior for rendering Tengwar.
@@ -72,5 +73,20 @@ impl Policy for Standard {
 
             _ => Some(SA_RINCE),
         }
+    }
+}
+
+
+pub trait IterPolicyChange<P: Policy> {
+    type NewIter<Q: Policy>: Iterator<Item=Token<Q>>;
+
+    fn change_policy<Q: Policy>(self) -> Self::NewIter<Q>;
+}
+
+impl<I: Iterator<Item=Token<P>>, P: Policy> IterPolicyChange<P> for I {
+    type NewIter<Q: Policy> = Map<I, fn(Token<P>) -> Token<Q>>;
+
+    fn change_policy<Q: Policy>(self) -> Self::NewIter<Q> {
+        self.map(Token::<P>::change_policy::<Q>)
     }
 }

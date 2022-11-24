@@ -165,6 +165,7 @@ impl<P: Policy> Glyph<P> {
         }
     }
 
+    //  TODO: Reduce number of constructors.
     /// Define a glyph with both a base [`char`] and a [`Tehta`].
     pub const fn new_both(base: char, tehta: Tehta) -> Self {
         Self { base: Some(base), tehta: Some(tehta), ..Self::new() }
