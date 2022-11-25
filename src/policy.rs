@@ -30,6 +30,9 @@ pub trait Policy: Copy {
     ///     extends downwards, leaving the space above free for the tehta.
     fn nuquerna(base: char) -> char { base }
 
+    /// Check whether a tengwa has an inverted variant.
+    fn nuquerna_valid(base: char) -> bool { false }
+
     /// Returns the appropriate "Sa-Rincë", or "S-hook", for a given character,
     ///     if it can host one, taking into account whether it is the final
     ///     character in a word.
@@ -64,6 +67,10 @@ impl Policy for Standard {
 
     fn nuquerna(base: char) -> char {
         nuquerna(base)
+    }
+
+    fn nuquerna_valid(base: char) -> bool {
+        nuquerna_valid(base)
     }
 
     fn sa_rince(c: char, is_final: bool) -> Option<char> {

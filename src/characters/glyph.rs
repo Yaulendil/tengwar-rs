@@ -320,7 +320,7 @@ impl<P: Policy> Glyph<P> {
 impl<P: Policy> Glyph<P> {
     /// Determine the base character to be used for this glyph. If one is not
     ///     set, an appropriate "carrier" mark will be returned instead.
-    pub const fn base(&self) -> char {
+    pub fn base_nuq(&self) -> char {
         match self {
             &Glyph {
                 base: Some(base),
@@ -329,16 +329,26 @@ impl<P: Policy> Glyph<P> {
                 nuquerna: true,
                 vowels: VowelStyle::Doubled | VowelStyle::Unique,
                 ..
-            } if nuquerna_valid(base) && !(tehta_alt && tehta.needs_ara()) => {
+            } if P::nuquerna_valid(base) && !(tehta_alt && tehta.needs_ara()) => {
                 //  In this case, ALL of the following are true:
                 //    - The glyph has both a tengwa and a tehta.
                 //    - The base tengwa has a Nuquerna variant.
                 //    - The glyph is set to use the Nuquerna variant.
                 //    - The tehta will be displayed on the tengwa.
                 //  The Nuquerna variant of the base will therefore be returned.
-                nuquerna(base)
+                P::nuquerna(base)
             }
 
+            _ => self.base(),
+        }
+    }
+
+    /// Determine the base character to be used for this glyph. If one is not
+    ///     set, an appropriate "carrier" mark will be returned instead.
+    ///
+    /// This method does not apply a Nuquerna variant.
+    pub const fn base(&self) -> char {
+        match self {
             &Glyph { base: Some(base), .. } => base,
             &Glyph { base: None, tehta_alt, ligate_short, .. } => {
                 if tehta_alt {
@@ -561,7 +571,7 @@ impl<P: Policy> Glyph<P> {
 
 impl<P: Policy> Display for Glyph<P> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let base: char = self.base();
+        let base: char = self.base_nuq();
 
         match self.tehta_char() {
             Some(TehtaChar::OnAraAfter(tehta)) => {
