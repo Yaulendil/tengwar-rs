@@ -71,11 +71,14 @@ pub trait Policy: Copy {
 }
 
 
+/// An empty [`Policy`] with all the default rules. No ligatures, no sa-rinci,
+///     and no nuquernar.
 #[derive(Clone, Copy, Debug, Default)]
 pub struct NoPolicy;
 impl Policy for NoPolicy {}
 
 
+/// A conservative [`Policy`] based on the "Tengwar Telcontar" typeface.
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Standard;
 
