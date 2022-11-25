@@ -92,7 +92,7 @@ pub const fn get_diphthong(slice: &[char]) -> Option<Glyph> {
         ['u', 'i'] => Some(Glyph::new_both(VOWEL_U, TEHTA_Y)),
 
         ['a', 'u']
-        | ['a', 'w'] => Some(Glyph::new_base(VOWEL_A).with_labial()),
+        | ['a', 'w'] => Some(Glyph::new_base(VOWEL_A).with_labial(true)),
 
         _ => None,
     }
@@ -230,7 +230,7 @@ impl TengwarMode for Beleriand {
                 //  Check for a nazalized consonant.
                 if let ['m' | 'n', rest @ ..] = chunk {
                     if let Some(new) = get_consonant(rest) {
-                        return finish!(new.with_nasal(), chunk.len());
+                        return finish!(new.with_nasal(true), chunk.len());
                     }
                 }
 

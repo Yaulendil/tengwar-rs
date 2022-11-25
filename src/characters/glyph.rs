@@ -219,41 +219,41 @@ impl<P: Policy> Glyph<P> {
         self
     }
 
-    pub const fn with_tehta_alt(mut self) -> Self {
-        self.tehta_alt = true;
+    pub const fn with_tehta_alt(mut self, enabled: bool) -> Self {
+        self.tehta_alt = enabled;
         self
     }
 
     /// Mark this glyph as being underlined.
-    pub const fn with_underline(mut self) -> Self {
-        self.long_cons = true;
+    pub const fn with_underline(mut self, enabled: bool) -> Self {
+        self.long_cons = enabled;
         self
     }
 
     /// Mark this glyph as being labialized. It will be rendered with a wavy
     ///     overbar.
-    pub const fn with_labial(mut self) -> Self {
-        self.labial = true;
+    pub const fn with_labial(mut self, enabled: bool) -> Self {
+        self.labial = enabled;
         self
     }
 
     /// Mark this glyph as being nasalized. It will be rendered overlined.
-    pub const fn with_nasal(mut self) -> Self {
-        self.nasal = true;
+    pub const fn with_nasal(mut self, enabled: bool) -> Self {
+        self.nasal = enabled;
         self
     }
 
     /// Mark this glyph as being palatalized. It will be rendered with a pair of
     ///     dots below it.
-    pub const fn with_palatal(mut self) -> Self {
-        self.palatal = true;
+    pub const fn with_palatal(mut self, enabled: bool) -> Self {
+        self.palatal = enabled;
         self
     }
 
     /// Mark this glyph as being followed by a sibilant. It may be rendered with
     ///     a flourish.
-    pub const fn with_rince(mut self) -> Self {
-        self.rince = true;
+    pub const fn with_rince(mut self, enabled: bool) -> Self {
+        self.rince = enabled;
         self
     }
 

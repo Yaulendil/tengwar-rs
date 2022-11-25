@@ -72,7 +72,7 @@ const fn get_consonant(slice: &[char]) -> Option<Glyph> {
         Some(cons) => Some(Glyph::new_base(cons)),
         None => match slice {
             &[a, b] if a == b => match consonant_char(&[a]) {
-                Some(cons) => Some(Glyph::new_base(cons).with_underline()),
+                Some(cons) => Some(Glyph::new_base(cons).with_underline(true)),
                 None => None,
             }
             _ => None,
@@ -178,13 +178,13 @@ impl Gondor {
             //  ...but NOT for a nasalized H.
             if chunk != ['m', 'h'] {
                 if let Some(new) = get_consonant(rest) {
-                    return Some((new.with_nasal(), chunk.len()));
+                    return Some((new.with_nasal(true), chunk.len()));
                 }
             }
         }
 
         if let ['x'] = chunk {
-            Some((Glyph::new_base(TENGWA_CALMA).with_rince(), 1))
+            Some((Glyph::new_base(TENGWA_CALMA).with_rince(true), 1))
         }
 
         //  Check for a final F, which should be spelled with Ampa instead of
