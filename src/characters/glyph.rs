@@ -77,6 +77,18 @@ impl TehtaChar {
 }
 
 
+fn write_tehta(f: &mut Formatter<'_>, tehta: char, double: bool) -> std::fmt::Result {
+    if double {
+        f.write_char(tehta)?;
+        f.write_char(tehta)?;
+    } else {
+        f.write_char(tehta)?;
+    }
+
+    Ok(())
+}
+
+
 /// A single base tengwa, and all of its modifications. This includes the tehta
 ///     marking, flags for additional diacritics, flags for consonant and vowel
 ///     length, and information on vowel and ligature behavior.
@@ -428,15 +440,11 @@ impl<P: Policy> Glyph<P> {
 /// Private: Helper methods.
 impl<P: Policy> Glyph<P> {
     /// Choose the correct form of Sa-Rincë.
-    const fn choose_rince(&self) -> Option<Rince> {
-        if self.rince {
-            if self.rince_final {
-                Some(Rince::choose(self.base()))
-            } else {
-                Some(Rince::Basic)
-            }
+    const fn choose_rince(&self) -> Rince {
+        if self.rince_final {
+            Rince::choose(self.base())
         } else {
-            None
+            Rince::Basic
         }
     }
 
@@ -505,7 +513,10 @@ impl<P: Policy> Glyph<P> {
 
     fn write_rince(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         if self.rince {
-            f.write_char(rince(self.base(), self.rince_final))
+            match self.choose_rince() {
+                Rince::Basic => f.write_char(SA_RINCE),
+                Rince::Final => f.write_char(SA_RINCE_FINAL),
+            }
         } else {
             Ok(())
         }
@@ -517,6 +528,34 @@ impl<P: Policy> Glyph<P> {
         } else {
             Ok(())
         }
+    }
+
+    fn write_rince_tehta(
+        &self,
+        f: &mut Formatter<'_>,
+        tehta: char,
+        double: bool,
+    ) -> std::fmt::Result {
+        //  NOTE: If there will be a non-final rincë in this position, write it
+        //      BEFORE the tehta. Discovered an issue with the basic rincë, when
+        //      placed after the tehta, not combining properly after the unique
+        //      long forms.
+        if self.rince {
+            match self.choose_rince() {
+                Rince::Basic => {
+                    f.write_char(SA_RINCE)?;
+                    write_tehta(f, tehta, double)?;
+                }
+                Rince::Final => {
+                    write_tehta(f, tehta, double)?;
+                    f.write_char(SA_RINCE_FINAL)?;
+                }
+            }
+        } else {
+            write_tehta(f, tehta, double)?;
+        }
+
+        Ok(())
     }
 }
 
@@ -548,49 +587,12 @@ impl<P: Policy> Display for Glyph<P> {
             Some(TehtaChar::OnTengwaOnce(tehta)) => {
                 f.write_char(base)?;
                 self.write_mods(f)?;
-
-                //  NOTE: If there will be a non-final rincë in this position,
-                //      write it BEFORE the tehta. Discovered an issue with the
-                //      basic rincë, when placed after the tehta, not combining
-                //      properly after the unique long forms.
-                match self.choose_rince() {
-                    Some(Rince::Basic) => {
-                        f.write_char(SA_RINCE)?;
-                        f.write_char(tehta)?;
-                    }
-                    Some(Rince::Final) => {
-                        f.write_char(tehta)?;
-                        f.write_char(SA_RINCE_FINAL)?;
-                    }
-                    None => {
-                        f.write_char(tehta)?;
-                    }
-                }
+                self.write_rince_tehta(f, tehta, false)?;
             }
             Some(TehtaChar::OnTengwaTwice(tehta)) => {
                 f.write_char(base)?;
                 self.write_mods(f)?;
-
-                //  NOTE: If the tehta is being doubled, it is PROBABLY not one
-                //      of the characters that has the issue described above.
-                //      However, the same rule should probably be followed here
-                //      for consistency.
-                match self.choose_rince() {
-                    Some(Rince::Basic) => {
-                        f.write_char(SA_RINCE)?;
-                        f.write_char(tehta)?;
-                        f.write_char(tehta)?;
-                    }
-                    Some(Rince::Final) => {
-                        f.write_char(tehta)?;
-                        f.write_char(tehta)?;
-                        f.write_char(SA_RINCE_FINAL)?;
-                    }
-                    None => {
-                        f.write_char(tehta)?;
-                        f.write_char(tehta)?;
-                    }
-                }
+                self.write_rince_tehta(f, tehta, true)?;
             }
             None => {
                 f.write_char(base)?;
