@@ -4,9 +4,6 @@ use crate::{characters::*, TengwarMode, ToTengwar, Transcriber};
 /// This trait defines higher-level behavior for rendering Tengwar.
 #[allow(unused_variables)]
 pub trait Policy: Copy {
-    // /// Define a new Policy state.
-    // fn new() -> Self;
-
     /// Returns a boolean indicating whether a given character may form a
     ///     ligature with a [long carrier](CARRIER_LONG) that follows it.
     ///
@@ -20,6 +17,13 @@ pub trait Policy: Copy {
     /// The ligature will be formed by replacing the short carrier character
     ///     with [a variant](CARRIER_SHORT_LIG).
     fn telco_ligates_with(base: char) -> bool { false }
+
+    /// Determine whether two [`Glyph`]s can be joined by a zero-width joiner.
+    fn ligature_valid<P: Policy>(
+        prev: &Glyph<Self>,
+        next: &Glyph<P>,
+        level: u8,
+    ) -> bool { false }
 
     /// Returns the "Nuquerna", or inverted, variant of a given character, if it
     ///     has one.
@@ -52,8 +56,10 @@ pub trait Policy: Copy {
         }
     }
 
+    /// Check whether a base tengwa is suitable to receive a sa-rincë.
     fn rince_valid(base: char) -> bool { false }
 
+    /// Check whether a base tengwa is suitable to receive the alternate rincë.
     fn rince_valid_final(base: char) -> bool { false }
 
     /// Create a [`Transcriber`] using the given [`TengwarMode`].
@@ -66,33 +72,150 @@ pub trait Policy: Copy {
 
 
 #[derive(Clone, Copy, Debug, Default)]
+pub struct NoPolicy;
+impl Policy for NoPolicy {}
+
+
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Standard;
 
 impl Policy for Standard {
-    // fn new() -> Self { Self }
-
     fn ligates_with_ara(base: char) -> bool {
-        ligates_with_ara(base)
+        match base {
+            TENGWA_TINCO..=TENGWA_ALDA => true,
+
+            TENGWA_SILME => true,
+            // TENGWA_ESSE => true,
+
+            TENGWA_HYARMEN..=TENGWA_URE => true,
+            TENGWA_OSSE_REV..=TENGWA_OSSE => true,
+            TENGWA_ANNA_OPEN..=TENGWA_WAIA => true,
+            _ => false,
+        }
     }
 
     fn telco_ligates_with(base: char) -> bool {
-        telco_ligates_with(base)
+        match Tengwa::either_from(base) {
+            Tengwa::Regular(tengwa) => tengwa.tema.left || !tengwa.tyelle.stem_up,
+            Tengwa::Irregular(char) => match char {
+                TENGWA_ROMEN..=TENGWA_ESSE_NUQ => true,
+                // TENGWA_HWESTA_SINDARINWA | TENGWA_URE => true,
+                TENGWA_ARA | TENGWA_TELCO => true,
+
+                TENGWA_ANNA_OPEN => true,
+                TENGWA_MALTA_HOOKED => true,
+                TENGWA_VALA_HOOKED => true,
+                // TENGWA_WAIA => true,
+                _ => false,
+            }
+        }
+    }
+
+    fn ligature_valid<P: Policy>(
+        prev: &Glyph<Self>,
+        next: &Glyph<P>,
+        level: u8,
+    ) -> bool {
+        const L_SILME: u8 = 2;
+        const L_SILME_MORE: u8 = 3;
+        const L_REGULARS: u8 = 3;
+
+        if level == 0 { return false; }
+
+        let lhs = *prev.parts().rhs();
+        let rhs = *next.parts().lhs();
+        let tengwar = (&lhs.tengwa, &rhs.tengwa);
+        let tehtar = (lhs.tehta, rhs.tehta);
+
+        match tengwar {
+            (Some(Tengwa::Irregular(TENGWA_SILME)), Some(rhs)) => {
+                //  Left tengwa is Silmë.
+
+                //  Ligatures of Silmë are very compact. The tehtar may make it
+                //      too crowded. Determine whether this is the case.
+                let too_crowded: bool = match tehtar {
+                    //  Two single dots are okay.
+                    (Some(DC_OVER_DOT_1), Some(DC_OVER_DOT_1)) => false,
+
+                    /*//  A single dot paired with another is okay.
+                    (Some(DC_OVER_DOT_1), Some(_)) => false,
+                    (Some(_), Some(DC_OVER_DOT_1)) => false,*/
+
+                    //  Two more complex tehtar would be too much.
+                    (Some(_), Some(_)) => true,
+                    _ => false,
+                };
+
+                if too_crowded {
+                    false
+                } else {
+                    match rhs {
+                        //  Allow ligation with any regular.
+                        _ if level < L_SILME => false,
+                        Tengwa::Regular(_) => true,
+
+                        //  Allow ligation with select irregulars.
+                        _ if level < L_SILME_MORE => false,
+                        Tengwa::Irregular(TENGWA_SILME) => true,
+                        Tengwa::Irregular(TENGWA_ESSE) => true,
+                        Tengwa::Irregular(TENGWA_ROMEN) => true,
+                        Tengwa::Irregular(TENGWA_ARDA) => true,
+                        Tengwa::Irregular(TENGWA_LAMBE) => true,
+                        Tengwa::Irregular(TENGWA_ALDA) => true,
+                        Tengwa::Irregular(TENGWA_HALLA) => true,
+                        Tengwa::Irregular(TENGWA_MALTA_HOOKED) => true,
+                        Tengwa::Irregular(TENGWA_VALA_HOOKED) => true,
+                        Tengwa::Irregular(TENGWA_LOWDHAM_HW) => true,
+
+                        //  Do not allow ligation with anything else.
+                        Tengwa::Irregular(_) => false,
+                    }
+                }
+            }
+            (Some(Tengwa::Regular(lhs)), Some(Tengwa::Regular(rhs))) => {
+                //  Both tengwar are regular. Allow ligation between two regular
+                //      tengwar, joining their stems, if they have shapes
+                //      approximating `dp`.
+                L_REGULARS <= level
+                    && (lhs.tema.left && lhs.tyelle.is_ascending())
+                    && (!rhs.tema.left && rhs.tyelle.is_descending())
+            }
+            _ => false,
+        }
     }
 
     fn nuquerna(base: char) -> char {
-        nuquerna(base)
+        match base {
+            TENGWA_SILME => TENGWA_SILME_NUQ,
+            TENGWA_ESSE => TENGWA_ESSE_NUQ,
+            other => other,
+        }
     }
 
     fn nuquerna_valid(base: char) -> bool {
-        nuquerna_valid(base)
+        base == TENGWA_SILME || base == TENGWA_ESSE
     }
 
     fn rince_valid(base: char) -> bool {
-        rince_valid(base)
+        match base {
+            TENGWA_ROMEN | TENGWA_ARDA
+            | TENGWA_SILME | TENGWA_SILME_NUQ
+            | TENGWA_ESSE | TENGWA_ESSE_NUQ => false,
+            _ => true,
+        }
     }
 
     fn rince_valid_final(base: char) -> bool {
-        rince_valid_final(base)
+        match base {
+            TENGWA_LAMBE | TENGWA_ALDA | TENGWA_HYARMEN => true,
+            tengwa if TEMA_TINCO.contains(tengwa) => true,
+            tengwa if TEMA_PARMA.contains(tengwa) => true,
+            //  NOTE: The left-bow Témar CAN support the alternate, but are
+            //      written with the basic form in canonical sources.
+            // tengwa if TEMA_CALMA.contains(tengwa) => true,
+            // tengwa if TEMA_QESSE.contains(tengwa) => true,
+            _ => false,
+        }
     }
 }
 

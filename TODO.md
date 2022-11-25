@@ -9,7 +9,7 @@
 - [ ] Allow custom Modes to be specified via a config language (Would TOML work?)
 ### Library
 - [ ] Gondor "Full" Mode
-- [ ] Flesh out `Policy` to make ligature/rincë rules extensible
+- [x] Flesh out `Policy` to make ligature/rincë rules extensible
 ### Output
 ### Tests
 

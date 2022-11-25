@@ -353,7 +353,7 @@ impl<P: Policy> Glyph<P> {
         }
     }
 
-    pub const fn parts(&self) -> Parts<'static> {
+    pub fn parts(&self) -> Parts<'static> {
         let tehta: Option<TehtaChar> = self.tehta_char();
 
         match tehta {
@@ -413,8 +413,8 @@ impl<P: Policy> Glyph<P> {
 
     /// Determine whether the base [`char`] of this glyph is permitted to ligate
     ///     with another glyph using a zero-width joiner.
-    pub const fn ligates_with(&self, other: &Self) -> bool {
-        ligature_valid(self, other, self.ligate_zwj)
+    pub fn ligates_with<Q: Policy>(&self, other: &Glyph<Q>) -> bool {
+        P::ligature_valid(self, other, self.ligate_zwj)
     }
 
     /// Determine whether the base [`char`] of this glyph is permitted to ligate
@@ -438,7 +438,7 @@ impl<P: Policy> Glyph<P> {
     }
 
     /// Resolve the position and identity of the tehta.
-    pub const fn tehta_char(&self) -> Option<TehtaChar> {
+    pub fn tehta_char(&self) -> Option<TehtaChar> {
         let Some(tehta) = self.tehta else {
             //  If there is no tehta, there is nothing to use for it.
             return None;
@@ -472,7 +472,7 @@ impl<P: Policy> Glyph<P> {
 
         //  If the base tengwa has a Nuquerna variant, but it is not going to be
         //      used, the standard form cannot hold a double or alternate tehta.
-        let nuq_ignored = !self.nuquerna && nuquerna_valid(tengwa);
+        let nuq_ignored = !self.nuquerna && P::nuquerna_valid(tengwa);
         let cannot_hold = self.tehta_alt && nuq_ignored;
 
         if cannot_hold || needs_ara {
