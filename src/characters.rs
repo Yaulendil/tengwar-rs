@@ -21,6 +21,13 @@ pub use tehta::Tehta;
 pub use tema::{Tema, TengwaRegular, Tyelle};
 
 
+#[derive(Clone, Copy, Debug)]
+pub enum Rince {
+    Basic,
+    Final,
+}
+
+
 /// The type of behavior to be followed in the rendering of tehtar representing
 ///     "long" vowels.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, ValueEnum)]

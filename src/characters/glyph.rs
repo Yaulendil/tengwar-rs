@@ -41,23 +41,6 @@ impl<'t> Parts<'t> {
 
 
 #[derive(Clone, Copy, Debug)]
-enum Rince {
-    Basic,
-    Final,
-}
-
-impl Rince {
-    pub const fn choose(base: char) -> Self {
-        if rince_valid_final(base) {
-            Self::Final
-        } else {
-            Self::Basic
-        }
-    }
-}
-
-
-#[derive(Clone, Copy, Debug)]
 pub enum TehtaChar {
     OnAraAfter(char),
     OnAraBefore(char),
@@ -401,15 +384,15 @@ impl<P: Policy> Glyph<P> {
 
     /// Determine whether a rincë may be added to this glyph. Returns `false` if
     ///     a rincë is already set.
-    pub const fn can_take_rince(&self) -> bool {
-        !self.rince && rince_valid(self.base())
+    pub fn can_take_rince(&self) -> bool {
+        !self.rince && P::rince_valid(self.base())
     }
 
     /// Determine whether the base character has a nuquerna variant, but is set
     ///     to not use it.
-    pub const fn ignoring_nuquerna(&self) -> bool {
+    pub fn ignoring_nuquerna(&self) -> bool {
         match self.base {
-            Some(base) if !self.nuquerna => nuquerna_valid(base),
+            Some(base) if !self.nuquerna => P::nuquerna_valid(base),
             _ => false,
         }
     }
@@ -450,12 +433,8 @@ impl<P: Policy> Glyph<P> {
 /// Private: Helper methods.
 impl<P: Policy> Glyph<P> {
     /// Choose the correct form of Sa-Rincë.
-    const fn choose_rince(&self) -> Rince {
-        if self.rince_final {
-            Rince::choose(self.base())
-        } else {
-            Rince::Basic
-        }
+    fn choose_rince(&self) -> Rince {
+        P::rince(self.base(), self.rince_final)
     }
 
     /// Resolve the position and identity of the tehta.

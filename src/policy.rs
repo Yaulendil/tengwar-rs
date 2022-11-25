@@ -40,7 +40,21 @@ pub trait Policy: Copy {
     /// The Sa-Rincë is attached to indicate that a sibilant sound follows the
     ///     character. For a character at the end of a word, a more ornate
     ///     variant may be used.
-    fn sa_rince(c: char, is_final: bool) -> Option<char> { None }
+    fn rince(base: char, is_final: bool) -> Rince {
+        if is_final {
+            if Self::rince_valid_final(base) {
+                Rince::Final
+            } else {
+                Rince::Basic
+            }
+        } else {
+            Rince::Basic
+        }
+    }
+
+    fn rince_valid(base: char) -> bool { false }
+
+    fn rince_valid_final(base: char) -> bool { false }
 
     /// Create a [`Transcriber`] using the given [`TengwarMode`].
     fn transcriber<M>(input: impl ToTengwar) -> Transcriber<M, Self>
@@ -73,19 +87,12 @@ impl Policy for Standard {
         nuquerna_valid(base)
     }
 
-    fn sa_rince(c: char, is_final: bool) -> Option<char> {
-        match c {
-            TENGWA_ROMEN | TENGWA_ARDA
-            | TENGWA_SILME | TENGWA_SILME_NUQ
-            | TENGWA_ESSE | TENGWA_ESSE_NUQ
-            => None,
+    fn rince_valid(base: char) -> bool {
+        rince_valid(base)
+    }
 
-            TENGWA_TINCO..=TENGWA_WILYA
-            | TENGWA_LAMBE | TENGWA_ALDA | TENGWA_HYARMEN
-            if is_final => Some(SA_RINCE_FINAL),
-
-            _ => Some(SA_RINCE),
-        }
+    fn rince_valid_final(base: char) -> bool {
+        rince_valid_final(base)
     }
 }
 
