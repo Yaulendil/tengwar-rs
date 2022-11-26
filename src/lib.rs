@@ -249,6 +249,7 @@ pub enum Token<P: Policy = Standard> {
 }
 
 impl<P: Policy> Token<P> {
+    /// Switch any [`Glyph`] in the token to use a different [`Policy`].
     pub const fn change_policy<Q: Policy>(self) -> Token<Q> {
         match self {
             Self::Glyph(glyph) => Token::Glyph(glyph.change_policy()),
@@ -257,6 +258,7 @@ impl<P: Policy> Token<P> {
         }
     }
 
+    /// Return a reference to the [`Glyph`], if there is one.
     pub const fn glyph(&self) -> Option<&Glyph<P>> {
         match self {
             Self::Char(_) => None,
@@ -265,6 +267,7 @@ impl<P: Policy> Token<P> {
         }
     }
 
+    /// Return a reference to the [`Numeral`], if there is one.
     pub const fn numeral(&self) -> Option<&Numeral> {
         match self {
             Self::Char(_) => None,
@@ -444,6 +447,7 @@ pub struct TranscriberSettings {
 }
 
 impl TranscriberSettings {
+    /// Define new settings for a [`TokenIter`].
     pub const fn new() -> Self {
         Self {
             alt_a: false,

@@ -6,7 +6,11 @@ use super::*;
 /// An optional base [`Tengwa`] paired with an optional diacritical tehta.
 #[derive(Clone, Copy, Debug)]
 pub struct TengwaTehta<'t> {
+    /// An optional base [`Tengwa`]. If this is not present, a carrier mark
+    ///     should be used.
     pub tengwa: Option<Tengwa<'t>>,
+    /// An optional [`char`] to represent a diacritical tehta, which should be
+    ///     displayed directly above the base tengwa.
     pub tehta: Option<char>,
 }
 
@@ -14,7 +18,9 @@ pub struct TengwaTehta<'t> {
 /// A representation of the visual composition of a [`Glyph`].
 #[derive(Clone, Copy, Debug)]
 pub enum Parts<'t> {
+    /// This glyph can be displayed with only a single base character.
     One(TengwaTehta<'t>),
+    /// This glyph requires two base characters to be displayed.
     Two(TengwaTehta<'t>, TengwaTehta<'t>),
 }
 

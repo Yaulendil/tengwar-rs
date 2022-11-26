@@ -78,8 +78,6 @@ pub trait TengwarMode {
 
     /// Set up a [`Transcriber`] over the characters of an input string, and
     ///     immediately collect it into the target type.
-    ///
-    /// [`Transcriber`]: crate::Transcriber
     fn transcribe<T: FromIterator<Token>>(input: impl AsRef<str>) -> T
         where Self: Default,
     {
@@ -88,8 +86,6 @@ pub trait TengwarMode {
 
     /// Set up a [`Transcriber`] over the characters of an input string, using
     ///     the default initial state of this mode.
-    ///
-    /// [`Transcriber`]: crate::Transcriber
     fn default_transcriber(input: impl AsRef<str>) -> Transcriber<Self>
         where Self: Default,
     {
@@ -97,8 +93,6 @@ pub trait TengwarMode {
     }
 
     /// Set up a [`Transcriber`] over the characters of an input string.
-    ///
-    /// [`Transcriber`]: crate::Transcriber
     fn into_transcriber(self, input: impl AsRef<str>) -> Transcriber<Self>
         where Self: Sized,
     {
@@ -146,14 +140,4 @@ pub trait TengwarMode {
     ///
     /// [`MAX_CHUNK`]: Self::MAX_CHUNK
     fn process(&mut self, chunk: &[char]) -> ParseAction;
-}
-
-
-#[test]
-fn test_iter() {
-    fn convert(text: impl AsRef<str>) -> String {
-        Quenya::transcribe(text)
-    }
-
-    eprintln!("{}", convert("yéni 144"));
 }

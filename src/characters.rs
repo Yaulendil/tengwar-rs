@@ -21,9 +21,16 @@ pub use tehta::Tehta;
 pub use tema::{Tema, TengwaRegular, Tyelle};
 
 
+/// A Sa-Rincë is a curl or hook that is attached to a tengwa, and represents a
+///     following sibilant sound. There are two forms, depending on the tengwa
+///     and its position.
 #[derive(Clone, Copy, Debug)]
 pub enum Rince {
+    /// The basic rincë is a small curl that can be attached to a tengwa in any
+    ///     position.
     Basic,
+    /// This variant rincë is a larger hook, and can only be applied to the last
+    ///     tengwa in a word.
     Final,
 }
 
@@ -124,12 +131,16 @@ impl std::ops::Deref for TengwaIrregular {
 ///     information regarding the actual shape of the character.
 #[derive(Clone, Copy, Debug)]
 pub enum Tengwa<'t> {
+    /// An irregular tengwa that does not follow the rules of the Témar.
     Irregular(char),
     // Irregular(TengwaIrregular),
+    /// A [regular tengwa](TengwaRegular) that follows specific formation rules.
     Regular(TengwaRegular<'t>),
 }
 
 impl<'t> Tengwa<'t> {
+    /// Given an input [`char`], if it maps to a [`TengwaRegular`], define it as
+    ///     such; Otherwise, define it as irregular.
     pub const fn either_from(char: char) -> Self {
         match TengwaRegular::find(char) {
             Some(tengwa) => Self::Regular(tengwa),
@@ -137,6 +148,7 @@ impl<'t> Tengwa<'t> {
         }
     }
 
+    /// Define a [`char`] as an irregular tengwa.
     pub const fn irregular_from(char: char) -> Self {
         Self::Irregular(char)
     }
@@ -162,6 +174,7 @@ impl<'t> Tengwa<'t> {
         }
     }*/
 
+    /// Return the regular tengwa matching a given [`char`], if there is one.
     pub const fn try_regular_from(char: char) -> Option<Self> {
         match TengwaRegular::find(char) {
             Some(tengwa) => Some(Self::Regular(tengwa)),
@@ -169,6 +182,7 @@ impl<'t> Tengwa<'t> {
         }
     }
 
+    /// Return a reference to the [`char`] representing this tengwa.
     pub const fn as_char(&self) -> &char {
         match self {
             Self::Irregular(char) => char,
@@ -177,6 +191,8 @@ impl<'t> Tengwa<'t> {
         }
     }
 
+    /// Return a reference to the [`char`] representing this tengwa, if it is
+    ///     irregular.
     pub const fn as_irregular(&self) -> Option<&char> {
         match self {
             Self::Irregular(char) => Some(char),
@@ -185,6 +201,8 @@ impl<'t> Tengwa<'t> {
         }
     }
 
+    /// Return a reference to the [`TengwaRegular`] in this tengwa, if it is
+    ///     regular.
     pub const fn as_regular(&self) -> Option<&TengwaRegular<'t>> {
         match self {
             Self::Irregular(_) => None,
@@ -192,6 +210,7 @@ impl<'t> Tengwa<'t> {
         }
     }
 
+    /// Return `true` if this tengwa is irregular.
     pub const fn is_irregular(&self) -> bool {
         match self {
             Self::Irregular(_) => true,
@@ -199,6 +218,7 @@ impl<'t> Tengwa<'t> {
         }
     }
 
+    /// Return `true` if this tengwa is regular.
     pub const fn is_regular(&self) -> bool {
         match self {
             Self::Irregular(_) => false,
