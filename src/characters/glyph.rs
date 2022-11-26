@@ -3,6 +3,7 @@ use crate::policy::{Policy, Standard};
 use super::*;
 
 
+/// An optional base [`Tengwa`] paired with an optional diacritical tehta.
 #[derive(Clone, Copy, Debug)]
 pub struct TengwaTehta<'t> {
     pub tengwa: Option<Tengwa<'t>>,
@@ -10,6 +11,7 @@ pub struct TengwaTehta<'t> {
 }
 
 
+/// A representation of the visual composition of a [`Glyph`].
 #[derive(Clone, Copy, Debug)]
 pub enum Parts<'t> {
     One(TengwaTehta<'t>),
@@ -17,6 +19,7 @@ pub enum Parts<'t> {
 }
 
 impl<'t> Parts<'t> {
+    /// Returns `true` if there are two separate base characters.
     pub const fn has_two(&self) -> bool {
         match self {
             Self::One(..) => false,
@@ -24,6 +27,8 @@ impl<'t> Parts<'t> {
         }
     }
 
+    /// Returns the left-hand [`TengwaTehta`], if there are two parts; If there
+    ///     is only one part, returns the one.
     pub const fn lhs(&self) -> &TengwaTehta<'t> {
         match self {
             Self::One(tt) => tt,
@@ -31,6 +36,8 @@ impl<'t> Parts<'t> {
         }
     }
 
+    /// Returns the right-hand [`TengwaTehta`], if there are two parts; If there
+    ///     is only one part, returns the one.
     pub const fn rhs(&self) -> &TengwaTehta<'t> {
         match self {
             Self::One(tt) => tt,
@@ -40,15 +47,24 @@ impl<'t> Parts<'t> {
 }
 
 
+/// The specific [`char`] to be used for a tehta, with a specific position to
+///     display it.
 #[derive(Clone, Copy, Debug)]
 pub enum TehtaChar {
+    /// The tehta will be placed on a [long carrier](CARRIER_LONG) following the
+    ///     base character.
     OnAraAfter(char),
+    /// The tehta will be placed on a [long carrier](CARRIER_LONG) preceding the
+    ///     base character.
     OnAraBefore(char),
+    /// The tehta will be placed on the base character itself.
     OnTengwaOnce(char),
+    /// The tehta will be placed *twice* on the base character itself.
     OnTengwaTwice(char),
 }
 
 impl TehtaChar {
+    /// Returns `true` if the tehta will not be placed above the base character.
     pub const fn is_separate(&self) -> bool {
         match self {
             Self::OnAraAfter(_) => true,
@@ -126,7 +142,7 @@ pub struct Glyph<P: Policy = Standard> {
     /// Indicates whether this glyph should try to use [`ZWJ`] ligation.
     pub ligate_zwj: u8,
 
-    // pub policy: P,
+    /// Phantom field to carry the [`Policy`] parameter.
     pub _p: PhantomData<P>,
 }
 
@@ -154,8 +170,6 @@ impl<P: Policy> Glyph<P> {
             dot_under: false,
             ligate_short: false,
             ligate_zwj: 0,
-
-            // policy: P::new(),
             _p: PhantomData,
         }
     }
@@ -186,6 +200,7 @@ impl<P: Policy> Glyph<P> {
         Self { tehta: Some(tehta), tehta_alt: alt, ..Self::new() }
     }
 
+    /// Switch the glyph to use a different [`Policy`] implementor.
     pub const fn change_policy<Q: Policy>(&self) -> Glyph<Q> {
         Glyph {
             base: self.base,
@@ -204,21 +219,23 @@ impl<P: Policy> Glyph<P> {
             dot_under: self.dot_under,
             ligate_short: self.ligate_short,
             ligate_zwj: self.ligate_zwj,
-            // policy: P::new(),
             _p: PhantomData,
         }
     }
 
+    /// Change the base [`char`].
     pub const fn with_tengwa(mut self, tengwa: char) -> Self {
         self.base = Some(tengwa);
         self
     }
 
+    /// Change the [`Tehta`] to be used.
     pub const fn with_tehta(mut self, tehta: Tehta) -> Self {
         self.tehta = Some(tehta);
         self
     }
 
+    /// Mark this glyph as using the alternate form of its [`Tehta`].
     pub const fn with_tehta_alt(mut self, enabled: bool) -> Self {
         self.tehta_alt = enabled;
         self
@@ -353,6 +370,7 @@ impl<P: Policy> Glyph<P> {
         }
     }
 
+    /// Return [`Parts`] representing the final visual composition of the glyph.
     pub fn parts(&self) -> Parts<'static> {
         let tehta: Option<TehtaChar> = self.tehta_char();
 
@@ -428,12 +446,9 @@ impl<P: Policy> Glyph<P> {
     pub fn telco_ligates(&self) -> bool {
         P::telco_ligates_with(self.base())
     }
-}
 
-/// Private: Helper methods.
-impl<P: Policy> Glyph<P> {
     /// Choose the correct form of Sa-Rincë.
-    fn choose_rince(&self) -> Rince {
+    pub fn choose_rince(&self) -> Rince {
         P::rince(self.base(), self.rince_final)
     }
 
@@ -448,32 +463,32 @@ impl<P: Policy> Glyph<P> {
             return Some(TehtaChar::OnTengwaOnce(tehta.base));
         };
 
-        let needs_ara;
-        let is_double;
-        let char;
+        let char: char;
+        let is_double: bool;
+        let needs_ara: bool;
 
         match (self.vowels, tehta) {
             (VowelStyle::Doubled, Tehta { base, can_double: true, .. }) => {
-                needs_ara = false;
-                is_double = self.tehta_alt;
                 char = base;
+                is_double = self.tehta_alt;
+                needs_ara = false;
             }
             (VowelStyle::Unique, Tehta { base, alternate: Some(alt), .. }) => {
-                needs_ara = false;
-                is_double = false;
                 char = if self.tehta_alt { alt } else { base };
+                is_double = false;
+                needs_ara = false;
             }
             (_, Tehta { base, .. }) => {
-                needs_ara = self.tehta_alt;
-                is_double = false;
                 char = base;
+                is_double = false;
+                needs_ara = self.tehta_alt;
             }
         }
 
         //  If the base tengwa has a Nuquerna variant, but it is not going to be
         //      used, the standard form cannot hold a double or alternate tehta.
-        let nuq_ignored = !self.nuquerna && P::nuquerna_valid(tengwa);
-        let cannot_hold = self.tehta_alt && nuq_ignored;
+        let nuq_ignored: bool = !self.nuquerna && P::nuquerna_valid(tengwa);
+        let cannot_hold: bool = self.tehta_alt && nuq_ignored;
 
         if cannot_hold || needs_ara {
             if self.tehta_first {
@@ -489,7 +504,10 @@ impl<P: Policy> Glyph<P> {
             }
         }
     }
+}
 
+/// Private: Helper methods.
+impl<P: Policy> Glyph<P> {
     fn write_mods(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         if self.nasal { f.write_char(MOD_NASAL)?; }
         if self.long_cons { f.write_char(MOD_LONG_CONS)?; }
