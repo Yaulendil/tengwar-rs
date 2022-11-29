@@ -9,6 +9,7 @@
 //!     [`Gondor`], and [`Beleriand`].
 
 pub mod beleriand;
+#[cfg(feature = "mode-custom")]
 pub mod custom;
 // pub mod general;
 pub mod gondor;
