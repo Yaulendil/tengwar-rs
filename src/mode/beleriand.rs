@@ -74,7 +74,7 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
 }
 
 
-const fn get_consonant(slice: &[char]) -> Option<Glyph> {
+pub const fn get_consonant(slice: &[char]) -> Option<Glyph> {
     match consonant_char(slice) {
         Some(cons) => Some(Glyph::new_base(cons)),
         None => None,
@@ -120,6 +120,17 @@ pub const fn get_vowel(slice: &[char]) -> Option<Glyph> {
 }
 
 
+pub const fn get_vowel_either(slice: &[char]) -> Option<Glyph> {
+    if let Some(glyph) = get_diphthong(slice) {
+        Some(glyph)
+    } else if let Some(glyph) = get_vowel(slice) {
+        Some(glyph)
+    } else {
+        None
+    }
+}
+
+
 /// The Mode of Beleriand, developed in the First Age for writing Sindarin.
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Beleriand {
@@ -140,14 +151,11 @@ impl Beleriand {
                     n -= 1;
                 }
                 ParseAction::MatchedPart(_) => {
-                    //  Next token is a tengwa.
+                    //  Next token is a glyph.
                     is_final = false;
                     break;
                 }
-                ParseAction::MatchedToken {
-                    token: Token::Glyph(_),
-                    ..
-                } => {
+                ParseAction::MatchedToken { token: Token::Glyph(_), .. } => {
                     //  Next token is a glyph.
                     is_final = false;
                     break;
@@ -215,9 +223,9 @@ impl TengwarMode for Beleriand {
             }
 
             //  Check for voiceless initials.
-            else if ['l', 'h'] == chunk && !self.previous.is_some() {
+            else if initial && ['l', 'h'] == chunk {
                 finish!(Glyph::new_base(TENGWA_ALDA), 2)
-            } else if ['r', 'h'] == chunk && !self.previous.is_some() {
+            } else if initial && ['r', 'h'] == chunk {
                 finish!(Glyph::new_base(TENGWA_ARDA), 2)
             }
 
@@ -237,28 +245,20 @@ impl TengwarMode for Beleriand {
                     }
                 }
 
-                //  Check for a diphthong.
-                if let Some(new) = get_diphthong(chunk) {
+                //  Check for a vowel or diphthong.
+                if let Some(new) = get_vowel_either(chunk) {
                     finish!(new, chunk.len())
-                }
-
-                //  Check for a single vowel.
-                else if let Some(glyph) = get_vowel(chunk) {
-                    finish!(glyph, chunk.len())
                 } else {
+                    //  An initial I, followed by a vowel, acts as a consonant.
                     if initial {
                         if let ['i', rest @ ..] = chunk {
-                            let first = ParseAction::MatchedToken {
-                                token: Token::Glyph(CONSONANT_I.into()),
-                                len: chunk.len(),
-                            };
+                            if let Some(new) = get_vowel_either(rest) {
+                                self.current = Some(new);
 
-                            if let Some(new) = get_diphthong(rest) {
-                                self.current = Some(new);
-                                return first;
-                            } else if let Some(new) = get_vowel(rest) {
-                                self.current = Some(new);
-                                return first;
+                                return ParseAction::MatchedToken {
+                                    token: Token::Glyph(CONSONANT_I.into()),
+                                    len: chunk.len(),
+                                };
                             }
                         }
                     }

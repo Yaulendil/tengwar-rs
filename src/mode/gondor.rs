@@ -67,7 +67,7 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
 }
 
 
-const fn get_consonant(slice: &[char]) -> Option<Glyph> {
+pub const fn get_consonant(slice: &[char]) -> Option<Glyph> {
     match consonant_char(slice) {
         Some(cons) => Some(Glyph::new_base(cons)),
         None => match slice {
@@ -119,6 +119,17 @@ pub const fn get_vowel(slice: &[char]) -> Option<Glyph> {
 }
 
 
+pub const fn get_vowel_either(slice: &[char]) -> Option<Glyph> {
+    if let Some(glyph) = get_diphthong(slice) {
+        Some(glyph)
+    } else if let Some(glyph) = get_vowel(slice) {
+        Some(glyph)
+    } else {
+        None
+    }
+}
+
+
 /// The Mode of Gondor, used in the Third Age for writing Sindarin.
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Gondor {
@@ -143,10 +154,7 @@ impl Gondor {
                     is_final = false;
                     break;
                 }
-                ParseAction::MatchedToken {
-                    token: Token::Glyph(_),
-                    ..
-                } => {
+                ParseAction::MatchedToken { token: Token::Glyph(_), .. } => {
                     //  Next token is a glyph.
                     is_final = false;
                     break;
@@ -289,30 +297,21 @@ impl TengwarMode for Gondor {
                 ParseAction::MatchedPart(len)
             }
 
-            //  Check for a diphthong.
-            else if let Some(new) = get_diphthong(chunk) {
-                self.current = Some(new);
-                ParseAction::MatchedPart(chunk.len())
-            }
-
-            //  Check for a single vowel.
-            else if let Some(new) = get_vowel(chunk) {
+            //  Check for a vowel or diphthong.
+            else if let Some(new) = get_vowel_either(chunk) {
                 self.current = Some(new);
                 ParseAction::MatchedPart(chunk.len())
             } else {
+                //  An initial I, followed by a vowel, acts as a consonant.
                 if initial {
                     if let ['i', rest @ ..] = chunk {
-                        let first = ParseAction::MatchedToken {
-                            token: Token::Glyph(CONSONANT_I.into()),
-                            len: chunk.len(),
-                        };
+                        if let Some(new) = get_vowel_either(rest) {
+                            self.current = Some(new);
 
-                        if let Some(new) = get_diphthong(rest) {
-                            self.current = Some(new);
-                            return first;
-                        } else if let Some(new) = get_vowel(rest) {
-                            self.current = Some(new);
-                            return first;
+                            return ParseAction::MatchedToken {
+                                token: Token::Glyph(CONSONANT_I.into()),
+                                len: chunk.len(),
+                            };
                         }
                     }
                 }
