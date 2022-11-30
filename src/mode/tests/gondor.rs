@@ -228,6 +228,7 @@ fn words() {
         CARRIER_DIPH_E, TEHTA_A.base, // ae
         TENGWA_LAMBE, // l
     ]);
+    test_tengwar!(Gondor, "iorhæl" == iorhael);
     test_tengwar!(Gondor, "jorhael" == iorhael);
     test_tengwar!(Gondor, "yorhael" != iorhael);
 
@@ -243,13 +244,17 @@ fn words() {
 #[test]
 fn vowels() {
     //  Test all diphthongs.
-    test_tengwar!(Gondor, "ae" => [CARRIER_DIPH_E, TEHTA_A.base]);
-    test_tengwar!(Gondor, "oe" => [CARRIER_DIPH_E, TEHTA_O.base]);
+    test_tengwar!(Gondor, "ae" => [CARRIER_DIPH_E, TEHTA_A.base] as ae);
+    test_tengwar!(Gondor, "oe" => [CARRIER_DIPH_E, TEHTA_O.base] as oe);
     test_tengwar!(Gondor, "ai" => [CARRIER_DIPH_I, TEHTA_A.base]);
     test_tengwar!(Gondor, "ei" => [CARRIER_DIPH_I, TEHTA_E.base]);
     test_tengwar!(Gondor, "ui" => [CARRIER_DIPH_I, TEHTA_U.base]);
     test_tengwar!(Gondor, "au" => [CARRIER_DIPH_U, TEHTA_A.base] as au);
     test_tengwar!(Gondor, "aw" == au);
+    test_tengwar!(Gondor, "æ" == ae);
+    test_tengwar!(Gondor, "Æ" == ae);
+    test_tengwar!(Gondor, "œ" == oe);
+    test_tengwar!(Gondor, "Œ" == oe);
 
     //  Test all vowels, alone.
     test_tengwar!(Gondor, "a" => [CARRIER_SHORT, TEHTA_A.base]);

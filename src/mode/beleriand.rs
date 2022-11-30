@@ -84,8 +84,8 @@ pub const fn get_consonant(slice: &[char]) -> Option<Glyph> {
 
 pub const fn get_diphthong(slice: &[char]) -> Option<Glyph> {
     match slice {
-        // ['a', 'e'] => Some(Glyph::new_both(VOWEL_A, TEHTA_YANTA)),
-        // ['o', 'e'] => Some(Glyph::new_both(VOWEL_O, TEHTA_YANTA)),
+        // ['a', 'e'] | ['æ'] => Some(Glyph::new_both(VOWEL_A, TEHTA_YANTA)),
+        // ['o', 'e'] | ['œ'] => Some(Glyph::new_both(VOWEL_O, TEHTA_YANTA)),
 
         ['a', 'i'] => Some(Glyph::new_both(VOWEL_A, TEHTA_Y)),
         ['e', 'i'] => Some(Glyph::new_both(VOWEL_E, TEHTA_Y)),
@@ -185,13 +185,17 @@ impl TengwarMode for Beleriand {
         macro_rules! finish {
             ($glyph:expr) => {finish!($glyph, 0)};
             ($glyph:expr, $len:expr) => {{
-                let glyph = $glyph;
-
+                let finished = $glyph;
                 self.current = None;
-                self.previous = Some(glyph);
+                output!(finished, $len)
+            }};
+        }
+        macro_rules! output {
+            ($glyph:expr, $len:expr) => {{
+                self.previous = Some($glyph);
 
                 ParseAction::MatchedToken {
-                    token: Token::Glyph(glyph),
+                    token: Token::Glyph($glyph),
                     len: $len,
                 }
             }};
@@ -214,12 +218,13 @@ impl TengwarMode for Beleriand {
             //  Check for special cases.
             if let ['x'] = chunk {
                 self.current = Some(Glyph::new_base(TENGWA_SILME));
-                self.previous = None;
-
-                ParseAction::MatchedToken {
-                    token: Token::Glyph(Glyph::new_base(TENGWA_CALMA)),
-                    len: 1,
-                }
+                output!(Glyph::new_base(TENGWA_CALMA), 1)
+            } else if let ['æ'] = chunk {
+                self.current = Some(Glyph::new_base(VOWEL_E));
+                output!(Glyph::new_base(VOWEL_A), 1)
+            } else if let ['œ'] = chunk {
+                self.current = Some(Glyph::new_base(VOWEL_E));
+                output!(Glyph::new_base(VOWEL_O), 1)
             }
 
             //  Check for voiceless initials.

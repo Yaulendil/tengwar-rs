@@ -83,8 +83,8 @@ pub const fn get_consonant(slice: &[char]) -> Option<Glyph> {
 
 pub const fn get_diphthong(slice: &[char]) -> Option<Glyph> {
     match slice {
-        ['a', 'e'] => Some(Glyph::new_both(CARRIER_DIPH_E, TEHTA_A)),
-        ['o', 'e'] => Some(Glyph::new_both(CARRIER_DIPH_E, TEHTA_O)),
+        ['a', 'e'] | ['æ'] => Some(Glyph::new_both(CARRIER_DIPH_E, TEHTA_A)),
+        ['o', 'e'] | ['œ'] => Some(Glyph::new_both(CARRIER_DIPH_E, TEHTA_O)),
 
         ['a', 'i'] => Some(Glyph::new_both(CARRIER_DIPH_I, TEHTA_A)),
         ['e', 'i'] => Some(Glyph::new_both(CARRIER_DIPH_I, TEHTA_E)),

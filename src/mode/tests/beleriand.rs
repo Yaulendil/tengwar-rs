@@ -127,6 +127,7 @@ fn words() {
         TENGWA_ARA, VOWEL_O, TENGWA_ROMEN,
         TENGWA_HYARMEN, VOWEL_A, VOWEL_E, TENGWA_LAMBE,
     ]);
+    test_tengwar!(Beleriand, "iorhæl" == iorhael);
     test_tengwar!(Beleriand, "jorhael" == iorhael);
     test_tengwar!(Beleriand, "yorhael" != iorhael);
 
@@ -140,13 +141,17 @@ fn words() {
 #[test]
 fn vowels() {
     //  Test all diphthongs.
-    test_tengwar!(Beleriand, "ae" => [VOWEL_A, VOWEL_E]);
-    test_tengwar!(Beleriand, "oe" => [VOWEL_O, VOWEL_E]);
+    test_tengwar!(Beleriand, "ae" => [VOWEL_A, VOWEL_E] as ae);
+    test_tengwar!(Beleriand, "oe" => [VOWEL_O, VOWEL_E] as oe);
     test_tengwar!(Beleriand, "ai" => [VOWEL_A, TEHTA_Y.base]);
     test_tengwar!(Beleriand, "ei" => [VOWEL_E, TEHTA_Y.base]);
     test_tengwar!(Beleriand, "ui" => [VOWEL_U, TEHTA_Y.base]);
     test_tengwar!(Beleriand, "au" => [VOWEL_A, MOD_LABIAL] as au);
     test_tengwar!(Beleriand, "aw" == au);
+    test_tengwar!(Beleriand, "æ" == ae);
+    test_tengwar!(Beleriand, "Æ" == ae);
+    test_tengwar!(Beleriand, "œ" == oe);
+    test_tengwar!(Beleriand, "Œ" == oe);
 
     //  Test all vowels, alone.
     test_tengwar!(Beleriand, "a" => [VOWEL_A]);
