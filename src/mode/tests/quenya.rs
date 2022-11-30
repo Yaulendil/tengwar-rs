@@ -559,7 +559,7 @@ fn words() {
         TENGWA_MALTA, TEHTA_E.base, // më
     ]);
     test_tengwar!(Quenya, "ngwalme" == ngwalme); // ASCII spelling.
-    test_tengwar!(Quenya, "nwalmë" != ngwalme);
+    test_tengwar!(Quenya, "nwalmë" == ngwalme);
 
     //  Medial NG.
     let anga = test_tengwar!(Quenya, "anga" => [

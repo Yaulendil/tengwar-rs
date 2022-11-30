@@ -5,8 +5,11 @@
 
 ### Added
 - Implemented `Policy` trait to adjust `Glyph` behavior.
+- Implemented "silent split" escape sequence. Now, ASCII input string `"etya\ ngoldorin"` will be presented unspaced, like `"etyangoldorin"`, but the `NG` will correctly use initial *Ñoldo* instead of medial *Anga*.
 ### Changed
 - Boolean `Glyph::with_*` methods now take inputs.
+### Fixed
+- Fixed mistake where initial `NW` used *Númen*+*Wilya* instead of *Ñwalmë*.
 
 ---
 ## 1.0.0: 2022-11-19

@@ -217,7 +217,10 @@ impl TengwarMode for Quenya {
             //  Try to find a new glyph.
 
             //  Check for special cases.
-            if let ['x', ..] = chunk {
+            if initial && ['n', 'w'] == chunk {
+                self.current = Some(Glyph::new_base(TENGWA_NWALME));
+                ParseAction::MatchedPart(2)
+            } else if let ['x', ..] = chunk {
                 self.current = Some(Glyph::new_base(TENGWA_CALMA).with_rince(true));
                 ParseAction::MatchedPart(1)
             } else if let ['y', ..] = chunk {
