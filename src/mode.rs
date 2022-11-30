@@ -64,6 +64,13 @@ pub enum ParseAction {
 impl ParseAction {
     /// The behavior of a simple backslash escape sequence.
     pub const ESC_BACKSLASH: Self = Self::Escape { len_seq: 1, n_skip: 1 };
+
+    pub const fn matched_opt(token: Option<Token>, len: usize) -> Self {
+        match token {
+            Some(token) => Self::MatchedToken { token, len },
+            None => Self::MatchedPart(len),
+        }
+    }
 }
 
 

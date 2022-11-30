@@ -5,6 +5,20 @@
 use super::{tehta::Tehta, tema::Tema};
 
 
+/// Backslash character, for marking the following character as nonstandard.
+pub const ESC: char = '\\';
+
+/// Escape character indicating a "silent split" in the input. This allows the
+///     input to specify a division, which will not be marked in the output,
+///     such that a following tengwa will be seen as "initial" by the parser.
+///
+/// For example, this allows a hyphenated phrase such as "etya-ñoldo", which has
+///     an initial NG after the hyphen, to be input as ASCII, and presented with
+///     no division ("etyañoldo"), while still using the correct initial variant
+///     of NG; The input string would be `"etya\ ngoldo"`.
+pub const ESC_NOP: char = ' ';
+
+
 /// A carrier marking for a long vowel.
 pub const CARRIER_LONG: char = TENGWA_ARA;
 /// A carrier marking for a short vowel.

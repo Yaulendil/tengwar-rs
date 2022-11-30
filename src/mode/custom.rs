@@ -62,7 +62,10 @@ impl TengwarMode for CustomMode {
 
         let _initial: bool = self.previous.is_none();
 
-        if let ['\\', _, ..] = chunk {
+        if let [ESC, ESC_NOP, ..] = chunk {
+            self.previous = None;
+            ParseAction::matched_opt(self.current.take().map(Token::Glyph), 2)
+        } else if let [ESC, _, ..] = chunk {
             ParseAction::ESC_BACKSLASH
         } else if let Some(_current) = &mut self.current {
             //  A glyph is currently being constructed. Try to continue it.
