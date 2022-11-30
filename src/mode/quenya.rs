@@ -29,13 +29,13 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
 
         //  Calmatéma.
         ['c'] | ['k']   /**/ => TEMA_CALMA.single_dn,
-        ['n', 'g']
-        | ['g']         /**/ => TEMA_CALMA.double_dn,
+        ['g']
+        | ['n', 'g']    /**/ => TEMA_CALMA.double_dn,
         ['c', 'h']
         | ['k', 'h']    /**/ => TEMA_CALMA.single_up,
         ['n', 'c']      /**/ => TEMA_CALMA.double_up,
         ['ñ']           /**/ => TEMA_CALMA.double_sh,
-        ['y']           /**/ => TEMA_CALMA.single_sh,
+        // ['y']           /**/ => TEMA_CALMA.single_sh, // Special case.
 
         //  Qessetéma.
         ['q']
@@ -50,6 +50,7 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         ['w']           /**/ => TEMA_QESSE.single_sh,
 
         //  Irregulars.
+        // ['r']           /**/ => TENGWA_ROMEN, // Only with following vowel.
         ['r', 'd']      /**/ => TENGWA_ARDA,
         ['l']           /**/ => TENGWA_LAMBE,
         ['l', 'd']      /**/ => TENGWA_ALDA,
