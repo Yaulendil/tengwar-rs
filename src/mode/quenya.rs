@@ -31,7 +31,8 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         ['c'] | ['k']   /**/ => TEMA_CALMA.single_dn,
         ['n', 'g']
         | ['g']         /**/ => TEMA_CALMA.double_dn,
-        ['c', 'h']      /**/ => TEMA_CALMA.single_up,
+        ['c', 'h']
+        | ['k', 'h']    /**/ => TEMA_CALMA.single_up,
         ['n', 'c']      /**/ => TEMA_CALMA.double_up,
         ['ñ']           /**/ => TEMA_CALMA.double_sh,
         ['y']           /**/ => TEMA_CALMA.single_sh,
