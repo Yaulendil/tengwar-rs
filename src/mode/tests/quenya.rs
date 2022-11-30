@@ -552,6 +552,17 @@ fn words() {
     test_tengwar!(Quenya, "ÑOLDO" == ngoldo);
     test_tengwar!(Quenya, "noldo" != ngoldo);
 
+    //  Initial NG, appearing medially due to concatenation.
+    let etya_ngoldo = test_tengwar!(Quenya, "etyañoldo" => [
+        CARRIER_SHORT, TEHTA_E.base, // e
+        TENGWA_TINCO, MOD_PALATAL, TEHTA_A.base, // tya
+        TENGWA_NOLDO, TEHTA_O.base, // ño
+        TENGWA_ALDA, TEHTA_O.base, // ldo
+    ]);
+    test_tengwar!(Quenya, r"etya\ ngoldo" == etya_ngoldo); // ASCII spelling.
+    test_tengwar!(Quenya, r"etya\ ñoldo" == etya_ngoldo);
+    test_tengwar!(Quenya, r"etyangoldo" != etya_ngoldo);
+
     //  Initial NGW (> NW).
     let ngwalme = test_tengwar!(Quenya, "ñwalmë" => [
         TENGWA_NWALME, TEHTA_A.base, // ñwa
