@@ -37,6 +37,14 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         ['ñ']           /**/ => TEMA_CALMA.double_sh,
         // ['y']           /**/ => TEMA_CALMA.single_sh, // Special case.
 
+        //  NOTE: This sound vanished from Quenya very early. However, it may
+        //      still be useful to have a way to write, either for representing
+        //      very old texts or (more likely) to represent a "vanished"
+        //      consonant (such as in "ʒalda").
+        //  https://at.mansbjorkman.net/teng_quenya.htm#note_anna
+        ['g', 'h']
+        | ['ɣ'] | ['ʒ'] /**/ => TEMA_CALMA.single_sh,
+
         //  Qessetéma.
         ['q']
         | ['q', 'u']
