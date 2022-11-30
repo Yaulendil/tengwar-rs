@@ -92,7 +92,7 @@ pub const fn get_diphthong(slice: &[char]) -> Option<Glyph> {
 }
 
 
-pub const fn get_vowel(slice: &[char]) -> Option<(Tehta, bool)> {
+pub const fn get_tehta(slice: &[char]) -> Option<(Tehta, bool)> {
     match slice {
         ['a'] | ['ä'] => Some((TEHTA_A, false)),
         ['e'] | ['ë'] => Some((TEHTA_E, false)),
@@ -107,6 +107,17 @@ pub const fn get_vowel(slice: &[char]) -> Option<(Tehta, bool)> {
         ['ú'] | ['u', 'u'] => Some((TEHTA_U, true)),
 
         _ => None,
+    }
+}
+
+
+pub const fn get_vowel_glyph(slice: &[char]) -> Option<Glyph> {
+    if let Some(glyph) = get_diphthong(slice) {
+        Some(glyph)
+    } else if let Some((tehta, alt)) = get_tehta(slice) {
+        Some(Glyph::new_vowel(tehta, alt))
+    } else {
+        None
     }
 }
 
@@ -128,14 +139,16 @@ impl TengwarMode for Quenya {
     fn process(&mut self, chunk: &[char]) -> ParseAction {
         macro_rules! finish {
             ($glyph:expr) => {finish!($glyph, 0)};
-            ($glyph:expr, $len:expr) => {{
-                let glyph = $glyph;
-
-                self.current = None;
-                self.previous = Some(glyph);
+            ($glyph:expr, $len:expr) => {replace!($glyph, None, $len)}
+        }
+        macro_rules! replace {
+            ($old:expr, $new:expr, $len:expr) => {{
+                let finished = $old;
+                self.current = $new;
+                self.previous = Some(finished);
 
                 ParseAction::MatchedToken {
-                    token: Token::Glyph(glyph),
+                    token: Token::Glyph(finished),
                     len: $len,
                 }
             }};
@@ -151,7 +164,7 @@ impl TengwarMode for Quenya {
             match &current.tehta {
                 Some(_) => ParseAction::MatchedNone,
                 None => match chunk {
-                    ['y'] if !current.palatal => {
+                    ['y', ..] if !current.palatal => {
                         current.palatal = true;
                         ParseAction::MatchedPart(1)
                     }
@@ -164,20 +177,32 @@ impl TengwarMode for Quenya {
                         //      allowed to narrow, it will become ['s'], which
                         //      will modify it incorrectly. Need to output the
                         //      current glyph immediately.
-                        finish!(*current, 0)
+                        finish!(*current)
                     }
                     ['l' | 'r'] => {
+                        //  The H in softened HL and HR is represented by Halla,
+                        //      not Hyarmen.
                         current.replace_base(TENGWA_HYARMEN, TENGWA_HALLA);
-                        finish!(*current, 0)
+                        finish!(*current)
                     }
                     _ => {
-                        if let Some(_) = get_diphthong(chunk) {
+                        if let Some(new) = get_diphthong(chunk) {
+                            //  A following vowel sound changes Órë to Rómen.
                             current.replace_base(TENGWA_ORE, TENGWA_ROMEN);
-                            finish!(*current, 0)
-                        } else if let Some((vowel, long)) = get_vowel(chunk) {
+
+                            //  Set the diphthong as the current glyph, while
+                            //      returning the glyph that was in progress.
+                            replace!(*current, Some(new), chunk.len())
+                        } else if let Some((tehta, alt)) = get_tehta(chunk) {
+                            //  A following vowel sound changes Órë to Rómen.
                             current.replace_base(TENGWA_ORE, TENGWA_ROMEN);
-                            current.tehta = Some(vowel);
-                            current.tehta_alt = long;
+                            current.tehta = Some(tehta);
+                            current.tehta_alt = alt;
+
+                            //  In the Classical mode, a vowel tehta is the last
+                            //      modification that can be made to a tengwa.
+                            //      Nothing else after the vowel can affect the
+                            //      glyph, so finish it now.
                             finish!(*current, chunk.len())
                         } else {
                             ParseAction::MatchedNone
@@ -189,7 +214,7 @@ impl TengwarMode for Quenya {
             //  Try to find a new glyph.
 
             //  Check for special cases.
-            if let ['x'] = chunk {
+            if let ['x', ..] = chunk {
                 self.current = Some(Glyph::new_base(TENGWA_CALMA).with_rince(true));
                 ParseAction::MatchedPart(1)
             } else if let ['y', ..] = chunk {
@@ -224,16 +249,13 @@ impl TengwarMode for Quenya {
                 ParseAction::MatchedPart(chunk.len())
             }
 
-            //  Check for a diphthong.
-            else if let Some(new) = get_diphthong(chunk) {
-                self.current = Some(new);
-                ParseAction::MatchedPart(chunk.len())
-            }
-
-            //  Check for a single vowel.
-            else if let Some((vowel, long)) = get_vowel(chunk) {
-                self.current = Some(Glyph::new_vowel(vowel, long));
-                ParseAction::MatchedPart(chunk.len())
+            //  Check for a vowel or diphthong.
+            else if let Some(new) = get_vowel_glyph(chunk) {
+                self.previous = Some(new);
+                ParseAction::MatchedToken {
+                    token: Token::Glyph(new),
+                    len: chunk.len(),
+                }
             } else {
                 ParseAction::MatchedNone
             }
