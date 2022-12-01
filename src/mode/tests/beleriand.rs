@@ -86,6 +86,7 @@ fn words() {
         TENGWA_CALMA, VOWEL_A, TENGWA_LAMBE, VOWEL_E, TENGWA_ORE,
     ]);
     test_tengwar!(Beleriand, "kalen" == calen);
+    test_tengwar!(Beleriand, "çalen" != calen);
 
     let _hebin = test_tengwar!(Beleriand, "hebin" => [
         TENGWA_HYARMEN, VOWEL_E, TENGWA_UMBAR, VOWEL_I, TENGWA_ORE,
@@ -96,9 +97,11 @@ fn words() {
     ]);
     test_tengwar!(Beleriand[nuquerna=true], "grist" == grist);
 
-    let _acharn = test_tengwar!(Beleriand, "acharn" => [
+    let acharn = test_tengwar!(Beleriand, "acharn" => [
         VOWEL_A, TENGWA_AHA, VOWEL_A, TENGWA_ROMEN, TENGWA_ORE,
     ]);
+    test_tengwar!(Beleriand, "akharn" == acharn);
+
     let _wethrin = test_tengwar!(Beleriand, "wethrin" => [
         TENGWA_WILYA, VOWEL_E, TENGWA_THULE, TENGWA_ROMEN, VOWEL_I, TENGWA_ORE,
     ]);

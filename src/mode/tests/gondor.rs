@@ -71,7 +71,9 @@ fn nuquernar() {
     ]);
     // test_tengwar!(lossen != lossen_nuq);
     test_tengwar!(Gondor, "lozen" == lossen);
+    test_tengwar!(Gondor, "loßen" == lossen);
     test_tengwar!(Gondor[nuquerna=true], "lozen" == lossen_nuq);
+    test_tengwar!(Gondor[nuquerna=true], "loßen" == lossen_nuq);
 
     //  Confirm lack of Nuquerna for a vowel on Ára.
     let iisa = test_tengwar!(Gondor, "ísa" => [
@@ -80,6 +82,7 @@ fn nuquernar() {
         CARRIER_SHORT, TEHTA_A.base, // í
     ]);
     test_tengwar!(Gondor[nuquerna=true], "ísa" == iisa);
+    test_tengwar!(Gondor[nuquerna=true], "íßa" != iisa);
 }
 
 
@@ -170,6 +173,7 @@ fn words() {
         TENGWA_NUMEN, TEHTA_E.base, // en
     ]);
     test_tengwar!(Gondor, "kalen" == calen);
+    test_tengwar!(Gondor, "çalen" != calen);
 
     let _hebin = test_tengwar!(Gondor, "hebin" => [
         TENGWA_HYARMEN, // h
@@ -182,11 +186,14 @@ fn words() {
         TENGWA_SILME, TEHTA_I.base, // is
         TENGWA_TINCO, // t
     ]);
-    let _acharn = test_tengwar!(Gondor, "acharn" => [
+
+    let acharn = test_tengwar!(Gondor, "acharn" => [
         TENGWA_HWESTA, TEHTA_A.base, // ach
         TENGWA_ROMEN, TEHTA_A.base, // ar
         TENGWA_NUMEN, // n
     ]);
+    test_tengwar!(Gondor, "akharn" == acharn);
+
     let _wethrin = test_tengwar!(Gondor, "wethrin" => [
         TENGWA_WILYA, // w
         TENGWA_THULE, TEHTA_E.base, // eth

@@ -63,7 +63,7 @@ pub const fn consonant_char(slice: &[char]) -> Option<char> {
         ['m', 'h']      /**/ => TENGWA_VALA_HOOKED,
         ['s']           /**/ => TENGWA_SILME,
         ['s', 's']
-        | ['z']         /**/ => TENGWA_ESSE,
+        | ['z'] | ['ß'] /**/ => TENGWA_ESSE,
 
         ['h']           /**/ => TENGWA_HYARMEN,
         ['h', 'w']      /**/ => TENGWA_HWESTA_SINDARINWA,

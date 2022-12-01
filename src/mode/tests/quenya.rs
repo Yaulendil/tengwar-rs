@@ -489,7 +489,9 @@ fn nuquernar() {
     ]);
     // test_tengwar!(esse != esse_nuq);
     test_tengwar!(Quenya, "eze" == esse);
+    test_tengwar!(Quenya, "eße" == esse);
     test_tengwar!(Quenya[nuquerna=true], "eze" == esse_nuq);
+    test_tengwar!(Quenya[nuquerna=true], "eße" == esse_nuq);
 
     //  Confirm lack of Nuquerna for a vowel on Ára.
     let siila = test_tengwar!(Quenya, "síla" => [
@@ -498,6 +500,7 @@ fn nuquernar() {
         TENGWA_LAMBE, TEHTA_A.base, // la
     ]);
     test_tengwar!(Quenya[nuquerna=true], "síla" == siila);
+    test_tengwar!(Quenya[nuquerna=true], "ßíla" != siila);
 }
 
 
@@ -558,8 +561,10 @@ fn words() {
     test_tengwar!(Quenya, "qenya" == quenya);
     test_tengwar!(Quenya, "kwenya" == quenya);
     test_tengwar!(Quenya, "cwenya" == quenya);
+    test_tengwar!(Quenya, "çwenya" != quenya);
     test_tengwar!(Quenya, "kuenya" != quenya);
     test_tengwar!(Quenya, "cuenya" != quenya);
+    test_tengwar!(Quenya, "çuenya" != quenya);
 
     let _aha = test_tengwar!(Quenya, "aha" => [
         CARRIER_SHORT, TEHTA_A.base, // a
@@ -602,6 +607,8 @@ fn words() {
         TENGWA_MALTA, TEHTA_A.base, // ma
     ]);
     test_tengwar!(Quenya, "kalma" == calma);
+    test_tengwar!(Quenya, "qalma" != calma);
+    test_tengwar!(Quenya, "çalma" != calma);
 
     //  Initial and final N.
     let nuumen = test_tengwar!(Quenya, "númen" => [
@@ -610,6 +617,7 @@ fn words() {
         TENGWA_NUMEN, // n
     ]);
     test_tengwar!(Quenya, "nuumen" == nuumen); // ASCII spelling.
+    test_tengwar!(Quenya, "ñuumen" != nuumen);
     test_tengwar!(Quenya, "ngúmen" != nuumen);
 
     //  Initial NG (> N).
