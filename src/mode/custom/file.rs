@@ -87,6 +87,7 @@ impl From<GlyphSpec> for Glyph {
             tehta: spec.tehta.map(Tehta::from),
             tehta_alt: spec.tehta_alt,
             tehta_first: false,
+            tehta_hidden: false,
             vowels: Default::default(),
             rince: spec.rince,
             rince_final: false,

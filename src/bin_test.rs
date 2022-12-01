@@ -129,6 +129,7 @@ fn test_styles() {
     run(["-sz", ARG_Q]);
     run(["-szzz", ARG_Q]);
     run(["-s", "-z", ARG_Q]);
+    run(["-s", "-z", "-zz", ARG_Q]);
     run(["-s", "-z", "-z", "-z", ARG_Q]);
 
     //  Alternate A-tehta.
@@ -138,6 +139,14 @@ fn test_styles() {
     //  Alternate Sa-Rincë.
     run(["--alt-rince", ARG_Q]);
     run(["-r", ARG_Q]);
+
+    //  Dots below plain tengwar.
+    run(["--dot-plain", ARG_Q]);
+    run(["-d", ARG_Q]);
+
+    //  A-tehta elision.
+    run(["--elide-a", ARG_Q]);
+    run(["-e", ARG_Q]);
 
     //  Disable Nuquernar.
     run(["--no-nuquernar", ARG_Q]);

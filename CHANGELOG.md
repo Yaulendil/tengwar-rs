@@ -4,6 +4,7 @@
 ## Upcoming
 
 ### Added
+- Implemented `--dot-plain` and `--elide-a` CLI options to enable variant behaviors used for Quenya.
 - Implemented `Policy` trait to adjust `Glyph` behavior.
 - Implemented "silent split" escape sequence. Now, ASCII input string `"etya\ ngoldorin"` will be presented unspaced, like `"etyangoldorin"`, but the `NG` will correctly use initial *Ñoldo* instead of medial *Anga*.
 - Added `Æ` and `Œ` as valid Sindarin diphthongs.

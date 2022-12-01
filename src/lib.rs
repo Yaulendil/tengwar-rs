@@ -391,6 +391,14 @@ impl<I, P, Q> Iterator for TokenIter<I, P, Q> where
             glyph.nuquerna = self.settings.nuquerna;
             glyph.vowels = self.settings.vowels;
 
+            if self.settings.dot_plain && !glyph.carries_tehta() {
+                glyph.dot_under = true;
+            }
+
+            if self.settings.elide_a {
+                glyph.elide_a();
+            }
+
             if self.settings.alt_a {
                 glyph.set_alt_a();
             }
@@ -428,6 +436,13 @@ pub struct TranscriberSettings {
     ///     appropriate.
     pub alt_rince: bool,
 
+    /// If this is `true`, any tengwa that does not carry a tehta will be marked
+    ///     with a dot.
+    pub dot_plain: bool,
+
+    /// If this is `true`, the [A-tehta](characters::TEHTA_A) will not be used.
+    pub elide_a: bool,
+
     /// If this is `true`, the [short carrier](characters::CARRIER_SHORT) will
     ///     be replaced by its [ligating variant](characters::CARRIER_SHORT_LIG)
     ///     where appropriate.
@@ -452,6 +467,8 @@ impl TranscriberSettings {
         Self {
             alt_a: false,
             alt_rince: false,
+            dot_plain: false,
+            elide_a: false,
             ligate_short: false,
             ligate_zwj: 0,
             nuquerna: false,

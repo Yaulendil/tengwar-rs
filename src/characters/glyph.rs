@@ -109,6 +109,7 @@ pub struct Glyph<P: Policy = Standard> {
     /// Indicates whether a tehta with an extended carrier should be printed
     ///     before the glyph.
     pub tehta_first: bool,
+    pub tehta_hidden: bool,
 
     /// The pattern of behavior followed by the tehta, if there is one.
     pub vowels: VowelStyle,
@@ -161,6 +162,7 @@ impl<P: Policy> Glyph<P> {
             tehta: None,
             tehta_alt: false,
             tehta_first: false,
+            tehta_hidden: false,
             vowels: VowelStyle::DEFAULT,
 
             rince: false,
@@ -213,6 +215,7 @@ impl<P: Policy> Glyph<P> {
             tehta: self.tehta,
             tehta_alt: self.tehta_alt,
             tehta_first: self.tehta_first,
+            tehta_hidden: self.tehta_hidden,
             vowels: self.vowels,
             rince: self.rince,
             rince_final: self.rince_final,
@@ -294,6 +297,13 @@ impl<P: Policy> Glyph<P> {
     pub fn integrate_vowel(&mut self, other: Self) {
         self.tehta = other.tehta;
         self.tehta_alt = other.tehta_alt;
+    }
+
+    /// Elide the [A-tehta](TEHTA_A).
+    pub fn elide_a(&mut self) {
+        if self.tehta == Some(TEHTA_A) {
+            self.tehta_hidden = true;
+        }
     }
 
     /// If the base [`char`] matches a specific value, change it to another.
@@ -458,6 +468,16 @@ impl<P: Policy> Glyph<P> {
         P::rince(self.base(), self.rince_final)
     }
 
+    pub fn carries_tehta(&self) -> bool {
+        match self.tehta_char() {
+            Some(TehtaChar::OnAraAfter(_)) => false,
+            Some(TehtaChar::OnAraBefore(_)) => false,
+            Some(TehtaChar::OnTengwaOnce(_)) => true,
+            Some(TehtaChar::OnTengwaTwice(_)) => true,
+            None => false,
+        }
+    }
+
     /// Resolve the position and identity of the tehta.
     pub fn tehta_char(&self) -> Option<TehtaChar> {
         let Some(tehta) = self.tehta else {
@@ -557,15 +577,15 @@ impl<P: Policy> Glyph<P> {
             match self.choose_rince() {
                 Rince::Basic => {
                     f.write_char(SA_RINCE)?;
-                    write_tehta(f, tehta, double)?;
+                    if !self.tehta_hidden { write_tehta(f, tehta, double)?; }
                 }
                 Rince::Final => {
-                    write_tehta(f, tehta, double)?;
+                    if !self.tehta_hidden { write_tehta(f, tehta, double)?; }
                     f.write_char(SA_RINCE_FINAL)?;
                 }
             }
         } else {
-            write_tehta(f, tehta, double)?;
+            if !self.tehta_hidden { write_tehta(f, tehta, double)?; }
         }
 
         Ok(())
@@ -587,11 +607,11 @@ impl<P: Policy> Display for Glyph<P> {
                 }
 
                 f.write_char(CARRIER_LONG)?;
-                f.write_char(tehta)?;
+                if !self.tehta_hidden { f.write_char(tehta)?; }
             }
             Some(TehtaChar::OnAraBefore(tehta)) => {
                 f.write_char(CARRIER_LONG)?;
-                f.write_char(tehta)?;
+                if !self.tehta_hidden { f.write_char(tehta)?; }
 
                 f.write_char(base)?;
                 self.write_mods(f)?;

@@ -87,6 +87,75 @@ fn alt_rince() {
 
 
 #[test]
+fn elision() {
+    test_tengwar!(Quenya, "alda" => [
+        CARRIER_SHORT, TEHTA_A.base, // a
+        TENGWA_ALDA, TEHTA_A.base, // lda
+    ]);
+    test_tengwar!(Quenya, "ʒalda" => [
+        TENGWA_ANNA, TEHTA_A.base, // ʒa
+        TENGWA_ALDA, TEHTA_A.base, // lda
+    ]);
+    test_tengwar!(Quenya[elide_a=true], "alda" => [CARRIER_SHORT, TENGWA_ALDA]);
+    test_tengwar!(Quenya[elide_a=true], "ʒalda" => [TENGWA_ANNA, TENGWA_ALDA]);
+
+    test_tengwar!(Quenya, "calma" => [
+        TENGWA_CALMA, TEHTA_A.base, // ca
+        TENGWA_LAMBE, // l
+        TENGWA_MALTA, TEHTA_A.base, // ma
+    ]);
+    test_tengwar!(Quenya[dot_plain=true], "calma" => [
+        TENGWA_CALMA, TEHTA_A.base, // ca
+        TENGWA_LAMBE, DC_UNDER_DOT_1, // l
+        TENGWA_MALTA, TEHTA_A.base, // ma
+    ]);
+    test_tengwar!(Quenya[elide_a=true], "calma" => [
+        TENGWA_CALMA, TENGWA_LAMBE, TENGWA_MALTA,
+    ]);
+    test_tengwar!(Quenya[dot_plain=true, elide_a=true], "calma" => [
+        TENGWA_CALMA, TENGWA_LAMBE, DC_UNDER_DOT_1, TENGWA_MALTA,
+    ]);
+
+    test_tengwar!(Quenya, "hárar" => [
+        TENGWA_HYARMEN, // h
+        CARRIER_LONG, TEHTA_A.base, // á
+        TENGWA_ROMEN, TEHTA_A.base, // ra
+        TENGWA_ORE, // r
+    ]);
+    test_tengwar!(Quenya[elide_a=true], "hárar" => [
+        TENGWA_HYARMEN, // h
+        CARRIER_LONG, // á
+        TENGWA_ROMEN, // ra
+        TENGWA_ORE, // r
+    ]);
+    test_tengwar!(Quenya[dot_plain=true, elide_a=true], "hárar" => [
+        TENGWA_HYARMEN, DC_UNDER_DOT_1, // h
+        CARRIER_LONG, // á
+        TENGWA_ROMEN, // ra
+        TENGWA_ORE, DC_UNDER_DOT_1, // r
+    ]);
+
+    test_tengwar!(Quenya, "airë" => [
+        TENGWA_YANTA, TEHTA_A.base, // ai
+        TENGWA_ROMEN, TEHTA_E.base, // rë
+    ]);
+    test_tengwar!(Quenya[elide_a=true], "airë" => [
+        TENGWA_YANTA, // ai
+        TENGWA_ROMEN, TEHTA_E.base, // rë
+    ]);
+
+    test_tengwar!(Quenya, "aulë" => [
+        TENGWA_URE, TEHTA_A.base, // au
+        TENGWA_LAMBE, TEHTA_E.base, // lë
+    ]);
+    test_tengwar!(Quenya[elide_a=true], "aulë" => [
+        TENGWA_URE, // au
+        TENGWA_LAMBE, TEHTA_E.base, // lë
+    ]);
+}
+
+
+#[test]
 fn ligatures() {
     test_tengwar!(Quenya[ligate_short=false, ligate_zwj=0], "ista" => [
         CARRIER_SHORT, TEHTA_I.base, // i

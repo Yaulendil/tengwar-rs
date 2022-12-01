@@ -84,6 +84,24 @@ struct StyleFlags {
     #[arg(long, short = 'r')]
     alt_rince: bool,
 
+    /// Use a dot to mark any tengwa that does not carry a vowel tehta.
+    ///
+    /// This is often used in combination with A-vowel elision; Any tengwa that
+    ///     does not show a vowel, but is also not marked with a dot, can be
+    ///     assumed to have an implicit A-vowel.
+    #[arg(long, short = 'd')]
+    dot_plain: bool,
+
+    /// Do not use a tehta at all for A-vowels.
+    ///
+    /// Being both the most complex to write and the most common in Quenya, the
+    ///     A-tehta was sometimes left out entirely. The presence of an A-vowel
+    ///     would then be inferred between consonants that could not form valid
+    ///     clusters.
+    //  TODO: Allow partial elision, using the tehta for initial/long A-vowels.
+    #[arg(long, short = 'e')]
+    elide_a: bool,
+
     /// Set behavior for long vowel tehtar.
     ///
     /// Generally, a long vowel may be indicated by
@@ -207,6 +225,8 @@ impl Command {
         TranscriberSettings {
             alt_a: self.style_flags.alt_a,
             alt_rince: self.style_flags.alt_rince,
+            dot_plain: self.style_flags.dot_plain,
+            elide_a: self.style_flags.elide_a,
             ligate_short: self.ligate_all || self.ligate_short,
             ligate_zwj: if self.ligate_all { u8::MAX } else { self.ligate_zwj },
             nuquerna: self.style_flags.nuquerna,
