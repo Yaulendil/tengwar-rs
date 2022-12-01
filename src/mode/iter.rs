@@ -19,13 +19,13 @@ const fn to_lower(c: char) -> char {
 /// The result of a single "step" of a [`Tokenizer`]. Multiple steps can be
 ///     performed for each iteration.
 #[derive(Clone, Debug)]
-enum IterStep {
+enum Step {
     /// The iteration is not complete. Another step should be run immediately.
-    Again,
-    /// The [`Tokenizer`] is exhausted. The iterator can safely return [`None`].
-    Empty,
+    Incomplete,
+    /// The [`Tokenizer`] is exhausted. The iterator should return [`None`].
+    Exhausted,
     /// The iteration is complete. The [`Token`] should now be returned.
-    Success(Token),
+    Complete(Token),
 }
 
 
@@ -34,7 +34,8 @@ enum IterStep {
 ///
 /// This is a lower-level construct, and performs only minimal post-processing
 ///     of the `Token`s, as defined by [`TengwarMode::finalize`]. For a higher
-///     level iterator with more powerful rules, see [`crate::Transcriber`].
+///     level iterator with more powerful rules, consider a [`Transcriber`],
+///     which can be created using [`Tokenizer::into_transcriber`].
 #[derive(Debug)]
 pub struct Tokenizer<M: TengwarMode> {
     /// The original data, with case intact.
@@ -126,13 +127,13 @@ impl<M: TengwarMode> Tokenizer<M> {
     /// Perform a single step of parsing. This will result in at most one call
     ///     to [`TengwarMode::process`], and does not guarantee that a [`Token`]
     ///     will be complete by the end. Each `Token` may require several steps.
-    fn step(&mut self) -> IterStep {
+    fn step(&mut self) -> Step {
         let &mut Self {
-            chars: _,
-            lower: ref data,
-            head, size, skip,
-            ref mut mode,
-            next: _,
+            chars: _, // Not used.
+            lower: ref data, // Immutable: Only need to read.
+            head, size, skip, // Copy.
+            ref mut mode, // Mutable: Processing updates state.
+            next: _, // Not used.
         } = self;
         let len: usize = data.len();
 
@@ -141,10 +142,10 @@ impl<M: TengwarMode> Tokenizer<M> {
             if 0 < skip {
                 if let Some(token) = mode.finish_current() {
                     self.advance_head(0);
-                    IterStep::Success(token)
+                    Step::Complete(token)
                 } else {
                     self.skip -= 1;
-                    IterStep::Success(Token::Char(self.skip_one()))
+                    Step::Complete(Token::Char(self.skip_one()))
                 }
             }
 
@@ -156,28 +157,28 @@ impl<M: TengwarMode> Tokenizer<M> {
                 match mode.process(chunk) {
                     ParseAction::MatchedNone => {
                         self.size -= 1;
-                        IterStep::Again
+                        Step::Incomplete
                     }
                     ParseAction::MatchedPart(n) => {
                         self.advance_head(n);
-                        IterStep::Again
+                        Step::Incomplete
                     }
                     ParseAction::MatchedToken { token, len } => {
                         self.advance_head(len);
-                        IterStep::Success(token)
+                        Step::Complete(token)
                     }
                     ParseAction::Skip(n) => {
                         self.skip += n;
 
                         match mode.finish_current() {
-                            Some(token) => IterStep::Success(token),
-                            None => IterStep::Again,
+                            Some(token) => Step::Complete(token),
+                            None => Step::Incomplete,
                         }
                     }
                     ParseAction::Escape { len_seq, n_skip } => {
                         self.advance_head(len_seq);
                         self.skip += n_skip;
-                        IterStep::Again
+                        Step::Incomplete
                     }
                 }
             }
@@ -186,37 +187,37 @@ impl<M: TengwarMode> Tokenizer<M> {
             //      constructed, finish and return it.
             else if let Some(token) = mode.finish_current() {
                 self.advance_head(0);
-                IterStep::Success(token)
+                Step::Complete(token)
             }
 
             //  Look for a sequence index.
             else if let Some((char, len)) = mode.find_index(&data[head..]) {
                 self.advance_head(len);
-                IterStep::Success(Token::Char(char))
+                Step::Complete(Token::Char(char))
             }
 
             //  Look for a numeric value.
             else if let Some((num, len)) = mode.find_numeral(&data[head..]) {
                 self.advance_head(len);
-                IterStep::Success(Token::Number(num))
+                Step::Complete(Token::Number(num))
             }
 
             //  Check for punctuation.
             else if let Some(punct) = punctuation(data[head]) {
                 self.advance_head(1);
-                IterStep::Success(Token::Char(punct))
+                Step::Complete(Token::Char(punct))
             }
 
             //  Give up and pass the current `char` through unchanged.
             else {
-                IterStep::Success(Token::Char(self.skip_one()))
+                Step::Complete(Token::Char(self.skip_one()))
             }
         } else { // len <= head
             //  The read head is at the end of the data. If a token is
             //      currently being constructed, finish and return it.
             match mode.finish_current() {
-                Some(token) => IterStep::Success(token),
-                None => IterStep::Empty,
+                Some(token) => Step::Complete(token),
+                None => Step::Exhausted,
             }
         }
     }
@@ -226,9 +227,9 @@ impl<M: TengwarMode> Tokenizer<M> {
     fn step_to_next(&mut self) -> Option<Token> {
         loop {
             match self.step() {
-                IterStep::Again => continue,
-                IterStep::Empty => break None,
-                IterStep::Success(token) => break Some(token),
+                Step::Incomplete => continue,
+                Step::Exhausted => break None,
+                Step::Complete(token) => break Some(token),
             }
         }
     }
