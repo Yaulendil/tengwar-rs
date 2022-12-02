@@ -15,8 +15,8 @@ pub mod custom;
 pub mod gondor;
 pub mod quenya;
 
-mod iter;
 mod tests;
+mod tokenizer;
 
 pub use beleriand::Beleriand;
 #[cfg(feature = "mode-custom")]
@@ -24,7 +24,7 @@ pub use custom::CustomMode;
 // pub use general::General;
 pub use gondor::Gondor;
 pub use quenya::Quenya;
-pub use iter::Tokenizer;
+pub use tokenizer::Tokenizer;
 
 use crate::{Numeral, Token, Transcriber};
 
