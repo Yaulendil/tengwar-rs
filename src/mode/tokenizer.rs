@@ -1,5 +1,5 @@
 use unicode_normalization::UnicodeNormalization;
-use crate::{characters::punctuation, Token, Transcriber};
+use crate::{Token, Transcriber};
 use super::{ParseAction, TengwarMode};
 
 
@@ -220,22 +220,10 @@ impl<M: TengwarMode> Tokenizer<M> {
                 Step::Complete(token)
             }
 
-            //  Look for a sequence index in the slice ahead.
-            else if let Some((char, len)) = mode.find_index(&data[head..]) {
+            //  Look for any secondary value in the slice ahead.
+            else if let Some((token, len)) = mode.find_secondary(&data[head..]) {
                 self.advance_head(len);
-                Step::Complete(Token::Char(char))
-            }
-
-            //  Look for a numeric value in the slice ahead.
-            else if let Some((num, len)) = mode.find_numeral(&data[head..]) {
-                self.advance_head(len);
-                Step::Complete(Token::Number(num))
-            }
-
-            //  Check for punctuation in the next `char`.
-            else if let Some(punct) = punctuation(data[head]) {
-                self.advance_head(1);
-                Step::Complete(Token::Char(punct))
+                Step::Complete(token)
             }
 
             //  Give up and pass the current `char` through unchanged.

@@ -130,6 +130,38 @@ pub trait TengwarMode {
         Numeral::parse(slice)
     }
 
+    /// Try to parse a slice of characters into a [`Token`]. If successful,
+    ///     returns the `Token` alongside the number of [`char`]s that were
+    ///     processed in order to produce it.
+    ///
+    /// This method is tried after the multi-step [`Self::process`] approach
+    ///     fails, and is expected to find numerals and punctuation. The input
+    ///     slice is NOT bounded by [`MAX_CHUNK`], extending to the end of the
+    ///     data.
+    ///
+    /// [`MAX_CHUNK`]: Self::MAX_CHUNK
+    //  TODO: Should the methods called here be included directly? The default
+    //      impls are already direct passthroughs. Is anything really gained
+    //      downstream from keeping them as separate methods?
+    fn find_secondary(&mut self, slice: &[char]) -> Option<(Token, usize)> {
+        //  Check for a sequential index.
+        if let Some((char, len)) = self.find_index(slice) {
+            Some((Token::Char(char), len))
+        }
+
+        //  Check for a standard numeral.
+        else if let Some((num, len)) = self.find_numeral(slice) {
+            Some((Token::Number(num), len))
+        }
+
+        //  Check for punctuation.
+        else {
+            let first: char = *slice.first()?;
+            let punct: char = crate::characters::punctuation(first)?;
+            Some((Token::Char(punct), 1))
+        }
+    }
+
     /// If there is a [`Token`] currently under construction, return it and
     ///     clear it from the internal state, preparing to begin a new one.
     ///
