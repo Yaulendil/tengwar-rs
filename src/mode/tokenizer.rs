@@ -117,13 +117,20 @@ impl<M: TengwarMode> Tokenizer<M> {
         self.size = self.chars.len().min(M::MAX_CHUNK);
     }
 
-    /// Pass along one [`char`], exactly as it is in the input, and advance the
-    ///     read head by one.
-    fn skip_one(&mut self) -> char {
-        let here: char = self.chars[self.head];
-        self.advance_head(1);
-        here
-    }
+    /// Decrease the width of the slice provided to the [`TengwarMode`]. This is
+    ///     done when the Mode implementation fails to report any progress, and
+    ///     allows it to try again on smaller data.
+    #[inline]
+    fn narrow_window(&mut self) { self.size -= 1; }
+
+    /// Add to the number of [`char`]s that will be passed through unaffected in
+    ///     subsequent calls to [`Tokenizer::step`].
+    #[inline]
+    fn skip_count_add(&mut self, n: usize) { self.skip += n; }
+
+    /// Decrement the number of [`char`]s that will be passed unaffected.
+    #[inline]
+    fn skip_count_dec(&mut self) { self.skip -= 1; }
 
     /// Perform a single step of parsing. This will result in at most one call
     ///     to [`TengwarMode::process`], and does not guarantee that a [`Token`]
@@ -155,8 +162,9 @@ impl<M: TengwarMode> Tokenizer<M> {
                     self.advance_head(0);
                     Step::Complete(token)
                 } else {
-                    self.skip -= 1;
-                    Step::Complete(Token::Char(self.skip_one()))
+                    self.advance_head(1);
+                    self.skip_count_dec();
+                    Step::Complete(Token::Char(self.chars[head]))
                 }
             }
 
@@ -168,13 +176,13 @@ impl<M: TengwarMode> Tokenizer<M> {
 
                 match mode.process(chunk) {
                     ParseAction::MatchedNone => {
-                        //  No match. Narrow the chunk and try again.
-                        self.size -= 1;
+                        //  No match. Narrow the window and try again.
+                        self.narrow_window();
                         Step::Incomplete
                     }
-                    ParseAction::MatchedPart(n) => {
+                    ParseAction::MatchedPart(len) => {
                         //  Partial match. Advance the read head and try again.
-                        self.advance_head(n);
+                        self.advance_head(len);
                         Step::Incomplete
                     }
                     ParseAction::MatchedToken { token, len } => {
@@ -187,9 +195,10 @@ impl<M: TengwarMode> Tokenizer<M> {
                         //  Skip specified. Increase the skip counter. Then, if
                         //      a token was in progress, return it; Otherwise,
                         //      try again.
-                        self.skip += n;
+                        let finished: Option<Token> = mode.finish_current();
+                        self.skip_count_add(n);
 
-                        match mode.finish_current() {
+                        match finished {
                             Some(token) => Step::Complete(token),
                             None => Step::Incomplete,
                         }
@@ -198,7 +207,7 @@ impl<M: TengwarMode> Tokenizer<M> {
                         //  Escape sequence. Advance the read head and increase
                         //      the skip counter, then try again.
                         self.advance_head(len_seq);
-                        self.skip += n_skip;
+                        self.skip_count_add(n_skip);
                         Step::Incomplete
                     }
                 }
@@ -231,7 +240,8 @@ impl<M: TengwarMode> Tokenizer<M> {
 
             //  Give up and pass the current `char` through unchanged.
             else {
-                Step::Complete(Token::Char(self.skip_one()))
+                self.advance_head(1);
+                Step::Complete(Token::Char(self.chars[head]))
             }
         }
     }
