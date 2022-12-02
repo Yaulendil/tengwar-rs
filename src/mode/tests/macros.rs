@@ -73,4 +73,31 @@ macro_rules! test_tengwar {
             w = $input.chars().count().max(original.chars().count()),
         );
     }};
+
+    ($lhs:ident == $rhs:expr) => {{
+        let (lhs_in, lhs_out) = &$lhs;
+        let (rhs_in, rhs_out) = &$rhs;
+
+        assert_eq!(lhs_out, rhs_out,
+            "Output of `{lhs}` does not match that of `{rhs}`.\
+            \n  {lhs_in:>w$}  (left): {lhs_out}\
+            \n  {rhs_in:>w$} (right): {rhs_out}",
+            lhs = stringify!($lhs),
+            rhs = stringify!($rhs),
+            w = lhs_in.chars().count().max(rhs_in.chars().count()),
+        );
+    }};
+    ($lhs:ident != $rhs:expr) => {{
+        let (lhs_in, lhs_out) = &$lhs;
+        let (rhs_in, rhs_out) = &$rhs;
+
+        assert_ne!(lhs_out, rhs_out,
+            "Output of `{lhs}` matches that of `{rhs}`, but should not.\
+            \n  {lhs_in:>w$}  (left): {lhs_out}\
+            \n  {rhs_in:>w$} (right): {rhs_out}",
+            lhs = stringify!($lhs),
+            rhs = stringify!($rhs),
+            w = lhs_in.chars().count().max(rhs_in.chars().count()),
+        );
+    }};
 }

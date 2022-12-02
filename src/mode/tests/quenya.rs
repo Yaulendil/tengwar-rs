@@ -9,14 +9,15 @@ fn alt_a() {
         CARRIER_DIPH_U, TEHTA_A.base, // au
         TENGWA_CALMA, TEHTA_A.base, // ca
     ]);
-    test_tengwar!(Quenya, "rauka" == rauca);
-
     let rauca_alt = test_tengwar!(Quenya[alt_a=true], "rauca" => [
         TENGWA_ROMEN, // r
         CARRIER_DIPH_U, TEHTA_YANTA.base, // au
         TENGWA_CALMA, TEHTA_YANTA.base, // ca
     ]);
+
+    test_tengwar!(Quenya, "rauka" == rauca);
     test_tengwar!(Quenya[alt_a=true], "rauka" == rauca_alt);
+    test_tengwar!(rauca != rauca_alt);
 }
 
 
@@ -466,17 +467,17 @@ fn numerals() {
 #[test]
 fn nuquernar() {
     //  Check Silmë.
-    let _silme = test_tengwar!(Quenya, "silmë" => [
+    let silme = test_tengwar!(Quenya, "silmë" => [
         TENGWA_SILME, TEHTA_I.base, // si
         TENGWA_LAMBE, // l
         TENGWA_MALTA, TEHTA_E.base, // më
     ]);
-    let _silme_nuq = test_tengwar!(Quenya[nuquerna=true], "silmë" => [
+    let silme_nuq = test_tengwar!(Quenya[nuquerna=true], "silmë" => [
         TENGWA_SILME_NUQ, TEHTA_I.base, // si
         TENGWA_LAMBE, // l
         TENGWA_MALTA, TEHTA_E.base, // më
     ]);
-    // test_tengwar!(silme != silme_nuq);
+    test_tengwar!(silme != silme_nuq);
 
     //  Check Essë.
     let esse = test_tengwar!(Quenya, "essë" => [
@@ -487,7 +488,7 @@ fn nuquernar() {
         CARRIER_SHORT, TEHTA_E.base, // e
         TENGWA_ESSE_NUQ, TEHTA_E.base, // ssë
     ]);
-    // test_tengwar!(esse != esse_nuq);
+    test_tengwar!(esse != esse_nuq);
     test_tengwar!(Quenya, "eze" == esse);
     test_tengwar!(Quenya, "eße" == esse);
     test_tengwar!(Quenya[nuquerna=true], "eze" == esse_nuq);

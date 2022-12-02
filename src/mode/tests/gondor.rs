@@ -4,27 +4,27 @@ use super::*;
 
 #[test]
 fn alt_a() {
-    let _adan = test_tengwar!(Gondor, "adan" => [
+    let adan = test_tengwar!(Gondor, "adan" => [
         TENGWA_ANDO, TEHTA_A.base, // ad
         TENGWA_NUMEN, TEHTA_A.base, // an
     ]);
-    let _adan_alt = test_tengwar!(Gondor[alt_a=true], "adan" => [
+    let adan_alt = test_tengwar!(Gondor[alt_a=true], "adan" => [
         TENGWA_ANDO, TEHTA_YANTA.base, // ad
         TENGWA_NUMEN, TEHTA_YANTA.base, // an
     ]);
-    // test_tengwar!(adan != adan_alt);
+    test_tengwar!(adan != adan_alt);
 
-    let _edain = test_tengwar!(Gondor, "edain" => [
+    let edain = test_tengwar!(Gondor, "edain" => [
         TENGWA_ANDO, TEHTA_E.base, // ed
         CARRIER_DIPH_I, TEHTA_A.base, // ai
         TENGWA_NUMEN, // n
     ]);
-    let _edain_alt = test_tengwar!(Gondor[alt_a=true], "edain" => [
+    let edain_alt = test_tengwar!(Gondor[alt_a=true], "edain" => [
         TENGWA_ANDO, TEHTA_E.base, // ed
         CARRIER_DIPH_I, TEHTA_YANTA.base, // ai
         TENGWA_NUMEN, // n
     ]);
-    // test_tengwar!(edain != edain_alt);
+    test_tengwar!(edain != edain_alt);
 }
 
 
@@ -46,17 +46,17 @@ fn normalization() {
 #[test]
 fn nuquernar() {
     //  Check Silmë.
-    let _estel = test_tengwar!(Gondor, "estel" => [
+    let estel = test_tengwar!(Gondor, "estel" => [
         TENGWA_SILME, TEHTA_E.base, // es
         TENGWA_TINCO, // t
         TENGWA_LAMBE, TEHTA_E.base, // el
     ]);
-    let _estel_nuq = test_tengwar!(Gondor[nuquerna=true], "estel" => [
+    let estel_nuq = test_tengwar!(Gondor[nuquerna=true], "estel" => [
         TENGWA_SILME_NUQ, TEHTA_E.base, // es
         TENGWA_TINCO, // t
         TENGWA_LAMBE, TEHTA_E.base, // el
     ]);
-    // test_tengwar!(estel != estel_nuq);
+    test_tengwar!(estel != estel_nuq);
 
     //  Check Essë.
     let lossen = test_tengwar!(Gondor, "lossen" => [
@@ -69,7 +69,7 @@ fn nuquernar() {
         TENGWA_ESSE_NUQ, TEHTA_O.base, // oss
         TENGWA_NUMEN, TEHTA_E.base, // en
     ]);
-    // test_tengwar!(lossen != lossen_nuq);
+    test_tengwar!(lossen != lossen_nuq);
     test_tengwar!(Gondor, "lozen" == lossen);
     test_tengwar!(Gondor, "loßen" == lossen);
     test_tengwar!(Gondor[nuquerna=true], "lozen" == lossen_nuq);
@@ -296,12 +296,12 @@ fn vowels() {
     test_tengwar!(Gondor, "oth" => [TENGWA_THULE, TEHTA_O.base]);
     test_tengwar!(Gondor, "uth" => [TENGWA_THULE, TEHTA_U.base]);
     test_tengwar!(Gondor, "yth" => [TENGWA_THULE, TEHTA_Y.base]);
-    test_tengwar!(Gondor, "áth" => [CARRIER_LONG, TEHTA_A.base, TENGWA_THULE], as aath);
-    test_tengwar!(Gondor, "éth" => [TENGWA_THULE, TEHTA_E.base, TEHTA_E.base], as eeth);
-    test_tengwar!(Gondor, "íth" => [CARRIER_LONG, TEHTA_I.base, TENGWA_THULE], as iith);
-    test_tengwar!(Gondor, "óth" => [TENGWA_THULE, TEHTA_O.base, TEHTA_O.base], as ooth);
-    test_tengwar!(Gondor, "úth" => [TENGWA_THULE, TEHTA_U.base, TEHTA_U.base], as uuth);
-    test_tengwar!(Gondor, "ýth" => [CARRIER_LONG, TEHTA_Y.base, TENGWA_THULE], as yyth);
+    test_tengwar!(Gondor, "áth" => [CARRIER_LONG, TEHTA_A.base, TENGWA_THULE] as aath);
+    test_tengwar!(Gondor, "éth" => [TENGWA_THULE, TEHTA_E.base, TEHTA_E.base] as eeth);
+    test_tengwar!(Gondor, "íth" => [CARRIER_LONG, TEHTA_I.base, TENGWA_THULE] as iith);
+    test_tengwar!(Gondor, "óth" => [TENGWA_THULE, TEHTA_O.base, TEHTA_O.base] as ooth);
+    test_tengwar!(Gondor, "úth" => [TENGWA_THULE, TEHTA_U.base, TEHTA_U.base] as uuth);
+    test_tengwar!(Gondor, "ýth" => [CARRIER_LONG, TEHTA_Y.base, TENGWA_THULE] as yyth);
     test_tengwar!(Gondor, "âth" == aath);
     test_tengwar!(Gondor, "êth" == eeth);
     test_tengwar!(Gondor, "îth" == iith);
