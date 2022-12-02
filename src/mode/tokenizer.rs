@@ -117,7 +117,8 @@ impl<M: TengwarMode> Tokenizer<M> {
         self.size = self.chars.len().min(M::MAX_CHUNK);
     }
 
-    /// Pass along one [`char`], exactly as it is in the input.
+    /// Pass along one [`char`], exactly as it is in the input, and advance the
+    ///     read head by one.
     fn skip_one(&mut self) -> char {
         let here: char = self.chars[self.head];
         self.advance_head(1);
@@ -128,18 +129,28 @@ impl<M: TengwarMode> Tokenizer<M> {
     ///     to [`TengwarMode::process`], and does not guarantee that a [`Token`]
     ///     will be complete by the end. Each `Token` may require several steps.
     fn step(&mut self) -> Step {
-        let &mut Self {
-            chars: _, // Not used.
-            lower: ref data, // Immutable: Only need to read.
-            head, size, skip, // Copy.
-            ref mut mode, // Mutable: Processing updates state.
-            next: _, // Not used.
-        } = self;
+        let data: &[char] = &self.lower;
+        let mode: &mut M = &mut self.mode;
+        let head: usize = self.head;
+        let size: usize = self.size;
+        let skip: usize = self.skip;
         let len: usize = data.len();
 
-        if head < len {
-            //  Obey the "skip" counter above all else.
+        if len <= head {
+            //  The read head is at the end of the data. If a token is currently
+            //      being constructed, finish and return it. Otherwise, there is
+            //      nothing more to be done, and the tokenizer is now exhausted.
+            match mode.finish_current() {
+                Some(token) => Step::Complete(token),
+                None => Step::Exhausted,
+            }
+        } else { // head < len
+            //  The read head has not reached the end of the data. There is more
+            //      work to do.
             if 0 < skip {
+                //  The skip counter is currently nonzero. If there is a token
+                //      in progress, finish and return it; Otherwise, decrement
+                //      the counter and return one `char` directly.
                 if let Some(token) = mode.finish_current() {
                     self.advance_head(0);
                     Step::Complete(token)
@@ -149,25 +160,33 @@ impl<M: TengwarMode> Tokenizer<M> {
                 }
             }
 
-            //  Delegate matching to the Mode implementation.
+            //  If the width of the check window has not yet narrowed to zero,
+            //      try to parse it according to the Mode implementation.
             else if 0 < size { // skip == 0
                 let end: usize = len.min(head + size);
                 let chunk: &[char] = &data[head..end];
 
                 match mode.process(chunk) {
                     ParseAction::MatchedNone => {
+                        //  No match. Narrow the chunk and try again.
                         self.size -= 1;
                         Step::Incomplete
                     }
                     ParseAction::MatchedPart(n) => {
+                        //  Partial match. Advance the read head and try again.
                         self.advance_head(n);
                         Step::Incomplete
                     }
                     ParseAction::MatchedToken { token, len } => {
+                        //  Complete match. Advance the read head and return the
+                        //      finished token.
                         self.advance_head(len);
                         Step::Complete(token)
                     }
                     ParseAction::Skip(n) => {
+                        //  Skip specified. Increase the skip counter. Then, if
+                        //      a token was in progress, return it; Otherwise,
+                        //      try again.
                         self.skip += n;
 
                         match mode.finish_current() {
@@ -176,6 +195,8 @@ impl<M: TengwarMode> Tokenizer<M> {
                         }
                     }
                     ParseAction::Escape { len_seq, n_skip } => {
+                        //  Escape sequence. Advance the read head and increase
+                        //      the skip counter, then try again.
                         self.advance_head(len_seq);
                         self.skip += n_skip;
                         Step::Incomplete
@@ -183,26 +204,26 @@ impl<M: TengwarMode> Tokenizer<M> {
                 }
             }
 
-            //  Nothing more can be added. If a token is currently being
-            //      constructed, finish and return it.
+            //  The chunk width has narrowed to zero. Nothing more can be added.
+            //      If a token is currently in progress, finish and return it.
             else if let Some(token) = mode.finish_current() {
                 self.advance_head(0);
                 Step::Complete(token)
             }
 
-            //  Look for a sequence index.
+            //  Look for a sequence index in the slice ahead.
             else if let Some((char, len)) = mode.find_index(&data[head..]) {
                 self.advance_head(len);
                 Step::Complete(Token::Char(char))
             }
 
-            //  Look for a numeric value.
+            //  Look for a numeric value in the slice ahead.
             else if let Some((num, len)) = mode.find_numeral(&data[head..]) {
                 self.advance_head(len);
                 Step::Complete(Token::Number(num))
             }
 
-            //  Check for punctuation.
+            //  Check for punctuation in the next `char`.
             else if let Some(punct) = punctuation(data[head]) {
                 self.advance_head(1);
                 Step::Complete(Token::Char(punct))
@@ -211,13 +232,6 @@ impl<M: TengwarMode> Tokenizer<M> {
             //  Give up and pass the current `char` through unchanged.
             else {
                 Step::Complete(Token::Char(self.skip_one()))
-            }
-        } else { // len <= head
-            //  The read head is at the end of the data. If a token is
-            //      currently being constructed, finish and return it.
-            match mode.finish_current() {
-                Some(token) => Step::Complete(token),
-                None => Step::Exhausted,
             }
         }
     }
