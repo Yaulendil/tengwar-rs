@@ -2,6 +2,18 @@
 #![cfg(test)]
 
 
+macro_rules! params {
+    () => { "" };
+    ($k:ident=$v:expr) => {
+        concat!(stringify!($k), "=", stringify!($v))
+    };
+    ($k:ident=$v:expr $(, $kn:ident=$vn:expr)+ $(,)?) => {
+        concat!(params!($k=$v), $(", ", params!($kn=$vn)),+)
+    };
+    ($($t:tt)*) => { stringify!($($t)*) };
+}
+
+
 macro_rules! test_tengwar {
     (#$mode:ty $([$($k:ident=$v:expr),*])?, $input:expr) => {{
         use $crate::ToTengwar;
@@ -30,11 +42,13 @@ macro_rules! test_tengwar {
         let received: String = test_tengwar!(#$mode $([$($t)*])?, $input);
 
         println!(
-            "[{file}:{line:0>3}] {mode}: {input:?} -> {received}",
+            // "[{file}:{line:0>3}] {mode}: {input:?} -> {received}{params}",
+            "[{file}:{line:0>3}] {input:?} -> {received}{params}",
             file = file!(),
             line = line!(),
-            mode = stringify!($mode),
+            // mode = stringify!($mode),
             input = $input,
+            params = concat!($("  [", params!($($t)*), "]")?),
         );
 
         assert_eq!(expected, received,
