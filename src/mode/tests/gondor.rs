@@ -79,8 +79,9 @@ fn nuquernar() {
     let iisa = test_tengwar!(Gondor, "ísa" => [
         CARRIER_LONG, TEHTA_I.base, // í
         TENGWA_SILME, // s
-        CARRIER_SHORT, TEHTA_A.base, // í
+        CARRIER_SHORT, TEHTA_A.base, // a
     ]);
+    test_tengwar!(Gondor[nuquerna=true], "iisa" == iisa);
     test_tengwar!(Gondor[nuquerna=true], "ísa" == iisa);
     test_tengwar!(Gondor[nuquerna=true], "íßa" != iisa);
 }
@@ -166,6 +167,7 @@ fn words() {
         TENGWA_HWESTA, // ch
     ]);
     test_tengwar!(Gondor, "telkh" == telch);
+    test_tengwar!(Gondor, "telgh" != telch);
 
     let calen = test_tengwar!(Gondor, "calen" => [
         TENGWA_QESSE, // c
@@ -193,6 +195,7 @@ fn words() {
         TENGWA_NUMEN, // n
     ]);
     test_tengwar!(Gondor, "akharn" == acharn);
+    test_tengwar!(Gondor, "agharn" != acharn);
 
     let _wethrin = test_tengwar!(Gondor, "wethrin" => [
         TENGWA_WILYA, // w
@@ -227,7 +230,7 @@ fn words() {
         TENGWA_NUMEN, TEHTA_Y.base, // yn
     ]);
 
-    //  Consonantal initial I.
+    //  Consonantal initial I and medial RH.
     let iorhael = test_tengwar!(Gondor, "iorhael" => [
         TENGWA_YANTA, // i
         TENGWA_ROMEN, TEHTA_O.base, // or
@@ -235,16 +238,25 @@ fn words() {
         CARRIER_DIPH_E, TEHTA_A.base, // ae
         TENGWA_LAMBE, // l
     ]);
-    test_tengwar!(Gondor, "iorhæl" == iorhael);
-    test_tengwar!(Gondor, "jorhael" == iorhael);
+    test_tengwar!(Gondor, "jorhæl" == iorhael);
     test_tengwar!(Gondor, "yorhael" != iorhael);
 
     //  Non-consonantal I in the same vowel cluster.
-    let _dior = test_tengwar!(Gondor, "dior" => [
+    let dior = test_tengwar!(Gondor, "dior" => [
         TENGWA_ANDO, // d
         CARRIER_SHORT, TEHTA_I.base, // i
         TENGWA_ORE, TEHTA_O.base, // or
     ]);
+    test_tengwar!(Gondor, "djor" != dior);
+    test_tengwar!(Gondor, "dyor" != dior);
+
+    //  Non-consonantal initial I.
+    let ithil = test_tengwar!(Gondor, "ithil" => [
+        TENGWA_THULE, TEHTA_I.base, // ith
+        TENGWA_LAMBE, TEHTA_I.base, // il
+    ]);
+    test_tengwar!(Gondor, "jthil" != ithil);
+    test_tengwar!(Gondor, "ythil" != ithil);
 }
 
 

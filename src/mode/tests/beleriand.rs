@@ -82,6 +82,8 @@ fn words() {
         TENGWA_TINCO, VOWEL_E, TENGWA_LAMBE, TENGWA_AHA,
     ]);
     test_tengwar!(Beleriand, "telkh" == telch);
+    test_tengwar!(Beleriand, "telgh" != telch);
+
     let calen = test_tengwar!(Beleriand, "calen" => [
         TENGWA_CALMA, VOWEL_A, TENGWA_LAMBE, VOWEL_E, TENGWA_ORE,
     ]);
@@ -101,6 +103,7 @@ fn words() {
         VOWEL_A, TENGWA_AHA, VOWEL_A, TENGWA_ROMEN, TENGWA_ORE,
     ]);
     test_tengwar!(Beleriand, "akharn" == acharn);
+    test_tengwar!(Beleriand, "agharn" != acharn);
 
     let _wethrin = test_tengwar!(Beleriand, "wethrin" => [
         TENGWA_WILYA, VOWEL_E, TENGWA_THULE, TENGWA_ROMEN, VOWEL_I, TENGWA_ORE,
@@ -125,19 +128,27 @@ fn words() {
         TENGWA_VALA_HOOKED, VOWEL_E, TENGWA_LAMBE, TENGWA_LAMBE, VOWEL_Y, TENGWA_ORE,
     ]);
 
-    //  Consonantal initial I.
+    //  Consonantal initial I and medial RH.
     let iorhael = test_tengwar!(Beleriand, "iorhael" => [
         TENGWA_ARA, VOWEL_O, TENGWA_ROMEN,
         TENGWA_HYARMEN, VOWEL_A, VOWEL_E, TENGWA_LAMBE,
     ]);
-    test_tengwar!(Beleriand, "iorhæl" == iorhael);
-    test_tengwar!(Beleriand, "jorhael" == iorhael);
+    test_tengwar!(Beleriand, "jorhæl" == iorhael);
     test_tengwar!(Beleriand, "yorhael" != iorhael);
 
     //  Non-consonantal I in the same vowel cluster.
-    let _dior = test_tengwar!(Beleriand, "dior" => [
+    let dior = test_tengwar!(Beleriand, "dior" => [
         TENGWA_ANDO, VOWEL_I, VOWEL_O, TENGWA_ROMEN,
     ]);
+    test_tengwar!(Beleriand, "djor" != dior);
+    test_tengwar!(Beleriand, "dyor" != dior);
+
+    //  Non-consonantal initial I.
+    let ithil = test_tengwar!(Beleriand, "ithil" => [
+        VOWEL_I, TENGWA_THULE, VOWEL_I, TENGWA_LAMBE,
+    ]);
+    test_tengwar!(Beleriand, "jthil" != ithil);
+    test_tengwar!(Beleriand, "ythil" != ithil);
 }
 
 

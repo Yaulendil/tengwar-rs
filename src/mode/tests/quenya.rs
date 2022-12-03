@@ -553,6 +553,7 @@ fn words() {
         TENGWA_ROMEN, TEHTA_A.base, // ra
         TENGWA_CALMA, SA_RINCE, TEHTA_E.base, // xë
     ]);
+    test_tengwar!(Quenya, "helkaracse" == helcaraxe);
     test_tengwar!(Quenya, "helkarakse" == helcaraxe);
 
     let quenya = test_tengwar!(Quenya, "quenya" => [
@@ -567,29 +568,63 @@ fn words() {
     test_tengwar!(Quenya, "cuenya" != quenya);
     test_tengwar!(Quenya, "çuenya" != quenya);
 
-    let _aha = test_tengwar!(Quenya, "aha" => [
+    let aha = test_tengwar!(Quenya, "aha" => [
         CARRIER_SHORT, TEHTA_A.base, // a
         TENGWA_AHA, TEHTA_A.base, // ha
     ]);
+    //  The following two are not the same sound as above, but were an archaic
+    //      sound, spelled the same as the modern breath-H.
+    test_tengwar!(Quenya, "acha" == aha);
+    test_tengwar!(Quenya, "akha" == aha);
+    test_tengwar!(Quenya, "agha" != aha);
 
-    let _hyarmen = test_tengwar!(Quenya, "hyarmen" => [
+    let nahta = test_tengwar!(Quenya, "nahta" => [
+        TENGWA_NUMEN, TEHTA_A.base, // na
+        TENGWA_AHA, // h
+        TENGWA_TINCO, TEHTA_A.base, // ta
+    ]);
+    //  The following two ARE the same sound; This is the one place it survives.
+    test_tengwar!(Quenya, "nachta" == nahta);
+    test_tengwar!(Quenya, "nakhta" == nahta);
+    test_tengwar!(Quenya, "naghta" != nahta);
+
+    let hyarmen = test_tengwar!(Quenya, "hyarmen" => [
         TENGWA_HYARMEN, MOD_PALATAL, TEHTA_A.base, // hya
         TENGWA_ORE, // r
         TENGWA_MALTA, TEHTA_E.base, // me
         TENGWA_NUMEN, // n
     ]);
+    let khyarmen = test_tengwar!(Quenya, "khyarmen" => [
+        TENGWA_AHA, MOD_PALATAL, TEHTA_A.base, // khya
+        TENGWA_ORE, // r
+        TENGWA_MALTA, TEHTA_E.base, // me
+        TENGWA_NUMEN, // n
+    ]);
+    test_tengwar!(Quenya, "chyarmen" == khyarmen);
+    test_tengwar!(Quenya, "chyarmen" != hyarmen);
+    test_tengwar!(hyarmen != khyarmen);
 
-    let _hwesta = test_tengwar!(Quenya, "hwesta" => [
+    let he = test_tengwar!(Quenya, "hë" => [TENGWA_HYARMEN, TEHTA_E.base]);
+    let khe = test_tengwar!(Quenya, "khë" => [TENGWA_AHA, TEHTA_E.base]);
+    test_tengwar!(Quenya, "chë" == khe);
+    test_tengwar!(Quenya, "chë" != he);
+    test_tengwar!(Quenya, "ghë" != he);
+    test_tengwar!(he != khe);
+
+    let hwesta = test_tengwar!(Quenya, "hwesta" => [
         TENGWA_HWESTA, TEHTA_E.base, // hwe
         TENGWA_SILME, // s
         TENGWA_TINCO, TEHTA_A.base, // ta
     ]);
+    test_tengwar!(Quenya, "chwesta" != hwesta);
+    test_tengwar!(Quenya, "khwesta" != hwesta);
+    test_tengwar!(Quenya, "ghwesta" != hwesta);
 
-    let ara = test_tengwar!(Quenya, "ára" => [
+    let aara = test_tengwar!(Quenya, "ára" => [
         CARRIER_LONG, TEHTA_A.base, // á
         TENGWA_ROMEN, TEHTA_A.base, // ra
     ]);
-    test_tengwar!(Quenya, "aara" == ara); // ASCII spelling.
+    test_tengwar!(Quenya, "aara" == aara); // ASCII spelling.
 
     //  Archaic TH (> S).
     let thuule = test_tengwar!(Quenya, "þúlë" => [
