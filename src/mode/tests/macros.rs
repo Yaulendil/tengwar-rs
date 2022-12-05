@@ -14,81 +14,99 @@ macro_rules! params {
 }
 
 
-macro_rules! test_tengwar {
-    (#$mode:ty $([$($k:ident=$v:expr),*])?, $input:expr) => {{
+/// Convert an input into the Tengwar. If the input is a string literal, this
+///     will transcribe it, returning a tuple with the input and output. If the
+///     input is an already-transcribed tuple, this will resolve to a reference.
+macro_rules! tengwar {
+    ($mode:ty $([$($k:ident=$v:expr),*])?, $input:literal) => {{
         use $crate::ToTengwar;
 
         #[allow(unused_mut)]
         let mut iter = $input.transcriber::<$mode>();
         $($(iter.settings.$k = $v;)*)?
-        iter.collect()
+        ($input, iter.collect::<String>())
+    }};
+    ($mode:ty $([$($t:tt)*])?, $input:expr) => { &$input };
+}
+
+
+/// Test the output of the transcription process by specifying a mode, and some
+///     values that should either match or differ.
+macro_rules! test_tengwar {
+    //  Save the conversion for later reuse.
+    ($mode:ty $([$($t:tt)*])?, $lhs:tt $op:tt $rhs:tt as $bind:tt) => {
+        let $bind = test_tengwar!($mode $([$($t)*])?, $lhs $op $rhs);
+    };
+    ($lhs:tt $op:tt $rhs:tt as $bind:tt) => {
+        let $bind = test_tengwar!($lhs $op $rhs);
+    };
+
+    //  Allow chaining multiple test operations.
+    ($mode:ty $([$($t:tt)*])?, $lhs:tt $op:tt $rhs:tt $($more:tt)+) => {{
+        let lhs = tengwar!($mode $([$($t)*])?, $lhs);
+        test_tengwar!($mode $([$($t)*])?, lhs $op $rhs);
+        test_tengwar!($mode $([$($t)*])?, lhs $($more)+);
+        lhs
     }};
 
-    ($mode:ty $([$($t:tt)*])?, $input:expr => [$($chars:tt)*] as $bind:ident) => {
-        let $bind = test_tengwar!(
-            $mode $([$($t)*])?,
-            $input => [$($chars)*]
-        );
-    };
-    ($mode:ty $([$($t:tt)*])?, $input:expr => $expected:expr, as $bind:ident) => {
-        let $bind = test_tengwar!(
-            $mode $([$($t)*])?,
-            $input => $expected
-        );
-    };
-
-    ($mode:ty $([$($t:tt)*])?, $input:expr => $expected:expr) => {{
-        let expected: String = $expected.into_iter().collect();
-        let received: String = test_tengwar!(#$mode $([$($t)*])?, $input);
+    //  Specify that the input must transcribe to an exact sequence of `char`s.
+    ($mode:ty $([$($t:tt)*])?, $lhs:tt => $rhs:tt) => {{
+        let conversion = tengwar!($mode $([$($t)*])?, $lhs);
+        let (input, output) = &conversion;
+        let expected: String = $rhs.into_iter().collect();
 
         println!(
-            // "[{file}:{line:0>3}] {mode}: {input:?} -> {received}{params}",
-            "[{file}:{line:0>3}] {input:?} -> {received}{params}",
+            // "[{file}:{line:0>3}] {mode}: {input:?} -> {output}{params}",
+            "[{file}:{line:0>3}] {input:?} -> {output}{params}",
             file = file!(),
             line = line!(),
             // mode = stringify!($mode),
-            input = $input,
             params = concat!($("  [", params!($($t)*), "]")?),
         );
 
-        assert_eq!(expected, received,
+        assert_eq!(expected.as_str(), output.as_str(),
             "Transcription of {input:?} does not match expectation.\
             \n  Expected: {expected}\
-            \n  Received: {received}",
-            input = $input,
+            \n  Received: {output}",
         );
 
-        ($input, received)
+        conversion
     }};
 
-    ($mode:ty $([$($t:tt)*])?, $input:tt == $expected:expr) => {{
-        let (original, expected) = &$expected;
-        let received: String = test_tengwar!(#$mode $([$($t)*])?, $input);
+    //  Specify that the input must transcribe to the same as another.
+    ($mode:ty $([$($t:tt)*])?, $lhs:tt == $rhs:tt) => {{
+        let lhs = tengwar!($mode $([$($t)*])?, $lhs);
+        let rhs = tengwar!($mode $([$($t)*])?, $rhs);
+        let (lhs_in, lhs_out) = &lhs;
+        let (rhs_in, rhs_out) = &rhs;
 
-        assert_eq!(expected, &received,
-            "Transcription of {new:?} does not match that of {old:?}.\
-            \n  {old:>w$} (expected): {expected}\
-            \n  {new:>w$} (received): {received}",
-            new = $input,
-            old = original,
-            w = $input.chars().count().max(original.chars().count()),
+        assert_eq!(lhs_out.as_str(), rhs_out.as_str(),
+            "Transcription of {lhs_in:?} does not match that of {rhs_in:?}.\
+            \n  {lhs_in:>w$}  (left): {lhs_out}\
+            \n  {rhs_in:>w$} (right): {rhs_out}",
+            w = lhs_in.chars().count().max(rhs_in.chars().count()),
         );
-    }};
-    ($mode:ty $([$($t:tt)*])?, $input:tt != $expected:expr) => {{
-        let (original, expected) = &$expected;
-        let received: String = test_tengwar!(#$mode $([$($t)*])?, $input);
 
-        assert_ne!(expected, &received,
-            "Transcription of {new:?} matches that of {old:?}, but should not.\
-            \n  {old:>w$} (expected): {expected}\
-            \n  {new:>w$} (received): {received}",
-            new = $input,
-            old = original,
-            w = $input.chars().count().max(original.chars().count()),
+        lhs
+    }};
+    ($mode:ty $([$($t:tt)*])?, $lhs:tt != $rhs:tt) => {{
+        let lhs = tengwar!($mode $([$($t)*])?, $lhs);
+        let rhs = tengwar!($mode $([$($t)*])?, $rhs);
+        let (lhs_in, lhs_out) = &lhs;
+        let (rhs_in, rhs_out) = &rhs;
+
+        assert_ne!(lhs_out.as_str(), rhs_out.as_str(),
+            "Transcription of {lhs_in:?} wrongly matches that of {rhs_in:?}.\
+            \n  {lhs_in:>w$}  (left): {lhs_out}\
+            \n  {rhs_in:>w$} (right): {rhs_out}",
+            w = lhs_in.chars().count().max(rhs_in.chars().count()),
         );
+
+        lhs
     }};
 
-    ($lhs:ident == $rhs:expr) => {{
+    //  Specify that saved transcriptions must match.
+    ($lhs:ident == $rhs:ident) => {{
         let (lhs_in, lhs_out) = &$lhs;
         let (rhs_in, rhs_out) = &$rhs;
 
@@ -101,12 +119,12 @@ macro_rules! test_tengwar {
             w = lhs_in.chars().count().max(rhs_in.chars().count()),
         );
     }};
-    ($lhs:ident != $rhs:expr) => {{
+    ($lhs:ident != $rhs:ident) => {{
         let (lhs_in, lhs_out) = &$lhs;
         let (rhs_in, rhs_out) = &$rhs;
 
         assert_ne!(lhs_out, rhs_out,
-            "Output of `{lhs}` matches that of `{rhs}`, but should not.\
+            "Output of `{lhs}` wrongly matches that of `{rhs}`.\
             \n  {lhs_in:>w$}  (left): {lhs_out}\
             \n  {rhs_in:>w$} (right): {rhs_out}",
             lhs = stringify!($lhs),
