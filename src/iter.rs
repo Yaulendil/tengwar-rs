@@ -92,8 +92,25 @@ impl<I, P, Q> Iterator for TokenIter<I, P, Q> where
                 glyph.dot_under = true;
             }
 
-            if self.settings.elide_a {
-                glyph.elide_a();
+            if self.settings.elide_a && glyph.tehta_is_a() {
+                if self.settings.keep_a_long && glyph.tehta_alt {
+                    //  We want to shorten long vowels, and this one is long.
+                    glyph.tehta_alt = false;
+
+                    /*if glyph.base.is_some() { // TODO
+                        glyph.tehta_alt = false;
+                    } else {
+                        glyph.tehta_hidden = true;
+                    }*/
+                } else if self.settings.keep_a_init {
+                    //  We want to keep an initial occurrence.
+                    if matches!(&self.last, Some(Token::Glyph(_))) {
+                        //  This is not an initial occurrence. Elide it.
+                        glyph.tehta_hidden = true;
+                    }
+                } else {
+                    glyph.tehta_hidden = true;
+                }
             }
 
             if self.settings.alt_a {
@@ -139,6 +156,12 @@ pub struct TranscriberSettings {
     /// If this is `true`, the [A-tehta](TEHTA_A) will not be used.
     pub elide_a: bool,
 
+    /// If this is `true`, the [A-tehta](TEHTA_A) will not be elided initially.
+    pub keep_a_init: bool,
+
+    /// If this is `true`, the [A-tehta](TEHTA_A) will not be elided when long.
+    pub keep_a_long: bool,
+
     /// If this is `true`, the [short carrier](CARRIER_SHORT) will be replaced
     ///     by its [ligating variant](CARRIER_SHORT_LIG) where appropriate.
     pub ligate_short: bool,
@@ -164,6 +187,8 @@ impl TranscriberSettings {
             alt_rince: false,
             dot_plain: false,
             elide_a: false,
+            keep_a_init: false,
+            keep_a_long: false,
             ligate_short: false,
             ligate_zwj: 0,
             nuquerna: false,

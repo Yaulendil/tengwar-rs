@@ -227,6 +227,8 @@ impl Command {
             alt_rince: self.style_flags.alt_rince,
             dot_plain: self.style_flags.dot_plain,
             elide_a: self.style_flags.elide_a,
+            keep_a_init: false,
+            keep_a_long: false,
             ligate_short: self.ligate_all || self.ligate_short,
             ligate_zwj: if self.ligate_all { u8::MAX } else { self.ligate_zwj },
             nuquerna: self.style_flags.nuquerna,

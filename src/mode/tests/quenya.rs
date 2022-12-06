@@ -153,6 +153,172 @@ fn elision() {
         TENGWA_URE, // au
         TENGWA_LAMBE, TEHTA_E.base, // lë
     ]);
+
+    //  NAMÁRIË
+    {
+        test_tengwar!(Quenya, "namárië" => [
+            TENGWA_NUMEN, TEHTA_A.base, // na
+            TENGWA_MALTA, // m
+            CARRIER_LONG, TEHTA_A.base, // á
+            TENGWA_ROMEN, TEHTA_I.base, // ri
+            CARRIER_SHORT, TEHTA_E.base, // ë
+        ]);
+        test_tengwar!(Quenya[elide_a=true], "namárië" => [
+            TENGWA_NUMEN, // n(a)
+            TENGWA_MALTA, // m
+            CARRIER_LONG, // á
+            TENGWA_ROMEN, TEHTA_I.base, // ri
+            CARRIER_SHORT, TEHTA_E.base, // ë
+        ]);
+        test_tengwar!(Quenya[elide_a=true, keep_a_init=true], "namárië" => [
+            TENGWA_NUMEN, TEHTA_A.base, // na
+            TENGWA_MALTA, // m
+            CARRIER_LONG, // á
+            TENGWA_ROMEN, TEHTA_I.base, // ri
+            CARRIER_SHORT, TEHTA_E.base, // ë
+        ]);
+        test_tengwar!(Quenya[elide_a=true, keep_a_long=true], "namárië" => [
+            TENGWA_NUMEN, // n(a)
+            TENGWA_MALTA, TEHTA_A.base, // má
+            TENGWA_ROMEN, TEHTA_I.base, // ri
+            CARRIER_SHORT, TEHTA_E.base, // ë
+        ]);
+        test_tengwar!(Quenya[
+            elide_a=true,
+            keep_a_init=true,
+            keep_a_long=true,
+        ], "namárië" => [
+            TENGWA_NUMEN, TEHTA_A.base, // na
+            TENGWA_MALTA, TEHTA_A.base, // má
+            TENGWA_ROMEN, TEHTA_I.base, // ri
+            CARRIER_SHORT, TEHTA_E.base, // e
+        ]);
+    }
+
+    //  MÁRA
+    {
+        test_tengwar!(Quenya, "mára" => [
+            TENGWA_MALTA, CARRIER_LONG, TEHTA_A.base, // má
+            TENGWA_ROMEN, TEHTA_A.base, // ra
+        ]);
+        test_tengwar!(Quenya[elide_a=true], "mára" => [
+            TENGWA_MALTA, CARRIER_LONG, // má
+            TENGWA_ROMEN, // r(a)
+        ]);
+        test_tengwar!(Quenya[elide_a=true, keep_a_init=true], "mára" => [
+            TENGWA_MALTA, CARRIER_LONG, TEHTA_A.base, // má
+            TENGWA_ROMEN, // r(a)
+        ]);
+        test_tengwar!(Quenya[elide_a=true, keep_a_long=true], "mára" => [
+            TENGWA_MALTA, TEHTA_A.base, // má
+            TENGWA_ROMEN, // r(a)
+        ]);
+        test_tengwar!(Quenya[
+            elide_a=true,
+            keep_a_init=true,
+            keep_a_long=true,
+        ], "mára" => [
+            TENGWA_MALTA, TEHTA_A.base, // má
+            TENGWA_ROMEN, // r(a)
+        ]);
+    }
+
+    //  MARÁ
+    {
+        test_tengwar!(Quenya, "mará" => [
+            TENGWA_MALTA, TEHTA_A.base, // ma
+            TENGWA_ROMEN, // r
+            CARRIER_LONG, TEHTA_A.base, // á
+        ]);
+        test_tengwar!(Quenya[elide_a=true], "mará" => [
+            TENGWA_MALTA, // m(a)
+            TENGWA_ROMEN, // r
+            CARRIER_LONG, // á
+        ]);
+        test_tengwar!(Quenya[elide_a=true, keep_a_init=true], "mará" => [
+            TENGWA_MALTA, TEHTA_A.base, // ma
+            TENGWA_ROMEN, // r
+            CARRIER_LONG, // á
+        ]);
+        test_tengwar!(Quenya[elide_a=true, keep_a_long=true], "mará" => [
+            TENGWA_MALTA, // m(a)
+            TENGWA_ROMEN, TEHTA_A.base, // rá
+        ]);
+        test_tengwar!(Quenya[
+            elide_a=true,
+            keep_a_init=true,
+            keep_a_long=true,
+        ], "mará" => [
+            TENGWA_MALTA, TEHTA_A.base, // ma
+            TENGWA_ROMEN, TEHTA_A.base, // rá
+        ]);
+    }
+
+    //  MARIA
+    {
+        test_tengwar!(Quenya, "maria" => [
+            TENGWA_MALTA, TEHTA_A.base, // ma
+            TENGWA_ROMEN, TEHTA_I.base, // ri
+            CARRIER_SHORT, TEHTA_A.base, // a
+        ]);
+        test_tengwar!(Quenya[elide_a=true], "maria" => [
+            TENGWA_MALTA, // m(a)
+            TENGWA_ROMEN, TEHTA_I.base, // ri
+            CARRIER_SHORT, // a
+        ]);
+        test_tengwar!(Quenya[elide_a=true, keep_a_init=true], "maria" => [
+            TENGWA_MALTA, TEHTA_A.base, // ma
+            TENGWA_ROMEN, TEHTA_I.base, // ri
+            CARRIER_SHORT, // a
+        ]);
+        test_tengwar!(Quenya[elide_a=true, keep_a_long=true], "maria" => [
+            TENGWA_MALTA, // m(a)
+            TENGWA_ROMEN, TEHTA_I.base, // ri
+            CARRIER_SHORT, // a
+        ]);
+        test_tengwar!(Quenya[
+            elide_a=true,
+            keep_a_init=true,
+            keep_a_long=true,
+        ], "maria" => [
+            TENGWA_MALTA, TEHTA_A.base, // ma
+            TENGWA_ROMEN, TEHTA_I.base, // ri
+            CARRIER_SHORT, // a
+        ]);
+    }
+
+    //  MARIÁ
+    {
+        test_tengwar!(Quenya, "mariá" => [
+            TENGWA_MALTA, TEHTA_A.base, // ma
+            TENGWA_ROMEN, TEHTA_I.base, // ri
+            CARRIER_LONG, TEHTA_A.base, // á
+        ]);
+        test_tengwar!(Quenya[elide_a=true], "mariá" => [
+            TENGWA_MALTA, // m(a)
+            TENGWA_ROMEN, TEHTA_I.base, // ri
+            CARRIER_LONG, // á
+        ]);
+        test_tengwar!(Quenya[elide_a=true, keep_a_init=true], "mariá" => [
+            TENGWA_MALTA, TEHTA_A.base, // ma
+            TENGWA_ROMEN, TEHTA_I.base, // ri
+            CARRIER_LONG, // á
+        ]);
+        test_tengwar!(Quenya[elide_a=true, keep_a_long=true], "mariá" => [
+            TENGWA_MALTA, // m(a)
+            TENGWA_ROMEN, TEHTA_I.base, // ri
+            CARRIER_SHORT, TEHTA_A.base, // á
+        ]);
+        test_tengwar!(Quenya[
+            elide_a=true,
+            keep_a_init=true,
+            keep_a_long=true,
+        ], "mariá" => [
+            TENGWA_MALTA, TEHTA_A.base, // ma
+            TENGWA_ROMEN, TEHTA_I.base, // ri
+            CARRIER_SHORT, TEHTA_A.base, // á
+        ]);
+    }
 }
 
 

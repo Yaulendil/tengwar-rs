@@ -299,13 +299,6 @@ impl<P: Policy> Glyph<P> {
         self.tehta_alt = other.tehta_alt;
     }
 
-    /// Elide the [A-tehta](TEHTA_A).
-    pub fn elide_a(&mut self) {
-        if self.tehta == Some(TEHTA_A) {
-            self.tehta_hidden = true;
-        }
-    }
-
     /// If the base [`char`] matches a specific value, change it to another.
     pub fn replace_base(&mut self, old: char, new: char) -> bool {
         if self.base == Some(old) {
@@ -529,6 +522,11 @@ impl<P: Policy> Glyph<P> {
                 Some(TehtaChar::OnTengwaOnce(char))
             }
         }
+    }
+
+    /// Return `true` if the glyph carries the [A-tehta](TEHTA_A).
+    pub fn tehta_is_a(&self) -> bool {
+        self.tehta == Some(TEHTA_A)
     }
 }
 

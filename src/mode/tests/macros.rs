@@ -18,12 +18,12 @@ macro_rules! params {
 ///     will transcribe it, returning a tuple with the input and output. If the
 ///     input is an already-transcribed tuple, this will resolve to a reference.
 macro_rules! tengwar {
-    ($mode:ty $([$($k:ident=$v:expr),*])?, $input:literal) => {{
-        use $crate::ToTengwar;
-
-        #[allow(unused_mut)]
-        let mut iter = $input.transcriber::<$mode>();
-        $($(iter.settings.$k = $v;)*)?
+    ($mode:ty $([])?, $input:literal) => {
+        ($input, <$mode as $crate::TengwarMode>::transcribe::<String>($input))
+    };
+    ($mode:ty [$($k:ident=$v:expr),+ $(,)?], $input:literal) => {{
+        let mut iter = <$mode as $crate::TengwarMode>::default_transcriber($input);
+        $(iter.settings.$k = $v;)+
         ($input, iter.collect::<String>())
     }};
     ($mode:ty $([$($t:tt)*])?, $input:expr) => { &$input };
