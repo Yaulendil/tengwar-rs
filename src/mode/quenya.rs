@@ -182,6 +182,11 @@ impl TengwarMode for Quenya {
                         ParseAction::MatchedPart(1)
                     }
                     ['s' | 'z'] if current.can_take_rince() => {
+                        //  FIXME: This is a POLICY LEVEL DECISION. It CANNOT be
+                        //      made at the Mode level while also assuming the
+                        //      Policy to be Standard.
+                        //  TODO: Make TengwarMode generic over Policy, or find
+                        //      a way to defer this decision to the TokenIter.
                         current.rince = true;
                         ParseAction::MatchedPart(1)
                     }
