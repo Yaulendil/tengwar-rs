@@ -8,38 +8,38 @@ fn alt_a() {
         TENGWA_ANDO, TEHTA_A.base, // ad
         TENGWA_NUMEN, TEHTA_A.base, // an
     ]);
-    let adan_alt = test_tengwar!(Gondor[alt_a=true], "adan" => [
+    test_tengwar!(Gondor[alt_a=true], "adan" != adan => [
         TENGWA_ANDO, TEHTA_YANTA.base, // ad
         TENGWA_NUMEN, TEHTA_YANTA.base, // an
     ]);
-    test_tengwar!(adan != adan_alt);
 
     let edain = test_tengwar!(Gondor, "edain" => [
         TENGWA_ANDO, TEHTA_E.base, // ed
         CARRIER_DIPH_I, TEHTA_A.base, // ai
         TENGWA_NUMEN, // n
     ]);
-    let edain_alt = test_tengwar!(Gondor[alt_a=true], "edain" => [
+    test_tengwar!(Gondor[alt_a=true], "edain" != edain => [
         TENGWA_ANDO, TEHTA_E.base, // ed
         CARRIER_DIPH_I, TEHTA_YANTA.base, // ai
         TENGWA_NUMEN, // n
     ]);
-    test_tengwar!(edain != edain_alt);
 }
 
 
 #[test]
 fn normalization() {
-    //  Standard codepoints.
-    let anduunie = test_tengwar!(Gondor, "andûnië" => [
-        TENGWA_ANDO, DC_OVER_LINE, TEHTA_A.base, // and
-        TENGWA_NUMEN, TEHTA_U.base, TEHTA_U.base, // ûn
-        CARRIER_SHORT, TEHTA_I.base, // i
-        CARRIER_SHORT, TEHTA_E.base, // ë
-    ]);
-    //  Combining diacritic equivalents.
-    test_tengwar!(Gondor, "andûnië" == anduunie);
-    test_tengwar!(Gondor, "ANDÛNIË" == anduunie);
+    test_tengwar!(Gondor, "andûnië"
+        //  Standard codepoints.
+        => [
+            TENGWA_ANDO, DC_OVER_LINE, TEHTA_A.base, // and
+            TENGWA_NUMEN, TEHTA_U.base, TEHTA_U.base, // ûn
+            CARRIER_SHORT, TEHTA_I.base, // i
+            CARRIER_SHORT, TEHTA_E.base, // ë
+        ]
+        //  Combining diacritic equivalents.
+        == "andûnië"
+        == "ANDÛNIË"
+    );
 }
 
 
@@ -51,29 +51,31 @@ fn nuquernar() {
         TENGWA_TINCO, // t
         TENGWA_LAMBE, TEHTA_E.base, // el
     ]);
-    let estel_nuq = test_tengwar!(Gondor[nuquerna=true], "estel" => [
+    test_tengwar!(Gondor[nuquerna=true], "estel" != estel => [
         TENGWA_SILME_NUQ, TEHTA_E.base, // es
         TENGWA_TINCO, // t
         TENGWA_LAMBE, TEHTA_E.base, // el
     ]);
-    test_tengwar!(estel != estel_nuq);
 
     //  Check Essë.
-    let lossen = test_tengwar!(Gondor, "lossen" => [
-        TENGWA_LAMBE, // l
-        TENGWA_ESSE, TEHTA_O.base, // oss
-        TENGWA_NUMEN, TEHTA_E.base, // en
-    ]);
-    let lossen_nuq = test_tengwar!(Gondor[nuquerna=true], "lossen" => [
-        TENGWA_LAMBE, // l
-        TENGWA_ESSE_NUQ, TEHTA_O.base, // oss
-        TENGWA_NUMEN, TEHTA_E.base, // en
-    ]);
-    test_tengwar!(lossen != lossen_nuq);
-    test_tengwar!(Gondor, "lozen" == lossen);
-    test_tengwar!(Gondor, "loßen" == lossen);
-    test_tengwar!(Gondor[nuquerna=true], "lozen" == lossen_nuq);
-    test_tengwar!(Gondor[nuquerna=true], "loßen" == lossen_nuq);
+    let lossen = test_tengwar!(Gondor, "lossen"
+        => [
+            TENGWA_LAMBE, // l
+            TENGWA_ESSE, TEHTA_O.base, // oss
+            TENGWA_NUMEN, TEHTA_E.base, // en
+        ]
+        == "lozen"
+        == "loßen"
+    );
+    test_tengwar!(Gondor[nuquerna=true], "lossen" != lossen
+        => [
+            TENGWA_LAMBE, // l
+            TENGWA_ESSE_NUQ, TEHTA_O.base, // oss
+            TENGWA_NUMEN, TEHTA_E.base, // en
+        ]
+        == "lozen"
+        == "loßen"
+    );
 
     //  Confirm lack of Nuquerna for a vowel on Ára.
     let iisa = test_tengwar!(Gondor, "ísa" => [
@@ -81,101 +83,104 @@ fn nuquernar() {
         TENGWA_SILME, // s
         CARRIER_SHORT, TEHTA_A.base, // a
     ]);
-    test_tengwar!(Gondor[nuquerna=true], "iisa" == iisa);
-    test_tengwar!(Gondor[nuquerna=true], "ísa" == iisa);
-    test_tengwar!(Gondor[nuquerna=true], "íßa" != iisa);
+    test_tengwar!(Gondor[nuquerna=true], iisa == "iisa" == "ísa");
 }
 
 
 #[test]
 fn words() {
-    test_tengwar!(Gondor, "axë" => [
-        TENGWA_CALMA, SA_RINCE, TEHTA_A.base, // ax
-        CARRIER_SHORT, TEHTA_E.base, // ë
-    ]);
+    test_tengwar!(Gondor, "axë"
+        => [TENGWA_QESSE, SA_RINCE, TEHTA_A.base, CARRIER_SHORT, TEHTA_E.base]
+        == "axe"
+        == "acsë"
+        == "aksë"
+        == "akzë"
+        != "akssë"
+    );
 
-    let edhellen = test_tengwar!(Gondor, "edhellen" => [
-        TENGWA_ANTO, TEHTA_E.base, // edh
-        TENGWA_LAMBE, DC_UNDER_LINE_H, TEHTA_E.base, // ell
-        TENGWA_NUMEN, TEHTA_E.base, // en
-    ]);
-    test_tengwar!(Gondor, "eðellen" == edhellen);
-    test_tengwar!(Gondor, "EÐELLEN" == edhellen);
-    test_tengwar!(Gondor, "edellen" != edhellen);
-    test_tengwar!(Gondor, "eθellen" != edhellen);
-    test_tengwar!(Gondor, "eþellen" != edhellen);
-    test_tengwar!(Gondor, "ethellen" != edhellen);
+    let _edhellen = test_tengwar!(Gondor, "edhellen"
+        => [
+            TENGWA_ANTO, TEHTA_E.base, // edh
+            TENGWA_LAMBE, DC_UNDER_LINE_H, TEHTA_E.base, // ell
+            TENGWA_NUMEN, TEHTA_E.base, // en
+        ]
+        == "eðellen"
+        == "EÐELLEN"
+        != "edellen"
+        != "eθellen"
+        != "eþellen"
+        != "ethellen"
+    );
 
-    let andaith = test_tengwar!(Gondor, "andaith" => [
-        TENGWA_ANDO, DC_OVER_LINE, TEHTA_A.base, // and
-        CARRIER_DIPH_I, TEHTA_A.base, // ai
-        TENGWA_THULE, // th
-    ]);
-    test_tengwar!(Gondor, "andaiθ" == andaith);
-    test_tengwar!(Gondor, "ANDAIΘ" == andaith);
-    test_tengwar!(Gondor, "andaiþ" == andaith);
-    test_tengwar!(Gondor, "ANDAIÞ" == andaith);
-    test_tengwar!(Gondor, "andait" != andaith);
-    test_tengwar!(Gondor, "andaið" != andaith);
-    test_tengwar!(Gondor, "andaidh" != andaith);
+    let _andaith = test_tengwar!(Gondor, "andaith"
+        => [
+            TENGWA_ANDO, DC_OVER_LINE, TEHTA_A.base, // and
+            CARRIER_DIPH_I, TEHTA_A.base, // ai
+            TENGWA_THULE, // th
+        ]
+        == "andaiθ"
+        == "ANDAIΘ"
+        == "andaiþ"
+        == "ANDAIÞ"
+        != "andait"
+        != "andaið"
+        != "andaidh"
+    );
 
     //  Final F, after consonant.
-    let parf = test_tengwar!(Gondor, "parf" => [
-        TENGWA_PARMA, // p
-        TENGWA_ROMEN, TEHTA_A.base, // ar
-        TENGWA_AMPA, // v
-    ]);
-    test_tengwar!(Gondor, "parv" == parf);
-    test_tengwar!(Gondor, "parφ" != parf);
-    test_tengwar!(Gondor, "parph" != parf);
+    let _parf = test_tengwar!(Gondor, "parf"
+        => [TENGWA_PARMA, TENGWA_ROMEN, TEHTA_A.base, TENGWA_AMPA]
+        == "parv"
+        != "parφ"
+        != "parph"
+    );
 
     //  Final F, after vowel.
-    let alaf = test_tengwar!(Gondor, "alaf" => [
-        TENGWA_LAMBE, TEHTA_A.base, // al
-        TENGWA_AMPA, TEHTA_A.base, // av
-    ]);
-    test_tengwar!(Gondor, "alav" == alaf);
-    test_tengwar!(Gondor, "alaφ" != alaf);
-    test_tengwar!(Gondor, "alaph" != alaf);
+    let _alaf = test_tengwar!(Gondor, "alaf"
+        => [TENGWA_LAMBE, TEHTA_A.base, TENGWA_AMPA, TEHTA_A.base]
+        == "alav"
+        != "alaφ"
+        != "alaph"
+    );
 
     //  Medial F, after consonant.
-    let alfirin = test_tengwar!(Gondor, "alfirin" => [
-        TENGWA_LAMBE, TEHTA_A.base, // al
-        TENGWA_FORMEN, // ph
-        TENGWA_ROMEN, TEHTA_I.base, // ir
-        TENGWA_NUMEN, TEHTA_I.base, // in
-    ]);
-    test_tengwar!(Gondor, "alphirin" == alfirin);
-    test_tengwar!(Gondor, "alφirin" == alfirin);
-    test_tengwar!(Gondor, "ALΦIRIN" == alfirin);
-    test_tengwar!(Gondor, "alvirin" != alfirin);
+    let _alfirin = test_tengwar!(Gondor, "alfirin"
+        => [
+            TENGWA_LAMBE, TEHTA_A.base, // al
+            TENGWA_FORMEN, // ph
+            TENGWA_ROMEN, TEHTA_I.base, // ir
+            TENGWA_NUMEN, TEHTA_I.base, // in
+        ]
+        == "alphirin"
+        == "alφirin"
+        == "ALΦIRIN"
+        != "alvirin"
+    );
 
     //  Medial F, after vowel.
-    let aphadon = test_tengwar!(Gondor, "aphadon" => [
-        TENGWA_FORMEN, TEHTA_A.base, // aph
-        TENGWA_ANDO, TEHTA_A.base, // ad
-        TENGWA_NUMEN, TEHTA_O.base, // on
-    ]);
-    test_tengwar!(Gondor, "afadon" == aphadon);
-    test_tengwar!(Gondor, "aφadon" == aphadon);
-    test_tengwar!(Gondor, "AΦADON" == aphadon);
-    test_tengwar!(Gondor, "avadon" != aphadon);
+    let _aphadon = test_tengwar!(Gondor, "aphadon"
+        => [
+            TENGWA_FORMEN, TEHTA_A.base, // aph
+            TENGWA_ANDO, TEHTA_A.base, // ad
+            TENGWA_NUMEN, TEHTA_O.base, // on
+        ]
+        == "afadon"
+        == "aφadon"
+        == "AΦADON"
+        != "avadon"
+    );
 
-    let telch = test_tengwar!(Gondor, "telch" => [
-        TENGWA_TINCO, // t
-        TENGWA_LAMBE, TEHTA_E.base, // el
-        TENGWA_HWESTA, // ch
-    ]);
-    test_tengwar!(Gondor, "telkh" == telch);
-    test_tengwar!(Gondor, "telgh" != telch);
+    let _telch = test_tengwar!(Gondor, "telch"
+        => [TENGWA_TINCO, TENGWA_LAMBE, TEHTA_E.base, TENGWA_HWESTA]
+        == "telkh"
+        != "telgh"
+    );
 
-    let calen = test_tengwar!(Gondor, "calen" => [
-        TENGWA_QESSE, // c
-        TENGWA_LAMBE, TEHTA_A.base, // al
-        TENGWA_NUMEN, TEHTA_E.base, // en
-    ]);
-    test_tengwar!(Gondor, "kalen" == calen);
-    test_tengwar!(Gondor, "çalen" != calen);
+    let _calen = test_tengwar!(Gondor, "calen"
+        => [TENGWA_QESSE, TENGWA_LAMBE, TEHTA_A.base, TENGWA_NUMEN, TEHTA_E.base]
+        == "kalen"
+        != "çalen"
+    );
 
     let _hebin = test_tengwar!(Gondor, "hebin" => [
         TENGWA_HYARMEN, // h
@@ -189,13 +194,11 @@ fn words() {
         TENGWA_TINCO, // t
     ]);
 
-    let acharn = test_tengwar!(Gondor, "acharn" => [
-        TENGWA_HWESTA, TEHTA_A.base, // ach
-        TENGWA_ROMEN, TEHTA_A.base, // ar
-        TENGWA_NUMEN, // n
-    ]);
-    test_tengwar!(Gondor, "akharn" == acharn);
-    test_tengwar!(Gondor, "agharn" != acharn);
+    let _acharn = test_tengwar!(Gondor, "acharn"
+        => [TENGWA_HWESTA, TEHTA_A.base, TENGWA_ROMEN, TEHTA_A.base, TENGWA_NUMEN]
+        == "akharn"
+        != "agharn"
+    );
 
     let _wethrin = test_tengwar!(Gondor, "wethrin" => [
         TENGWA_WILYA, // w
@@ -231,49 +234,43 @@ fn words() {
     ]);
 
     //  Consonantal initial I and medial RH.
-    let iorhael = test_tengwar!(Gondor, "iorhael" => [
-        TENGWA_YANTA, // i
-        TENGWA_ROMEN, TEHTA_O.base, // or
-        TENGWA_HYARMEN, // h
-        CARRIER_DIPH_E, TEHTA_A.base, // ae
-        TENGWA_LAMBE, // l
-    ]);
-    test_tengwar!(Gondor, "jorhæl" == iorhael);
-    test_tengwar!(Gondor, "yorhael" != iorhael);
+    let _iorhael = test_tengwar!(Gondor, "iorhael"
+        => [
+            TENGWA_YANTA, // i
+            TENGWA_ROMEN, TEHTA_O.base, // or
+            TENGWA_HYARMEN, // h
+            CARRIER_DIPH_E, TEHTA_A.base, // ae
+            TENGWA_LAMBE, // l
+        ]
+        == "jorhæl"
+        != "yorhael"
+    );
 
     //  Non-consonantal I in the same vowel cluster.
-    let dior = test_tengwar!(Gondor, "dior" => [
-        TENGWA_ANDO, // d
-        CARRIER_SHORT, TEHTA_I.base, // i
-        TENGWA_ORE, TEHTA_O.base, // or
-    ]);
-    test_tengwar!(Gondor, "djor" != dior);
-    test_tengwar!(Gondor, "dyor" != dior);
+    let _dior = test_tengwar!(Gondor, "dior"
+        => [TENGWA_ANDO, CARRIER_SHORT, TEHTA_I.base, TENGWA_ORE, TEHTA_O.base]
+        != "djor"
+        != "dyor"
+    );
 
     //  Non-consonantal initial I.
-    let ithil = test_tengwar!(Gondor, "ithil" => [
-        TENGWA_THULE, TEHTA_I.base, // ith
-        TENGWA_LAMBE, TEHTA_I.base, // il
-    ]);
-    test_tengwar!(Gondor, "jthil" != ithil);
-    test_tengwar!(Gondor, "ythil" != ithil);
+    let _ithil = test_tengwar!(Gondor, "ithil"
+        => [TENGWA_THULE, TEHTA_I.base, TENGWA_LAMBE, TEHTA_I.base]
+        != "jthil"
+        != "ythil"
+    );
 }
 
 
 #[test]
 fn vowels() {
     //  Test all diphthongs.
-    test_tengwar!(Gondor, "ae" => [CARRIER_DIPH_E, TEHTA_A.base] as ae);
-    test_tengwar!(Gondor, "oe" => [CARRIER_DIPH_E, TEHTA_O.base] as oe);
+    test_tengwar!(Gondor, "ae" => [CARRIER_DIPH_E, TEHTA_A.base] == "æ" == "Æ");
+    test_tengwar!(Gondor, "oe" => [CARRIER_DIPH_E, TEHTA_O.base] == "œ" == "Œ");
     test_tengwar!(Gondor, "ai" => [CARRIER_DIPH_I, TEHTA_A.base]);
     test_tengwar!(Gondor, "ei" => [CARRIER_DIPH_I, TEHTA_E.base]);
     test_tengwar!(Gondor, "ui" => [CARRIER_DIPH_I, TEHTA_U.base]);
-    test_tengwar!(Gondor, "au" => [CARRIER_DIPH_U, TEHTA_A.base] as au);
-    test_tengwar!(Gondor, "aw" == au);
-    test_tengwar!(Gondor, "æ" == ae);
-    test_tengwar!(Gondor, "Æ" == ae);
-    test_tengwar!(Gondor, "œ" == oe);
-    test_tengwar!(Gondor, "Œ" == oe);
+    test_tengwar!(Gondor, "au" => [CARRIER_DIPH_U, TEHTA_A.base] == "aw");
 
     //  Test all vowels, alone.
     test_tengwar!(Gondor, "a" => [CARRIER_SHORT, TEHTA_A.base]);
@@ -282,24 +279,12 @@ fn vowels() {
     test_tengwar!(Gondor, "o" => [CARRIER_SHORT, TEHTA_O.base]);
     test_tengwar!(Gondor, "u" => [CARRIER_SHORT, TEHTA_U.base]);
     test_tengwar!(Gondor, "y" => [CARRIER_SHORT, TEHTA_Y.base]);
-    test_tengwar!(Gondor, "á" => [CARRIER_LONG, TEHTA_A.base] as aa);
-    test_tengwar!(Gondor, "é" => [CARRIER_LONG, TEHTA_E.base] as ee);
-    test_tengwar!(Gondor, "í" => [CARRIER_LONG, TEHTA_I.base] as ii);
-    test_tengwar!(Gondor, "ó" => [CARRIER_LONG, TEHTA_O.base] as oo);
-    test_tengwar!(Gondor, "ú" => [CARRIER_LONG, TEHTA_U.base] as uu);
-    test_tengwar!(Gondor, "ý" => [CARRIER_LONG, TEHTA_Y.base] as yy);
-    test_tengwar!(Gondor, "â" == aa);
-    test_tengwar!(Gondor, "ê" == ee);
-    test_tengwar!(Gondor, "î" == ii);
-    test_tengwar!(Gondor, "ô" == oo);
-    test_tengwar!(Gondor, "û" == uu);
-    test_tengwar!(Gondor, "ŷ" == yy);
-    test_tengwar!(Gondor, "aa" == aa);
-    test_tengwar!(Gondor, "ee" == ee);
-    test_tengwar!(Gondor, "ii" == ii);
-    test_tengwar!(Gondor, "oo" == oo);
-    test_tengwar!(Gondor, "uu" == uu);
-    test_tengwar!(Gondor, "yy" == yy);
+    test_tengwar!(Gondor, "á" => [CARRIER_LONG, TEHTA_A.base] == "â" == "aa");
+    test_tengwar!(Gondor, "é" => [CARRIER_LONG, TEHTA_E.base] == "ê" == "ee");
+    test_tengwar!(Gondor, "í" => [CARRIER_LONG, TEHTA_I.base] == "î" == "ii");
+    test_tengwar!(Gondor, "ó" => [CARRIER_LONG, TEHTA_O.base] == "ô" == "oo");
+    test_tengwar!(Gondor, "ú" => [CARRIER_LONG, TEHTA_U.base] == "û" == "uu");
+    test_tengwar!(Gondor, "ý" => [CARRIER_LONG, TEHTA_Y.base] == "ŷ" == "yy");
 
     //  Test all vowels, before consonants.
     test_tengwar!(Gondor, "ath" => [TENGWA_THULE, TEHTA_A.base]);
@@ -308,24 +293,12 @@ fn vowels() {
     test_tengwar!(Gondor, "oth" => [TENGWA_THULE, TEHTA_O.base]);
     test_tengwar!(Gondor, "uth" => [TENGWA_THULE, TEHTA_U.base]);
     test_tengwar!(Gondor, "yth" => [TENGWA_THULE, TEHTA_Y.base]);
-    test_tengwar!(Gondor, "áth" => [CARRIER_LONG, TEHTA_A.base, TENGWA_THULE] as aath);
-    test_tengwar!(Gondor, "éth" => [TENGWA_THULE, TEHTA_E.base, TEHTA_E.base] as eeth);
-    test_tengwar!(Gondor, "íth" => [CARRIER_LONG, TEHTA_I.base, TENGWA_THULE] as iith);
-    test_tengwar!(Gondor, "óth" => [TENGWA_THULE, TEHTA_O.base, TEHTA_O.base] as ooth);
-    test_tengwar!(Gondor, "úth" => [TENGWA_THULE, TEHTA_U.base, TEHTA_U.base] as uuth);
-    test_tengwar!(Gondor, "ýth" => [CARRIER_LONG, TEHTA_Y.base, TENGWA_THULE] as yyth);
-    test_tengwar!(Gondor, "âth" == aath);
-    test_tengwar!(Gondor, "êth" == eeth);
-    test_tengwar!(Gondor, "îth" == iith);
-    test_tengwar!(Gondor, "ôth" == ooth);
-    test_tengwar!(Gondor, "ûth" == uuth);
-    test_tengwar!(Gondor, "ŷth" == yyth);
-    test_tengwar!(Gondor, "aath" == aath);
-    test_tengwar!(Gondor, "eeth" == eeth);
-    test_tengwar!(Gondor, "iith" == iith);
-    test_tengwar!(Gondor, "ooth" == ooth);
-    test_tengwar!(Gondor, "uuth" == uuth);
-    test_tengwar!(Gondor, "yyth" == yyth);
+    test_tengwar!(Gondor, "áth" => [CARRIER_LONG, TEHTA_A.base, TENGWA_THULE] == "âth" == "aath");
+    test_tengwar!(Gondor, "éth" => [TENGWA_THULE, TEHTA_E.base, TEHTA_E.base] == "êth" == "eeth");
+    test_tengwar!(Gondor, "íth" => [CARRIER_LONG, TEHTA_I.base, TENGWA_THULE] == "îth" == "iith");
+    test_tengwar!(Gondor, "óth" => [TENGWA_THULE, TEHTA_O.base, TEHTA_O.base] == "ôth" == "ooth");
+    test_tengwar!(Gondor, "úth" => [TENGWA_THULE, TEHTA_U.base, TEHTA_U.base] == "ûth" == "uuth");
+    test_tengwar!(Gondor, "ýth" => [CARRIER_LONG, TEHTA_Y.base, TENGWA_THULE] == "ŷth" == "yyth");
 
     //  Test alternate styles of long vowels.
     test_tengwar!(Gondor[vowels=Separate], "áth" => [CARRIER_LONG, TEHTA_A.base, TENGWA_THULE]);
