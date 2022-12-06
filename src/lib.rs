@@ -91,9 +91,9 @@
 //! ## Crate-level function
 //!
 //! Also available, and likely the easiest to discover via code completion, is
-//!     the top-level [`crate::transcribe`] function, which takes an implementor
-//!     of [`TengwarMode`] as a generic parameter. This function accepts any
-//!     input type that implements [`ToTengwar`], and is a passthrough to the
+//!     the top-level [`transcribe`] function, which takes an implementor of
+//!     [`TengwarMode`] as a generic parameter. This function accepts any input
+//!     type that implements [`ToTengwar`], and is a passthrough to the
 //!     [`ToTengwar::to_tengwar`] method.
 //! ```
 //! use tengwar::{Quenya, transcribe};
@@ -101,6 +101,73 @@
 //! let text: String = transcribe::<Quenya>("namárië !");
 //! assert_eq!(text, " ");
 //! ```
+//!
+//! ---
+//! # In Detail
+//!
+//! The core of this library is the [`Token`] enum. A `Token` may hold a simple
+//!     [`char`], a [`Glyph`], or a [`Numeral`]. An iterator of `Token`s can be
+//!     [`collect`]ed into a [`String`]; This is where the rendering of Tengwar
+//!     text truly takes place.
+//!
+//! The rest of the library is geared around the creation of `Tokens`, usually
+//!     by iteration, and modifying them before the final call to `collect`.
+//!
+//! ## Mode
+//!
+//! A "Mode" of the Tengwar is essentially an orthography mapping; It correlates
+//!     conventions of writing in a primary world alphabet to the conventions of
+//!     writing in the Tengwar.
+//!
+//! For this purpose, the [`TengwarMode`] trait is provided. A type implementing
+//!     this trait is expected to perform essentially as a state machine, taking
+//!     input in the form of slices of `char`s, and using them to progressively
+//!     construct `Token`s.
+//!
+//! ## Tokenizer
+//!
+//! The first level of iteration is the [`Tokenizer`](mode::Tokenizer). This
+//!     iterator takes UTF-8 text, breaks it down into a [`Vec`] of normalized
+//!     Unicode codepoints, and assembles [`Token`]s according to the rules
+//!     specified by an implementation of [`TengwarMode`].
+//!
+//! Short slices of `char`s are passed to the Mode type, which determines
+//!     whether to accept them as part of a `Token`. If the `char`s are not
+//!     accepted, the slice is narrowed and tried again, until the width reaches
+//!     zero; At this point, the Mode type is shown the full remaining data and
+//!     asked whether it can get anything at all from it. If it cannot, a `char`
+//!     is returned unchanged as a `Token`.
+//!
+//! When the `Tokenizer` yields a `Token`, the following one is generated. This
+//!     allows for one last call to the Mode type, to [`TengwarMode::finalize`],
+//!     to modify a `Token` in light of the one that follows it; This is a very
+//!     important step, as some modes require that different base characters are
+//!     used depending on what follows them.
+//!
+//! ## TokenIter / Transcriber
+//!
+//! The second level of iteration is the [`TokenIter`]. This iterator can wrap
+//!     any other iterator that produces [`Token`]s, and its purpose is to apply
+//!     contextual rules and transformations specified at runtime. This is what
+//!     allows the executable transcriber to take CLI options that change rules,
+//!     such as the treatment of "long" tehta variants.
+//!
+//! A `TokenIter` that wraps a [`Tokenizer`](mode::Tokenizer) can also be called
+//!     a [`Transcriber`] for simplicity, because it is known that its `Token`s
+//!     are being produced directly from text.
+//!
+//! ## Policy
+//!
+//! A "Policy" is similar to a Mode, but rather than defining details about
+//!     **orthography**, it instead defines details about **typography**. This
+//!     includes details such as valid ligatures and placements of *Sa-Rinci*.
+//!
+//! The [`Policy`](policy::Policy) trait is provided for this purpose, and is
+//!     used as a generic parameter for the [`Glyph`] type. Because of this, it
+//!     is also a generic parameter for the [`Token`] and [`TokenIter`] types;
+//!     The [`Tokenizer`](mode::Tokenizer) type is considered to be out of scope
+//!     of the Policy system, and simply yields all of its `Token`s with the
+//!     default policy ([`policy::Standard`]).
 
 #[macro_use]
 extern crate cfg_if;
