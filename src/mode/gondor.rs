@@ -192,7 +192,7 @@ impl Gondor {
         }
 
         if let ['x'] = chunk {
-            Some((Glyph::new_base(TENGWA_CALMA).with_rince(true), 1))
+            Some((Glyph::new_base(TENGWA_QESSE).with_rince(true), 1))
         }
 
         //  Check for a final F, which should be spelled with Ampa instead of
