@@ -3,6 +3,9 @@
 ---
 ## Upcoming
 
+### Fixed
+- Fixed a bug where separate long vowel style would override the Nuquerna setting, even for short vowels.
+
 ---
 ## 1.1.0: 2023-10-03
 

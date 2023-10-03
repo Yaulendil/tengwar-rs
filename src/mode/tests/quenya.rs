@@ -914,21 +914,81 @@ fn vowels() {
     test_tengwar!(Quenya, "ló" => [TENGWA_LAMBE, TEHTA_O.base, TEHTA_O.base] == "loo");
     test_tengwar!(Quenya, "lú" => [TENGWA_LAMBE, TEHTA_U.base, TEHTA_U.base] == "luu");
 
+    //  Test alternate styles of long vowels.
+    test_tengwar!(Quenya[vowels=Separate], "la" => [TENGWA_LAMBE, TEHTA_A.base]);
+    test_tengwar!(Quenya[vowels=Separate], "le" => [TENGWA_LAMBE, TEHTA_E.base]);
+    test_tengwar!(Quenya[vowels=Separate], "li" => [TENGWA_LAMBE, TEHTA_I.base]);
+    test_tengwar!(Quenya[vowels=Separate], "lo" => [TENGWA_LAMBE, TEHTA_O.base]);
+    test_tengwar!(Quenya[vowels=Separate], "lu" => [TENGWA_LAMBE, TEHTA_U.base]);
+    test_tengwar!(Quenya[vowels=Doubled], "la" => [TENGWA_LAMBE, TEHTA_A.base]);
+    test_tengwar!(Quenya[vowels=Doubled], "le" => [TENGWA_LAMBE, TEHTA_E.base]);
+    test_tengwar!(Quenya[vowels=Doubled], "li" => [TENGWA_LAMBE, TEHTA_I.base]);
+    test_tengwar!(Quenya[vowels=Doubled], "lo" => [TENGWA_LAMBE, TEHTA_O.base]);
+    test_tengwar!(Quenya[vowels=Doubled], "lu" => [TENGWA_LAMBE, TEHTA_U.base]);
+    test_tengwar!(Quenya[vowels=Unique], "la" => [TENGWA_LAMBE, TEHTA_A.base]);
+    test_tengwar!(Quenya[vowels=Unique], "le" => [TENGWA_LAMBE, TEHTA_E.base]);
+    test_tengwar!(Quenya[vowels=Unique], "li" => [TENGWA_LAMBE, TEHTA_I.base]);
+    test_tengwar!(Quenya[vowels=Unique], "lo" => [TENGWA_LAMBE, TEHTA_O.base]);
+    test_tengwar!(Quenya[vowels=Unique], "lu" => [TENGWA_LAMBE, TEHTA_U.base]);
+
     test_tengwar!(Quenya[vowels=Separate], "lá" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_A.base]);
     test_tengwar!(Quenya[vowels=Separate], "lé" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_E.base]);
     test_tengwar!(Quenya[vowels=Separate], "lí" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_I.base]);
     test_tengwar!(Quenya[vowels=Separate], "ló" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_O.base]);
     test_tengwar!(Quenya[vowels=Separate], "lú" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_U.base]);
-
     test_tengwar!(Quenya[vowels=Doubled], "lá" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_A.base]);
     test_tengwar!(Quenya[vowels=Doubled], "lé" => [TENGWA_LAMBE, TEHTA_E.base, TEHTA_E.base]);
     test_tengwar!(Quenya[vowels=Doubled], "lí" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_I.base]);
     test_tengwar!(Quenya[vowels=Doubled], "ló" => [TENGWA_LAMBE, TEHTA_O.base, TEHTA_O.base]);
     test_tengwar!(Quenya[vowels=Doubled], "lú" => [TENGWA_LAMBE, TEHTA_U.base, TEHTA_U.base]);
-
     test_tengwar!(Quenya[vowels=Unique], "lá" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_A.base]);
     test_tengwar!(Quenya[vowels=Unique], "lé" => [TENGWA_LAMBE, TEHTA_E.alternate.unwrap()]);
     test_tengwar!(Quenya[vowels=Unique], "lí" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_I.base]);
     test_tengwar!(Quenya[vowels=Unique], "ló" => [TENGWA_LAMBE, TEHTA_O.alternate.unwrap()]);
     test_tengwar!(Quenya[vowels=Unique], "lú" => [TENGWA_LAMBE, TEHTA_U.alternate.unwrap()]);
+}
+
+
+#[test]
+fn edge_case() {
+    //  Check for edge case where short vowels do not use Silmi/Essi Nuquernar.
+    test_tengwar!(Quenya[nuquerna=true, vowels=Unique], "sú"
+        => [TENGWA_SILME_NUQ, TEHTA_U.alternate.unwrap()]
+    );
+    test_tengwar!(Quenya[nuquerna=true, vowels=Doubled], "sú"
+        => [TENGWA_SILME_NUQ, TEHTA_U.base, TEHTA_U.base]
+    );
+    test_tengwar!(Quenya[nuquerna=true, vowels=Separate], "sú"
+        => [TENGWA_SILME, CARRIER_LONG, TEHTA_U.base]
+    );
+
+    test_tengwar!(Quenya[nuquerna=true, vowels=Unique], "su"
+        => [TENGWA_SILME_NUQ, TEHTA_U.base]
+    );
+    test_tengwar!(Quenya[nuquerna=true, vowels=Doubled], "su"
+        => [TENGWA_SILME_NUQ, TEHTA_U.base]
+    );
+    test_tengwar!(Quenya[nuquerna=true, vowels=Separate], "su"
+        => [TENGWA_SILME_NUQ, TEHTA_U.base]
+    );
+
+    test_tengwar!(Quenya[nuquerna=true, vowels=Unique], "sá"
+        => [TENGWA_SILME, CARRIER_LONG, TEHTA_A.base]
+    );
+    test_tengwar!(Quenya[nuquerna=true, vowels=Doubled], "sá"
+        => [TENGWA_SILME, CARRIER_LONG, TEHTA_A.base]
+    );
+    test_tengwar!(Quenya[nuquerna=true, vowels=Separate], "sá"
+        => [TENGWA_SILME, CARRIER_LONG, TEHTA_A.base]
+    );
+
+    test_tengwar!(Quenya[nuquerna=true, vowels=Unique], "sa"
+        => [TENGWA_SILME_NUQ, TEHTA_A.base]
+    );
+    test_tengwar!(Quenya[nuquerna=true, vowels=Doubled], "sa"
+        => [TENGWA_SILME_NUQ, TEHTA_A.base]
+    );
+    test_tengwar!(Quenya[nuquerna=true, vowels=Separate], "sa"
+        => [TENGWA_SILME_NUQ, TEHTA_A.base]
+    );
 }

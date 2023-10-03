@@ -333,6 +333,22 @@ impl<P: Policy> Glyph<P> {
         match self {
             &Glyph {
                 base: Some(base),
+                tehta: Some(_),
+                tehta_alt: false,
+                nuquerna: true,
+                ..
+            } if P::nuquerna_valid(base) => {
+                //  In this case, ALL of the following are true:
+                //    - The glyph has both a tengwa and a tehta.
+                //    - The base tengwa has a Nuquerna variant.
+                //    - The glyph is set to use the Nuquerna variant.
+                //    - The tehta is in its base form.
+                //  The Nuquerna variant of the base will therefore be returned.
+                P::nuquerna(base)
+            }
+
+            &Glyph {
+                base: Some(base),
                 tehta: Some(tehta),
                 tehta_alt,
                 nuquerna: true,

@@ -1,6 +1,10 @@
 # TODO
 
 ---
+## 1.1.1
+- [ ] Fix Nuquerna bug with separate vowel mode
+
+---
 ## 1.2.0
 
 ### CLI
