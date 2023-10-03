@@ -425,7 +425,7 @@ impl<P: Policy> Glyph<P> {
         }
     }
 
-    /// Determine whether is glyph has no basic forms at all.
+    /// Determine whether this glyph has no basic forms at all.
     pub const fn is_empty(&self) -> bool {
         self.base.is_none() && self.tehta.is_none()
     }
