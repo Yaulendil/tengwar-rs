@@ -332,37 +332,22 @@ impl<P: Policy> Glyph<P> {
     pub fn base_nuq(&self) -> char {
         match self {
             &Glyph {
-                base: Some(base),
-                tehta: Some(_),
-                tehta_alt: false,
-                nuquerna: true,
+                base: Some(base), // Has a tengwa.
+                tehta: Some(_), // Has a tehta.
+                tehta_alt: false, // Will use the BASE form of the tehta.
+                nuquerna: true, // Is set to use a Nuquerna.
                 ..
-            } if P::nuquerna_valid(base) => {
-                //  In this case, ALL of the following are true:
-                //    - The glyph has both a tengwa and a tehta.
-                //    - The base tengwa has a Nuquerna variant.
-                //    - The glyph is set to use the Nuquerna variant.
-                //    - The tehta is in its base form.
-                //  The Nuquerna variant of the base will therefore be returned.
-                P::nuquerna(base)
-            }
+            } => P::nuquerna(base),
 
             &Glyph {
-                base: Some(base),
-                tehta: Some(tehta),
-                tehta_alt,
-                nuquerna: true,
-                vowels: VowelStyle::Doubled | VowelStyle::Unique,
-                ..
-            } if P::nuquerna_valid(base) && !(tehta_alt && tehta.needs_ara()) => {
-                //  In this case, ALL of the following are true:
-                //    - The glyph has both a tengwa and a tehta.
-                //    - The base tengwa has a Nuquerna variant.
-                //    - The glyph is set to use the Nuquerna variant.
-                //    - The tehta will be displayed on the tengwa.
-                //  The Nuquerna variant of the base will therefore be returned.
-                P::nuquerna(base)
-            }
+                base: Some(base), // Has a tengwa.
+                tehta: Some(tehta), // Has a tehta.
+                tehta_alt: true, // Will use the ALTERNATE form of the tehta.
+                nuquerna: true, // Is set to use a Nuquerna.
+                vowels, ..
+            } if vowels.allow_long_above() // Alt tehta is allowed above tengwa.
+                && !tehta.needs_ara() // This alt tehta does not require Ára.
+                => P::nuquerna(base),
 
             _ => self.base(),
         }

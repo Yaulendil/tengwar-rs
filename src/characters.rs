@@ -58,6 +58,16 @@ impl VowelStyle {
     /// The default behavior. Everything should use this, if not otherwise
     ///     specified.
     pub const DEFAULT: Self = Self::Doubled;
+
+    /// Returns `true` if this vowel style allows for a "long" tehta to be
+    ///     placed above a base tengwa.
+    pub const fn allow_long_above(&self) -> bool {
+        match self {
+            Self::Separate => false,
+            Self::Doubled => true,
+            Self::Unique => true,
+        }
+    }
 }
 
 impl Default for VowelStyle {
