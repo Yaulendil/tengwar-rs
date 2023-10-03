@@ -3,6 +3,9 @@
 ---
 ## Upcoming
 
+---
+## 1.1.0: 2023-10-03
+
 ### Added
 - Implemented `--dot-plain` and `--elide-a` CLI options to enable variant behaviors used for Quenya.
 - Implemented `Policy` trait to adjust `Glyph` behavior.

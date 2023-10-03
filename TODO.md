@@ -1,7 +1,7 @@
 # TODO
 
 ---
-## 1.1.0
+## 1.2.0
 
 ### CLI
 ### Docs
@@ -9,7 +9,6 @@
 - [ ] Allow custom Modes to be specified via a config language (Would TOML work?)
 ### Library
 - [ ] Gondor "Full" Mode
-- [x] Flesh out `Policy` to make ligature/rincë rules extensible
 ### Output
 ### Tests
 
