@@ -3,6 +3,8 @@
 ---
 ## Upcoming
 
+### Added
+- Allowed macron to be read as a long vowel marker.
 ### Fixed
 - Fixed a bug where separate long vowel style would override the Nuquerna setting, even for short vowels.
 

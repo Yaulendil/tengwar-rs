@@ -110,11 +110,11 @@ pub const fn get_tehta(slice: &[char]) -> Option<(Tehta, bool)> {
         ['o'] | ['ö'] => Some((TEHTA_O, false)),
         ['u'] | ['ü'] => Some((TEHTA_U, false)),
 
-        ['á'] | ['a', 'a'] => Some((TEHTA_A, true)),
-        ['é'] | ['e', 'e'] => Some((TEHTA_E, true)),
-        ['í'] | ['i', 'i'] => Some((TEHTA_I, true)),
-        ['ó'] | ['o', 'o'] => Some((TEHTA_O, true)),
-        ['ú'] | ['u', 'u'] => Some((TEHTA_U, true)),
+        ['á'] | ['ā'] | ['a', 'a'] => Some((TEHTA_A, true)),
+        ['é'] | ['ē'] | ['e', 'e'] => Some((TEHTA_E, true)),
+        ['í'] | ['ī'] | ['i', 'i'] => Some((TEHTA_I, true)),
+        ['ó'] | ['ō'] | ['o', 'o'] => Some((TEHTA_O, true)),
+        ['ú'] | ['ū'] | ['u', 'u'] => Some((TEHTA_U, true)),
 
         _ => None,
     }

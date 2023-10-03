@@ -108,12 +108,12 @@ pub const fn get_vowel(slice: &[char]) -> Option<Glyph> {
         ['u'] | ['ü'] => Glyph::new_base(VOWEL_U),
         ['y'] | ['ÿ'] => Glyph::new_base(VOWEL_Y),
 
-        ['á'] | ['â'] | ['a', 'a'] => Glyph::new_both(VOWEL_A, ANDAITH),
-        ['é'] | ['ê'] | ['e', 'e'] => Glyph::new_both(VOWEL_E, ANDAITH),
-        ['í'] | ['î'] | ['i', 'i'] => Glyph::new_both(VOWEL_I, ANDAITH),
-        ['ó'] | ['ô'] | ['o', 'o'] => Glyph::new_both(VOWEL_O, ANDAITH),
-        ['ú'] | ['û'] | ['u', 'u'] => Glyph::new_both(VOWEL_U, ANDAITH),
-        ['ý'] | ['ŷ'] | ['y', 'y'] => Glyph::new_both(VOWEL_Y, ANDAITH),
+        ['á'] | ['â'] | ['ā'] | ['a', 'a'] => Glyph::new_both(VOWEL_A, ANDAITH),
+        ['é'] | ['ê'] | ['ē'] | ['e', 'e'] => Glyph::new_both(VOWEL_E, ANDAITH),
+        ['í'] | ['î'] | ['ī'] | ['i', 'i'] => Glyph::new_both(VOWEL_I, ANDAITH),
+        ['ó'] | ['ô'] | ['ō'] | ['o', 'o'] => Glyph::new_both(VOWEL_O, ANDAITH),
+        ['ú'] | ['û'] | ['ū'] | ['u', 'u'] => Glyph::new_both(VOWEL_U, ANDAITH),
+        ['ý'] | ['ŷ'] | ['ȳ'] | ['y', 'y'] => Glyph::new_both(VOWEL_Y, ANDAITH),
 
         _ => { return None; }
     })

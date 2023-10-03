@@ -896,11 +896,11 @@ fn vowels() {
     test_tengwar!(Quenya, "i" => [CARRIER_SHORT, TEHTA_I.base]);
     test_tengwar!(Quenya, "o" => [CARRIER_SHORT, TEHTA_O.base]);
     test_tengwar!(Quenya, "u" => [CARRIER_SHORT, TEHTA_U.base]);
-    test_tengwar!(Quenya, "á" => [CARRIER_LONG, TEHTA_A.base] == "aa");
-    test_tengwar!(Quenya, "é" => [CARRIER_LONG, TEHTA_E.base] == "ee");
-    test_tengwar!(Quenya, "í" => [CARRIER_LONG, TEHTA_I.base] == "ii");
-    test_tengwar!(Quenya, "ó" => [CARRIER_LONG, TEHTA_O.base] == "oo");
-    test_tengwar!(Quenya, "ú" => [CARRIER_LONG, TEHTA_U.base] == "uu");
+    test_tengwar!(Quenya, "á" => [CARRIER_LONG, TEHTA_A.base] == "ā" == "aa");
+    test_tengwar!(Quenya, "é" => [CARRIER_LONG, TEHTA_E.base] == "ē" == "ee");
+    test_tengwar!(Quenya, "í" => [CARRIER_LONG, TEHTA_I.base] == "ī" == "ii");
+    test_tengwar!(Quenya, "ó" => [CARRIER_LONG, TEHTA_O.base] == "ō" == "oo");
+    test_tengwar!(Quenya, "ú" => [CARRIER_LONG, TEHTA_U.base] == "ū" == "uu");
 
     //  Test all vowels, after consonants.
     test_tengwar!(Quenya, "la" => [TENGWA_LAMBE, TEHTA_A.base]);
@@ -908,11 +908,11 @@ fn vowels() {
     test_tengwar!(Quenya, "li" => [TENGWA_LAMBE, TEHTA_I.base]);
     test_tengwar!(Quenya, "lo" => [TENGWA_LAMBE, TEHTA_O.base]);
     test_tengwar!(Quenya, "lu" => [TENGWA_LAMBE, TEHTA_U.base]);
-    test_tengwar!(Quenya, "lá" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_A.base] == "laa");
-    test_tengwar!(Quenya, "lé" => [TENGWA_LAMBE, TEHTA_E.base, TEHTA_E.base] == "lee");
-    test_tengwar!(Quenya, "lí" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_I.base] == "lii");
-    test_tengwar!(Quenya, "ló" => [TENGWA_LAMBE, TEHTA_O.base, TEHTA_O.base] == "loo");
-    test_tengwar!(Quenya, "lú" => [TENGWA_LAMBE, TEHTA_U.base, TEHTA_U.base] == "luu");
+    test_tengwar!(Quenya, "lá" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_A.base] == "lā" == "laa");
+    test_tengwar!(Quenya, "lé" => [TENGWA_LAMBE, TEHTA_E.base, TEHTA_E.base] == "lē" == "lee");
+    test_tengwar!(Quenya, "lí" => [TENGWA_LAMBE, CARRIER_LONG, TEHTA_I.base] == "lī" == "lii");
+    test_tengwar!(Quenya, "ló" => [TENGWA_LAMBE, TEHTA_O.base, TEHTA_O.base] == "lō" == "loo");
+    test_tengwar!(Quenya, "lú" => [TENGWA_LAMBE, TEHTA_U.base, TEHTA_U.base] == "lū" == "luu");
 
     //  Test alternate styles of long vowels.
     test_tengwar!(Quenya[vowels=Separate], "la" => [TENGWA_LAMBE, TEHTA_A.base]);

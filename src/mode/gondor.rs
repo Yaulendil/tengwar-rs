@@ -107,12 +107,12 @@ pub const fn get_vowel(slice: &[char]) -> Option<Glyph> {
         ['u'] | ['ü'] => Some(Glyph::new_tehta(TEHTA_U)),
         ['y'] | ['ÿ'] => Some(Glyph::new_tehta(TEHTA_Y)),
 
-        ['á'] | ['â'] | ['a', 'a'] => Some(Glyph::new_tehta_alt(TEHTA_A)),
-        ['é'] | ['ê'] | ['e', 'e'] => Some(Glyph::new_tehta_alt(TEHTA_E)),
-        ['í'] | ['î'] | ['i', 'i'] => Some(Glyph::new_tehta_alt(TEHTA_I)),
-        ['ó'] | ['ô'] | ['o', 'o'] => Some(Glyph::new_tehta_alt(TEHTA_O)),
-        ['ú'] | ['û'] | ['u', 'u'] => Some(Glyph::new_tehta_alt(TEHTA_U)),
-        ['ý'] | ['ŷ'] | ['y', 'y'] => Some(Glyph::new_tehta_alt(TEHTA_Y)),
+        ['á'] | ['â'] | ['ā'] | ['a', 'a'] => Some(Glyph::new_tehta_alt(TEHTA_A)),
+        ['é'] | ['ê'] | ['ē'] | ['e', 'e'] => Some(Glyph::new_tehta_alt(TEHTA_E)),
+        ['í'] | ['î'] | ['ī'] | ['i', 'i'] => Some(Glyph::new_tehta_alt(TEHTA_I)),
+        ['ó'] | ['ô'] | ['ō'] | ['o', 'o'] => Some(Glyph::new_tehta_alt(TEHTA_O)),
+        ['ú'] | ['û'] | ['ū'] | ['u', 'u'] => Some(Glyph::new_tehta_alt(TEHTA_U)),
+        ['ý'] | ['ŷ'] | ['ȳ'] | ['y', 'y'] => Some(Glyph::new_tehta_alt(TEHTA_Y)),
 
         _ => None,
     }

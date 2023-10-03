@@ -181,12 +181,12 @@ fn vowels() {
     test_tengwar!(Beleriand, "o" => [VOWEL_O]);
     test_tengwar!(Beleriand, "u" => [VOWEL_U]);
     test_tengwar!(Beleriand, "y" => [VOWEL_Y]);
-    test_tengwar!(Beleriand, "á" => [VOWEL_A, LONG] == "â" == "aa");
-    test_tengwar!(Beleriand, "é" => [VOWEL_E, LONG] == "ê" == "ee");
-    test_tengwar!(Beleriand, "í" => [VOWEL_I, LONG] == "î" == "ii");
-    test_tengwar!(Beleriand, "ó" => [VOWEL_O, LONG] == "ô" == "oo");
-    test_tengwar!(Beleriand, "ú" => [VOWEL_U, LONG] == "û" == "uu");
-    test_tengwar!(Beleriand, "ý" => [VOWEL_Y, LONG] == "ŷ" == "yy");
+    test_tengwar!(Beleriand, "á" => [VOWEL_A, LONG] == "â" == "ā" == "aa");
+    test_tengwar!(Beleriand, "é" => [VOWEL_E, LONG] == "ê" == "ē" == "ee");
+    test_tengwar!(Beleriand, "í" => [VOWEL_I, LONG] == "î" == "ī" == "ii");
+    test_tengwar!(Beleriand, "ó" => [VOWEL_O, LONG] == "ô" == "ō" == "oo");
+    test_tengwar!(Beleriand, "ú" => [VOWEL_U, LONG] == "û" == "ū" == "uu");
+    test_tengwar!(Beleriand, "ý" => [VOWEL_Y, LONG] == "ŷ" == "ȳ" == "yy");
 
     //  Test all vowels, before consonants.
     test_tengwar!(Beleriand, "ath" => [VOWEL_A, TENGWA_THULE]);
@@ -195,10 +195,10 @@ fn vowels() {
     test_tengwar!(Beleriand, "oth" => [VOWEL_O, TENGWA_THULE]);
     test_tengwar!(Beleriand, "uth" => [VOWEL_U, TENGWA_THULE]);
     test_tengwar!(Beleriand, "yth" => [VOWEL_Y, TENGWA_THULE]);
-    test_tengwar!(Beleriand, "áth" => [VOWEL_A, LONG, TENGWA_THULE] == "âth" == "aath");
-    test_tengwar!(Beleriand, "éth" => [VOWEL_E, LONG, TENGWA_THULE] == "êth" == "eeth");
-    test_tengwar!(Beleriand, "íth" => [VOWEL_I, LONG, TENGWA_THULE] == "îth" == "iith");
-    test_tengwar!(Beleriand, "óth" => [VOWEL_O, LONG, TENGWA_THULE] == "ôth" == "ooth");
-    test_tengwar!(Beleriand, "úth" => [VOWEL_U, LONG, TENGWA_THULE] == "ûth" == "uuth");
-    test_tengwar!(Beleriand, "ýth" => [VOWEL_Y, LONG, TENGWA_THULE] == "ŷth" == "yyth");
+    test_tengwar!(Beleriand, "áth" => [VOWEL_A, LONG, TENGWA_THULE] == "âth" == "āth" == "aath");
+    test_tengwar!(Beleriand, "éth" => [VOWEL_E, LONG, TENGWA_THULE] == "êth" == "ēth" == "eeth");
+    test_tengwar!(Beleriand, "íth" => [VOWEL_I, LONG, TENGWA_THULE] == "îth" == "īth" == "iith");
+    test_tengwar!(Beleriand, "óth" => [VOWEL_O, LONG, TENGWA_THULE] == "ôth" == "ōth" == "ooth");
+    test_tengwar!(Beleriand, "úth" => [VOWEL_U, LONG, TENGWA_THULE] == "ûth" == "ūth" == "uuth");
+    test_tengwar!(Beleriand, "ýth" => [VOWEL_Y, LONG, TENGWA_THULE] == "ŷth" == "ȳth" == "yyth");
 }
