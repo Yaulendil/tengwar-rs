@@ -31,7 +31,7 @@ When run directly, reads all command-line arguments and prints them back in Teng
     > tengwar "Elen síla lúmenn' omentielvo :"
         
 
-    > tengwar "Utúlie'n aurë!, Aiya Eldalië ar Atanatári , utúlie'n aurë!:"
+    > tengwar "Utúlie'n aurë!. Aiya Eldalië ar Atanatári . utúlie'n aurë!:"
             
 
 If no arguments are provided, reads from Standard Input and prints transliteration to Standard Output line by line.
@@ -114,11 +114,12 @@ Tengwar [punctuation](https://at.mansbjorkman.net/teng_punctuation.htm) is essen
 It is therefore probably best to not even try, and instead to punctuate the input text with the output in mind.
 
 This program does convert punctuation marks into Unicode codepoints, but whitespace is passed through verbatim, neither added nor subtracted¹.
-As of this writing at version `1.0.0`, punctuation is processed as can be seen above and in the following table:
+Punctuation is processed as can be seen above and in the following table:
 
 | Input              | Output |
 |--------------------|:------:|
-| `'`, `.`, `,`, `·` |  ``   |
+| `,`                |  `◌`  |
+| `'`, `.`, `·`      |  ``   |
 | `:`, `;`           |  ``   |
 | `⁝`, `︙`           |  ``   |
 | `⁘`, `⁛`, `…`      |  ``   |
@@ -188,9 +189,9 @@ It uses the [Tengwar Telcontar] font with the Graphite renderer, and the given c
 
 \begin{document}
     % "The king of Doriath, Elu Thingol, was slain by Dwarves from Nogrod."
-    \Classical{i aran Lestanórëo ,}
+    \Classical{i aran Lestanórëo .}
     \Beleriand{“Elu Thingol„}
-    \Classical{, nánë nahtana ló Casari Návaróto ::}
+    \Classical{. nánë nahtana ló Casari Návaróto ::}
 \end{document}
 ```
 

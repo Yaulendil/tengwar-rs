@@ -83,7 +83,8 @@ impl Default for VowelStyle {
 ///     constructed from similar basic marks, such as `:-` and `::`.
 pub const fn punctuation(chr: char) -> Option<char> {
     Some(match chr {
-        '\'' | '.' | ',' | '·' => PUNCT_DOT_1,
+        ',' => DC_UNDER_LINE_V,
+        '\'' | '.' | '·' => PUNCT_DOT_1,
         ':' | ';' => PUNCT_DOT_2,
         '⁝' | '︙' => PUNCT_DOT_3,
         '⁘' | '⁛' | '…' => PUNCT_DOT_4,

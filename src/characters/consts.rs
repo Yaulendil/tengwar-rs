@@ -100,6 +100,20 @@ pub const DC_UNDER_LINE_V: char = '';
 pub const DC_UNDER_RING: char = '';
 
 
+/// A vertical line below a tengwa, when it represents a shortened vowel, is
+///     apparently named as *thinnas* in `DTS 65`. *Thinnas* is the Noldorin
+///     word for "shortness".
+pub const DC_THINNAS: char = DC_UNDER_LINE_V;
+
+/// Equivalent to [`DC_THINNAS`], provided for consistency with all the Quenya
+///     names used in this module. Quenya *þennië* is a cognate of *thennas*,
+///     which is in turn the Sindarin form of the given Noldorin *thinnas*.
+//  TODO: Get access to DTS 65 and find out whether it is used for Sindarin or
+//      Noldorin exclusively. If this is the case, it may not actually make much
+//      sense to give it a Quenya label.
+pub const DC_THENNIE: char = DC_THINNAS;
+
+
 /// Marking to denote a sound that leads into a "w" sound.
 pub const MOD_LABIAL: char = DC_OVER_WAVE;
 /// Long/double consonant.
@@ -183,7 +197,7 @@ pub const PUNCT_EXCLAM: char = '';
 /// A variant exclamatory marking, used in the contract given to Bilbo Baggins
 ///     by Thorin Oakenshield.
 pub const PUNCT_THORIN: char = '';
-/// A symbol resembling a capital `B`, serving as an interrogative marking.
+/// A symbol resembling a `B` or `β`, serving as an interrogative marking.
 pub const PUNCT_INTERR: char = '';
 
 /// A single horizontal line with a wave, resembling a tilde.
@@ -293,6 +307,7 @@ impl Tema {
 
 
 //  Alternate spellings.
+// pub const DC_SENNIE: char = DC_THENNIE; // þ -> s
 // pub const TENGWA_SULE: char = TENGWA_THULE; // þ -> s
 // pub const TENGWA_HARMA: char = TENGWA_AHA;
 // pub const TENGWA_QUESSE: char = TENGWA_QESSE;
